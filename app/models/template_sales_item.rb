@@ -10,6 +10,10 @@ class TemplateSalesItem < ActiveRecord::Base
   has_many :production_repair_results
   has_many :post_production_results 
   
+  has_many :production_orders
+  has_many :production_repair_orders
+  has_many :post_production_orders 
+  
   validates_presence_of :code 
   
   def has_unconfirmed_production_result?
@@ -31,5 +35,13 @@ class TemplateSalesItem < ActiveRecord::Base
   
   def confirmed_sales_items
     self.sales_items.where(:is_confirmed => true ).order("created_at ASC")
+  end
+  
+  def pending_production_repair
+    total_quantity_ordered = self.production_repair_orders.sum("quantity") 
+    total_quantity_finished = self.production_repair_results.where(:is_confirmed => true ) .sum("ok_quantity")
+    
+    
+    total_quantity_ordered - total_quantity_finished 
   end
 end

@@ -141,6 +141,12 @@ PRODUCTION_ORDER = {
 
 }
 
+PRODUCTION_REPAIR_ORDER = { 
+  :production_repair => 1, 
+  :sales_return => 2,  
+  :guarantee_return => 3  
+}
+
 POST_PRODUCTION_ORDER = {
   :sales_order_only_post_production => 1,  # so the guy put the iron @us. 
   :sales_order                      => 2,

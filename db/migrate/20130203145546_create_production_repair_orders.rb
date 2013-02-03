@@ -1,10 +1,11 @@
-class CreatePostProductionOrders < ActiveRecord::Migration
+class CreateProductionRepairOrders < ActiveRecord::Migration
   def change
-    create_table :post_production_orders do |t| 
-      t.integer :template_sales_item_id 
+    create_table :production_repair_orders do |t|
+      t.integer :template_sales_item_id  
       t.integer :creator_id 
       
-      t.integer :case     , :default  => POST_PRODUCTION_ORDER[:sales_order]
+      
+      t.integer :case     , :default  => PRODUCTION_REPAIR_ORDER[:production_repair]
       
       t.integer :quantity 
       

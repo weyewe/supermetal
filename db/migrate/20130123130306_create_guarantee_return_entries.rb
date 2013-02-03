@@ -15,6 +15,9 @@ class CreateGuaranteeReturnEntries < ActiveRecord::Migration
       t.decimal :weight_for_production , :precision => 7, :scale => 2 , :default => 0
       
       
+      t.integer :quantity_for_production_repair       ,  :default => 0 
+      t.decimal :weight_for_production_repair , :precision => 7, :scale => 2 , :default => 0
+      
       t.boolean :is_confirmed, :default => false
       
       

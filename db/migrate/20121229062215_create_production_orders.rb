@@ -1,7 +1,7 @@
 class CreateProductionOrders < ActiveRecord::Migration
   def change
     create_table :production_orders do |t|
-      t.integer :sales_item_id 
+      t.integer :template_sales_item_id 
       t.integer :creator_id 
       
       

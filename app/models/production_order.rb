@@ -1,11 +1,10 @@
 class ProductionOrder < ActiveRecord::Base
-  attr_accessible :sales_item_id,  :sales_item_subcription_id, :template_sales_item_id, 
+  attr_accessible   :sales_item_subcription_id, :template_sales_item_id, 
                   :case, :quantity,
                   :source_document_entry, :source_document_entry_id,
                   :source_document, :source_document_id
                   
-  belongs_to :sales_item
-  belongs_to :sales_item_subcription 
+ 
   belongs_to :template_sales_item
   
   def ProductionOrder.create_sales_production_order( sales_item  )

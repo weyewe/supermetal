@@ -112,11 +112,7 @@ class ProductionRepairResult < ActiveRecord::Base
     new_object.template_sales_item_id = template_sales_item.id 
     new_object.creator_id = employee.id 
      
-  
-    # if not params[:ok_quantity].nil? and params[:ok_quantity].to_i > sales_item_subcription.pending_production 
-    #   new_object.errors.add(:ok_quantity , "Maksimal pending production: #{sales_item_subcription.pending_production}" ) 
-    #   return new_object 
-    # end
+   
     
     new_object.ok_quantity         = params[:ok_quantity]
     new_object.repairable_quantity = params[:repairable_quantity]
