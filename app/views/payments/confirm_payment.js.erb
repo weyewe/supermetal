@@ -1,0 +1,49 @@
+$(document).ready(function(){
+	var $form_wrapper = $("#action_button"); 
+	$form_wrapper.spin(false); 
+ 
+
+	<% if  @payment.is_confirmed?  %>
+	 
+	// replace the actionbar  with postConfirmBar => to delete the sales order 
+		<% post_confirm_bar = escape_javascript(  render :partial => "invoice_payments/payment/post_confirm_bar", 
+		:locals => {
+	    :parent => @payment  
+	  })%>
+		
+		$("#actionbar").replaceWith('<%=  post_confirm_bar %>');
+	
+	// refresh the itemList => no edit or delete 
+		<% item_list = escape_javascript(  render :partial => "invoice_payments/payment/item_list", 
+		:locals => {
+	    :parent => @payment ,
+			:objects => @payment.invoice_payments  
+	  })%>
+	
+		$("#tableview").replaceWith('<%= item_list %>');
+		
+		
+	
+	// alert msgbox: success confirming 
+		$.msgbox("Berhasil Konfirmasi Payment: <%= @payment.code %>", 
+						{type: "info"});
+						 
+		
+		
+	<% else %> 
+		// replace the form, show the edit 
+		<% actionbar = escape_javascript(  render :partial => "invoice_payments/payment/actionbar", 
+		:locals => {
+	    :parent => @payment  
+	  })%>
+	
+		$("#actionbar").replaceWith("<%= actionbar %>");
+		 
+		$.msgbox("Error konfirmasi  payment: <%= @payment.code %>", 
+					{type: "error"});
+	<% end %>
+ 
+	jQuery('.prevent_double_submit').preventDoubleSubmit();
+});
+
+

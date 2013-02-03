@@ -1,0 +1,34 @@
+<% if new_object.persisted? %>
+	<% id = 'edit_object'%>
+<% else %>
+	<% id = 'new_object'%>
+<% end %>
+
+<%= simple_form_for( new_object, :url => url,
+      :method => :post , 
+      :html => {:class => " prevent_double_submit ajax-form   no_content_form",
+        :id => "#{id}"}) do |f| %>
+
+	<%= f.input :case, :label => "Tipe Kas Akun" do %>
+     <%= f.select :case, 
+         CashAccount.all_selectable_cases %>
+  <% end %>
+
+
+  <%= f.input :name  , :input_html => {:class => "input-xlarge "}, 
+  			:label => "Nama Akun Kas" %>
+ 
+
+  <div class="form-actions">
+	
+		<% if new_object.persisted? %>
+			<%= f.button :submit , :class => "btn btn-primary", :value=> "Update  Cash Account" %>
+		<% else %>
+			<%= f.button :submit , :class => "btn btn-primary", :value=> "Create Cash Account" %>
+		<% end %>
+		
+  </div>
+<% end %>
+
+
+ 

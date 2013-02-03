@@ -1,0 +1,92 @@
+<% if new_object.persisted? %>
+	<% id = 'edit_object'%>
+<% else %>
+	<% id = 'new_object'%>
+<% end %>
+
+
+
+<%= simple_form_for( new_object, :url => url,
+      :method => :post , 
+      :html => {:class => " prevent_double_submit ajax-form   no_content_form",
+        :id => "#{id}"}) do |f| %>
+
+	 
+
+
+  <%= f.input :customer_id  , :input_html => {:class => "input-xlarge "}, 
+  			:label => "Customer" %>
+
+	<%= f.input :amount_paid  , 
+				:input_html => {:class => "input-xlarge ", :value => "#{new_object.amount_paid.to_i}"}, 
+  			:label => "Jumlah uang yang <b>diterima</b>",
+ 				:as => :string,
+				:hint => "Dalam rupiah (tanpa tanda baca). Contoh: <b>15500</b> == Rp 15,000 " %>
+	
+	<%= f.input :downpayment_usage_amount  , 
+				:input_html => {:class => "input-xlarge ", :value => "#{new_object.amount_paid.to_i}"}, 
+  			:label => "Jumlah <b>Penggunaan</b> Down Payment",
+ 				:as => :string,
+				:hint => "Dalam rupiah (tanpa tanda baca). Contoh: <b>15500</b> == Rp 15,000 " %>
+ 
+<hr />
+	<%= f.input :downpayment_addition_amount  , 
+				:input_html => {:class => "input-xlarge ", :value => "#{new_object.amount_paid.to_i}"}, 
+				:label => "Jumlah <b>Penambahan</b> Down Payment",
+				:as => :string,
+				:hint => "Dalam rupiah (tanpa tanda baca). Contoh: <b>15500</b> == Rp 15,000 " %>
+
+<hr />
+	<%= f.input :cash_account_id, :label => "Tujuan Pembayaran" , 
+		:hint => "Jika hanya pembayaran dengan menggunakan <b>Down Payment</b>, " + 
+						"apapun pilihannya tidak akan berpengaruh" do %>
+     <%= f.select :cash_account_id, 
+         CashAccount.all_selectables %>
+  <% end %>
+
+
+	<%= f.input :payment_method, :label => "Metode Pembayaran" do %>
+     <%= f.select :payment_method, 
+         Payment.selectable_payment_methods %>
+  <% end %>
+<hr />
+	<%= f.input :note  , 
+				:input_html => {:class => "input-xlarge ", :rows => "5" }, 
+				:label => "Keterangan",
+				:as => :text %>
+				
+				
+  <div class="form-actions">
+	
+		<% if new_object.persisted? %>
+			<%= f.button :submit , :class => "btn btn-primary", :value=> "Update Payment" %>
+		<% else %>
+			<%= f.button :submit , :class => "btn btn-primary", :value=> "Create Payment" %>
+		<% end %>
+		
+  </div>
+<% end %>
+
+
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+	
+	 $("#payment_customer_id").tokenInput('<%=	search_customer_url %>', {
+		prePopulate:   	[
+				<% if not new_object.customer_id.nil? %> 
+				{id: <%= new_object.customer_id %>, name: '<%= new_object.customer.name %>'}
+				<% end %>
+			],
+		zindex: 9999,
+		propertyToSearch: "name",
+		tokenLimit: 1
+	});
+
+
+ 
+	
+	
+});
+</script>

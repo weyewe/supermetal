@@ -1,0 +1,51 @@
+<%= render :partial => "layouts/masthead" ,:locals => {
+	:title => "Report Pengerjaan",
+	:description => "Lihat progress pengerjaan order client"
+}%>
+
+<%= create_breadcrumb(@breadcrumbs).html_safe %>
+
+<div id="content">
+
+	<div class="container">
+		
+		
+		<div class="row">
+			
+			<div class="span12">
+				 
+				<table class="table table-bordered table-striped table-highlight" id='tableview'>
+					<thead>
+						<tr>
+							<th>Code</th> 
+							<th>Customer</th>
+							<th style="font-weight:bold;">Pending Production</th>
+							<th style="font-weight:bold;">Pending Post Production</th>
+							<th style="font-weight:bold;">Ready</th>
+							<th>Pengiriman</th> 
+						</tr>
+					</thead>
+					<tbody> 
+						<% @objects.each do |object| %>
+							<%= render :partial =>  'home/entry', :locals => {
+								:object => object 
+							} %> 
+						<% end %>
+					</tbody>
+				</table>
+
+				
+				
+				
+			 
+				
+			</div> <!-- /.span12 -->
+			
+		 
+		</div> <!-- /.row -->
+		
+	
+	</div> <!-- /.container -->
+
+</div> <!-- /#content -->
+ 

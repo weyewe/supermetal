@@ -1,0 +1,48 @@
+<%= render :partial => "layouts/masthead" ,:locals => {
+	:title => "Sejarah Downpayment",
+	:description => "Penambahan dan Penggunaan customer <b>#{@customer.name}</b>".html_safe 
+}%>
+
+<%= create_breadcrumb(@breadcrumbs).html_safe %>
+
+<div id="content">
+
+	<div class="container">
+		
+		
+		<div class="row">
+			
+			<div class="span12">
+				 
+				<table class="table table-bordered table-striped table-highlight" id='tableview'>
+					<thead>
+						<tr>
+							<th>Tanggal</th> 
+							<th>Payment</th> 
+							<th style="font-weight:bold;">Jumlah</th>  
+						</tr>
+					</thead>
+					<tbody> 
+						<% @objects.each do |object| %>
+							<%= render :partial =>  'downpayment_histories/entry', :locals => {
+								:object => object 
+							} %> 
+						<% end %>
+					</tbody>
+				</table>
+
+				
+				
+				
+			 
+				
+			</div> <!-- /.span12 -->
+			
+		 
+		</div> <!-- /.row -->
+		
+	
+	</div> <!-- /.container -->
+
+</div> <!-- /#content -->
+ 
