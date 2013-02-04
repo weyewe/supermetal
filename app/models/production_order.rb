@@ -39,21 +39,48 @@ class ProductionOrder < ActiveRecord::Base
   end
   
   
-  def ProductionOrder.generate_post_production_failure_production_order( post_production_history )
-    # puts "We are inside the production order\n"*10
-    return nil if post_production_history.quantity_to_be_reproduced == 0 
-    sales_item = post_production_history.sales_item 
-    ProductionOrder.create(
-      :sales_item_id            => sales_item.id       ,
-      :sales_item_subcription_id => sales_item.sales_item_subcription_id , 
-      :template_sales_item_id    => sales_item.template_sales_item_id  ,
+  def ProductionOrder.generate_post_production_bad_source_failure_production_order( post_production_result )
+    return nil if post_production_result.bad_source_quantity  == 0 
+    ProductionOrder.create( 
+      :sales_item_subcription_id => nil, 
+      :template_sales_item_id    => post_production_result.template_sales_item_id  ,
       
-      :case                     => PRODUCTION_ORDER[:post_production_failure]     ,
-      :quantity                 => post_production_history.quantity_to_be_reproduced     ,
-      :source_document_entry    => post_production_history.class.to_s          ,
-      :source_document_entry_id => post_production_history.id                  ,
-      :source_document          => post_production_history.class.to_s          ,
-      :source_document_id       => post_production_history.id  
+      :case                     => PRODUCTION_ORDER[:post_production_failure_bad_source]     ,
+      :quantity                 => post_production_result.bad_source_quantity     ,
+      :source_document_entry    => post_production_result.class.to_s          ,
+      :source_document_entry_id => post_production_result.id                  ,
+      :source_document          => post_production_result.class.to_s          ,
+      :source_document_id       => post_production_result.id  
+    ) 
+  end
+  
+  def ProductionOrder.generate_post_production_technical_failure_production_order( post_production_result )
+    return nil if post_production_result.broken_quantity  == 0 
+    ProductionOrder.create( 
+      :sales_item_subcription_id => nil, 
+      :template_sales_item_id    => post_production_result.template_sales_item_id  ,
+      
+      :case                     => PRODUCTION_ORDER[:post_production_failure_technical_failure]     ,
+      :quantity                 => post_production_result.broken_quantity     ,
+      :source_document_entry    => post_production_result.class.to_s          ,
+      :source_document_entry_id => post_production_result.id                  ,
+      :source_document          => post_production_result.class.to_s          ,
+      :source_document_id       => post_production_result.id  
+    ) 
+  end
+  
+  def ProductionOrder.generate_production_repair_failure_production_order( production_repair_result  )
+    return nil if production_repair_result.broken_quantity  == 0 
+    ProductionOrder.create( 
+      :sales_item_subcription_id => nil, 
+      :template_sales_item_id    => production_repair_result.template_sales_item_id  ,
+      
+      :case                     => PRODUCTION_ORDER[:post_production_failure_technical_failure]     ,
+      :quantity                 => production_repair_result.broken_quantity     ,
+      :source_document_entry    => production_repair_result.class.to_s          ,
+      :source_document_entry_id => production_repair_result.id                  ,
+      :source_document          => production_repair_result.class.to_s          ,
+      :source_document_id       => production_repair_result.id  
     ) 
   end
   

@@ -169,6 +169,14 @@ describe SalesItem do
       only_machining_template.pending_production.should == 0 
       only_machining_template.pending_post_production.should == @only_machining_sales_quantity
     end
+    
+    it 'should give template sales item the appropriate status: internal production?' do
+      template_sales_item = @has_production_sales_item.template_sales_item
+      template_sales_item.is_internal_production.should be_true 
+      
+      only_machining_template = @only_machining_sales_item.template_sales_item 
+      only_machining_template.is_internal_production.should be_false 
+    end
   end # on confirming sales order 
   
   

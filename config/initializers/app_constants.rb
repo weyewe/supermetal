@@ -132,9 +132,10 @@ MATERIAL = {
 PRODUCTION_ORDER = {
   :sales_order             => 1,  
   :production_failure      => 2, 
-  :post_production_failure => 3, 
-  :sales_return            => 4, 
-  :delivery_lost           => 5,
+  :post_production_failure_bad_source => 3, 
+  :post_production_failure_technical_failure => 4, 
+  :sales_return            => 5, 
+  :delivery_lost           => 6,
   :sales_return_post_production_failure => 10  ,
   
   :guarantee_return => 15

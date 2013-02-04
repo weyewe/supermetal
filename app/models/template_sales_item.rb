@@ -24,10 +24,18 @@ class TemplateSalesItem < ActiveRecord::Base
     self.post_production_results.where(:is_confirmed => false ).count != 0 
   end
   
+  def has_unconfirmed_production_repair_result?
+    self.production_repair_results.where(:is_confirmed => false).count != 0 
+  end
+  
   def self.create_based_on_sales_item( sales_item )
     new_object = self.new
     new_object.code = sales_item.code 
   
+    if not sales_item.is_production?
+      new_object.is_internal_production  = false 
+    end
+    
     new_object.save 
     
     return new_object 
@@ -62,13 +70,14 @@ class TemplateSalesItem < ActiveRecord::Base
   def pending_production
     total_quantity_ordered = self.production_orders.sum("quantity") 
     total_quantity_finished = self.production_results.where(:is_confirmed => true ) .sum("processed_quantity")  
+                                
     
     total_quantity_ordered - total_quantity_finished
   end
   
   def pending_production_repair
     total_quantity_ordered = self.production_repair_orders.sum("quantity") 
-    total_quantity_finished = self.production_repair_results.where(:is_confirmed => true ) .sum("ok_quantity")
+    total_quantity_finished = self.production_repair_results.where(:is_confirmed => true ) .sum("processed_quantity")
     
     total_quantity_ordered - total_quantity_finished 
   end

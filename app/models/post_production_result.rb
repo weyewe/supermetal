@@ -1,10 +1,10 @@
 class PostProductionResult < ActiveRecord::Base
   # attr_accessible :title, :body
-  belongs_to :template_sales_item_id 
+  belongs_to :template_sales_item
    
   validates_presence_of   :ok_quantity,  :broken_quantity, :bad_source_quantity, 
                           :ok_weight,   :broken_weight,   :bad_source_weight ,  
-                          :started_at, :finished_at
+                          :started_at, :finished_at, :template_sales_item_id 
                           
   validates_numericality_of :ok_quantity, :broken_quantity  ,  :bad_source_quantity, 
                           :ok_weight, :broken_weight    , :bad_source_weight         
@@ -193,6 +193,21 @@ class PostProductionResult < ActiveRecord::Base
         raise ActiveRecord::Rollback, "Call tech support!" 
       end
        
+       
+      if self.template_sales_item.is_internal_production? 
+        
+      
+        if self.bad_source_quantity != 0 
+          # create production order 
+          ProductionOrder.generate_post_production_bad_source_failure_production_order( self )
+        end
+        
+        if self.broken_quantity != 0 
+          # create production order 
+          ProductionOrder.generate_post_production_technical_failure_production_order( self )
+        end
+      else
+      end 
     end
     
   end 
