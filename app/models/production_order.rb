@@ -124,11 +124,12 @@ class ProductionOrder < ActiveRecord::Base
   
   def ProductionOrder.generate_delivery_lost_production_order( delivery_lost_entry  )
     return nil if delivery_lost_entry.quantity_lost == 0 
-    sales_item = delivery_lost_entry.delivery_entry.sales_item
+    # sales_item = delivery_lost_entry.delivery_entry.sales_item
+    template_sales_item = delivery_lost_entry.delivery_entry.sales_item.template_sales_item
     ProductionOrder.create(
-      :sales_item_id            =>  sales_item.id       ,
-      :sales_item_subcription_id => sales_item.sales_item_subcription_id , 
-      :template_sales_item_id    => sales_item.template_sales_item_id  ,
+      # :sales_item_id            =>  sales_item.id       ,
+      # :sales_item_subcription_id => sales_item.sales_item_subcription_id , 
+      :template_sales_item_id    => template_sales_item.id  ,
       
       :case                     => PRODUCTION_ORDER[:delivery_lost]     ,
       :quantity                 => delivery_lost_entry.quantity_lost     ,

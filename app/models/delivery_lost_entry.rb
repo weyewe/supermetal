@@ -45,6 +45,6 @@ class DeliveryLostEntry < ActiveRecord::Base
      # puts "after update, pending_production: #{sales_item.pending_production}"
      # puts "after update, total production_order : #{sales_item.production_orders.sum('quantity')}"
     
-    sales_item.update_on_delivery_lost_entry_confirm
+    # sales_item.update_on_delivery_lost_entry_confirm
   end
 end

@@ -179,4 +179,24 @@ class TemplateSalesItem < ActiveRecord::Base
     
     total_quantity_received - total_quantity_worked
   end
+  
+
+###################################################
+###################################################
+################# =>    Only Post Production 
+###################################################
+###################################################
+  def on_delivery
+    template_sales_item_id=  self.id 
+    items_on_delivery = DeliveryEntry.joins(:sales_item).where(
+        :sales_item => {
+          :template_sales_item_id => template_sales_item_id
+        },
+        :is_confirmed => true,
+        :is_finalized => false 
+      ).sum('quantity_sent')
+  end
+  
+   
+
 end

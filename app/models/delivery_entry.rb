@@ -10,17 +10,21 @@ class DeliveryEntry < ActiveRecord::Base
   validate   :quantity_sent_weight_is_not_zero_and_less_than_ready_quantity 
   validate   :uniqueness_of_sales_item
   validate   :customer_ownership_to_sales_item
-  validate :no_overcharge
+  validate :valid_delivery_entry_combination
   
   def quantity_sent_is_not_zero_and_less_than_ready_quantity
-    sales_item = self.sales_item
-    if  self.normal_delivery_entry?  and  self.delivery.is_confirmed == false and ( quantity_sent <= 0 or quantity_sent > sales_item.ready ) 
-      errors.add(:quantity_sent , "Kuantitas harus lebih dari 0 dan kurang atau sama dengan #{sales_item.ready}" )  
-    end
+    ready_production = self.sales_item.template_sales_item.ready_production
+    ready_post_production = self.sales_item.template_sales_item.ready_post_production
     
-    if self.entry_case == DELIVERY_ENTRY_CASE[:guarantee_return] and 
-        self.delivery.is_confirmed == false and ( quantity_sent <= 0 or quantity_sent > sales_item.pending_guarantee_return_delivery)
-      errors.add(:quantity_sent , "Kuantitas harus lebih dari 0 dan kurang atau sama dengan #{sales_item.ready} (pengembalian retur garansi)" )  
+    if self.item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:production]
+      if quantity_sent.present? and ( quantity_sent > ready_production  or quantity_sent <= 0 ) 
+        errors.add(:quantity_sent , "Kuantitas harus lebih dari 0 dan kurang atau sama dengan #{ready_production}" )  
+      end
+      
+    elsif self.item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
+      if quantity_sent.present? and ( quantity_sent > ready_post_production  or quantity_sent <= 0 ) 
+        errors.add(:quantity_sent , "Kuantitas harus lebih dari 0 dan kurang atau sama dengan #{ready_post_production}" )  
+      end
     end
   end
   
@@ -40,17 +44,11 @@ class DeliveryEntry < ActiveRecord::Base
     delivery_entry_count = DeliveryEntry.where(
       :sales_item_id => self.sales_item_id,
       :delivery_id => parent.id ,
-      :entry_case => self.entry_case 
+      :entry_case => self.entry_case,
+      :item_condition => self.item_condition 
     ).count 
     
-    # if not self.persisted? and post_uniq_sales_item_id_list.include?( self.sales_item_id)
-    #   errors.add(:sales_item_id , "Sales item #{self.sales_item.code} sudah terdaftar di surat jalan" ) 
-    # elsif self.persisted? and sales_item_id_list.length !=  post_uniq_sales_item_id_list.length
-    #   errors.add(:sales_item_id , "Sales item #{self.sales_item.code} sudah terdaftar di surat jalan" ) 
-    # end
-    
-    # i want to check.. if there has been such delivery entry with  similar entry_case and sales_item_id 
-    # =>  error 
+   
     if not self.persisted? and delivery_entry_count != 0
       errors.add(:sales_item_id , "Sales item #{self.sales_item.code} sudah terdaftar di surat jalan" ) 
     elsif self.persisted? and delivery_entry_count != 1 
@@ -137,8 +135,8 @@ class DeliveryEntry < ActiveRecord::Base
           errors.add(:entry_case , "Hanya ada permintaan untuk casting. pengembalian barang keropos tidak valid" ) 
         elsif entry_case == DELIVERY_ENTRY_CASE[:technical_failure_post_production]
           errors.add(:entry_case , "Hanya ada permintaan untuk casting. Gagal bubut tidak valid" ) 
-        elsif entry_case == DELIVERY_ENTRY_CASE[:cancel_post_production_only]
-          errors.add(:entry_case , "Hanya ada permintaan untuk casting. Pengembalian batal bubut tidak valid" ) 
+        elsif entry_case == DELIVERY_ENTRY_CASE[:cancel_post_production_only] 
+          errors.add(:entry_case ,  "Hanya ada permintaan untuk casting. Pengembalian batal bubut tidak valid") 
         end
       end
     end
@@ -147,7 +145,15 @@ class DeliveryEntry < ActiveRecord::Base
     # only post production (pure service)
     if not sales_item.is_production and sales_item.is_post_production
       if item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:production]
-        errors.add(:item_condition , "Tidak bisa pengiriman barang hasil cor. Harus hasil bubut" ) 
+        if entry_case == DELIVERY_ENTRY_CASE[:cancel_post_production_only]  and sales_item.template_sales_item.pending_post_production_only_post_production < quantity_sent 
+          errors.add(:entry_case , "Tidak bisa pengembalian batal bubut. Max: #{sales_item.template_sales_item.pending_post_production_only_post_production}"  ) 
+        else
+          # no errors 
+        end
+        
+        if entry_case != DELIVERY_ENTRY_CASE[:cancel_post_production_only]
+          errors.add(:item_condition , "Tidak bisa mengeluarkan barang  yang belum di proses, kecuali pengembalian batal bubut" ) 
+        end
       end 
 
       if item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
@@ -165,8 +171,8 @@ class DeliveryEntry < ActiveRecord::Base
           errors.add(:entry_case , "Tidak bisa pengembalian barang keropos. Max: #{sales_item.template_sales_item.pending_bad_source}" ) 
         elsif entry_case == DELIVERY_ENTRY_CASE[:technical_failure_post_production] and sales_item.template_sales_item.pending_bad_source < quantity_sent
           errors.add(:entry_case , "Tidak bisa pengembalian gagal bubut. Max: #{sales_item.template_sales_item.pending_broken_quantity}" ) 
-        elsif entry_case == DELIVERY_ENTRY_CASE[:cancel_post_production_only] and sales_item.template_sales_item.pending_post_production_only_post_production < quantity_sent
-          errors.add(:entry_case , "Tidak bisa pengembalian gagal bubut. Max: #{sales_item.template_sales_item.pending_post_production}" ) 
+        elsif entry_case == DELIVERY_ENTRY_CASE[:cancel_post_production_only] 
+          errors.add(:entry_case , "Hanya ada permintaan untuk casting. Pengembalian batal bubut tidak valid"  ) 
         end
       end
     end
@@ -372,9 +378,9 @@ class DeliveryEntry < ActiveRecord::Base
       raise ActiveRecord::Rollback, "Call tech support!" 
     end
     
-    sales_item = self.sales_item 
+    # sales_item = self.sales_item 
     
-    sales_item.update_on_delivery_confirm
+    # sales_item.update_on_delivery_confirm
     # sales_item.update_on_delivery_statistics
     # sales_item.update_ready_statistics
   end

@@ -266,6 +266,7 @@ DELIVERY_ENTRY_CASE_VALUE = {
   :bad_source_fail_post_production   => "Cast Keropos (hanya bubut)", 
   :technical_failure_post_production => "Gagal bubut (hanya bubut)" ,
   :guarantee_return_failure_post_production => "Gagal bubut (hanya bubut) untuk item garansi" ,
+  :cancel_post_production_only => "Batal hanya bubut"
 }
 
 # http://www.mangareader.net/303-55068-12/drifters/chapter-14.html
