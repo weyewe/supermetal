@@ -4,7 +4,7 @@ class DeliveryEntry < ActiveRecord::Base
   belongs_to :sales_item 
   has_one :sales_return_entry
   
-  
+  validates_presence_of :item_condition, :entry_case, :sales_item_id 
   
   validate   :quantity_sent_is_not_zero_and_less_than_ready_quantity
   validate   :quantity_sent_weight_is_not_zero_and_less_than_ready_quantity 
@@ -79,9 +79,10 @@ class DeliveryEntry < ActiveRecord::Base
     new_object.quantity_sent        = params[:quantity_sent]       
     new_object.quantity_sent_weight = BigDecimal( params[:quantity_sent_weight ])
     new_object.entry_case           = params[:entry_case] 
+    new_object.item_condition           = params[:item_condition] 
 
     
-    new_object.generate_delivery_entry_case
+    # new_object.generate_delivery_entry_case
     if new_object.save 
       new_object.generate_code 
       
@@ -100,8 +101,9 @@ class DeliveryEntry < ActiveRecord::Base
     self.quantity_sent        = params[:quantity_sent]       
     self.quantity_sent_weight = BigDecimal( params[:quantity_sent_weight ])
     self.entry_case           = params[:entry_case] 
+    new_object.item_condition           = params[:item_condition]
 
-    new_object.generate_delivery_entry_case
+    # new_object.generate_delivery_entry_case
     if self.save 
     end
     
@@ -236,16 +238,16 @@ class DeliveryEntry < ActiveRecord::Base
     end
   end
   
-  def generate_delivery_entry_case 
-    if self.entry_case.nil? 
-      sales_item  = self.sales_item 
-      if sales_item.is_post_production? # contains post production.. don't really care about production 
-        self.entry_case = DELIVERY_ENTRY_CASE[:ready_post_production]
-      elsif sales_item.only_production?
-        self.entry_case = DELIVERY_ENTRY_CASE[:ready_production]
-      end
-    end
-  end
+  # def generate_delivery_entry_case 
+  #   if self.entry_case.nil? 
+  #     sales_item  = self.sales_item 
+  #     if sales_item.is_post_production? # contains post production.. don't really care about production 
+  #       self.entry_case = DELIVERY_ENTRY_CASE[:ready_post_production]
+  #     elsif sales_item.only_production?
+  #       self.entry_case = DELIVERY_ENTRY_CASE[:ready_production]
+  #     end
+  #   end
+  # end
   
   def confirm 
     return nil if self.is_confirmed == true  
@@ -255,7 +257,7 @@ class DeliveryEntry < ActiveRecord::Base
     
     self.generate_code
     
-    self.generate_delivery_entry_case 
+    # self.generate_delivery_entry_case 
     
     validate_pricing_availability
     
