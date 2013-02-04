@@ -25,6 +25,9 @@ class SalesReturnEntry < ActiveRecord::Base
     self.quantity_for_post_production = params[:quantity_for_post_production]
     self.weight_for_post_production   = BigDecimal( params[:weight_for_post_production] )
     
+    self.quantity_for_production_repair = params[:quantity_for_production_repair]
+    self.weight_for_production_repair   = BigDecimal( params[:weight_for_production_repair] )
+    
     self.validate_return_handling 
     
     if self.errors.size > 0 
@@ -40,9 +43,10 @@ class SalesReturnEntry < ActiveRecord::Base
   end
     
   def validate_total_quantity_is_equal_to_the_sales_return_quantity
-    if quantity_for_production  + quantity_for_post_production != self.quantity_returned
+    if quantity_for_production  + quantity_for_post_production + quantity_for_production_repair != self.quantity_returned
       msg = "Jumlah retur: #{self.quantity_returned}."+ 
             " Jumlah dari produksi (#{self.quantity_for_production}) + " + 
+            " Jumlah dari perbaiki produksi (#{self.quantity_for_production_repair}) + " + 
             " post produksi (#{self.quantity_for_post_production}) + " + 
             'tidak sesuai'
       self.errors.add(:quantity_for_production ,  msg )  
@@ -82,8 +86,8 @@ class SalesReturnEntry < ActiveRecord::Base
        self.errors.add(:weight_for_post_production , "Berat total tidak boleh 0" )     
     end
     
-    if  quantity_for_post_production.present?  and quantity_for_post_production == 0  and 
-              weight_for_post_production > BigDecimal('0')
+    if  quantity_for_production_repair.present?  and quantity_for_production_repair == 0  and 
+              weight_for_production_repair > BigDecimal('0')
       self.errors.add(:weight_for_post_production , "Berat harus 0 karena kuantitas perbaiki  = 0" )  
     end
   end
@@ -120,15 +124,16 @@ class SalesReturnEntry < ActiveRecord::Base
     self.save 
     
     ProductionOrder.generate_sales_return_production_order( self  )
+    ProductionRepairOrder.generate_sales_return_production_repair_order( self  )
     PostProductionOrder.generate_sales_return_repair_post_production_order( self ) 
     
     self.reload
     
     
     
-    sales_item = self.delivery_entry.sales_item 
-    sales_item.reload 
-    sales_item.update_on_sales_return_confirm
+    # sales_item = self.delivery_entry.sales_item 
+    # sales_item.reload 
+    # sales_item.update_on_sales_return_confirm
      #   
      # sales_item.update_pending_production 
      # sales_item.reload 

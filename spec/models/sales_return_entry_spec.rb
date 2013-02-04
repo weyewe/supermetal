@@ -134,4 +134,216 @@ describe SalesReturnEntry do
     @delivery_entry.reload
     @template_sales_item.reload
   end
+  
+  context 'no returned sales item' do
+    before(:each) do 
+      # create finalization
+      @quantity_returned = 0  
+      @quantity_confirmed =   @delivery_entry.quantity_sent - @quantity_returned
+
+      # puts "quantity_confirmed: #{@quantity_confirmed}"
+      # puts "quantity_returned: #{@quantity_returned}"
+
+      @delivery_entry.update_post_delivery(@admin, {
+        :quantity_confirmed => @quantity_confirmed , 
+        :quantity_confirmed_weight =>  "#{@quantity_confirmed*10 }", 
+        :quantity_returned => @quantity_returned ,
+        :quantity_returned_weight => "#{@quantity_returned*20}" ,
+        :quantity_lost => 0 
+      }) 
+
+
+      @has_production_sales_item.reload 
+      @initial_on_delivery_item = @has_production_sales_item.on_delivery 
+      @initial_fulfilled = @has_production_sales_item.fulfilled_order
+
+
+      @delivery.reload 
+      @delivery.finalize(@admin)
+      @delivery.reload
+
+      # @delivery.finalize(@admin)  
+      @has_production_sales_item.reload
+
+      @sales_return = @delivery.sales_return 
+      # @sales_return_entry = @sales_return.sales_return_entries.first
+    end
+    
+    it 'should have no sales return ' do
+      @sales_return.should be_nil 
+    end
+    
+    it 'should be finalized' do
+      @delivery.is_finalized.should be_true 
+    end
+  end
+  
+  context 'has returned sales item' do
+    before(:each) do 
+      # create finalization
+      @quantity_returned = 5 
+      @quantity_confirmed =   @delivery_entry.quantity_sent - @quantity_returned
+  
+      # puts "quantity_confirmed: #{@quantity_confirmed}"
+      # puts "quantity_returned: #{@quantity_returned}"
+  
+      @delivery_entry.update_post_delivery(@admin, {
+        :quantity_confirmed => @quantity_confirmed , 
+        :quantity_confirmed_weight =>  "#{@quantity_confirmed*10 }", 
+        :quantity_returned => @quantity_returned ,
+        :quantity_returned_weight => "#{@quantity_returned*20}" ,
+        :quantity_lost => 0 
+      }) 
+  
+  
+      @has_production_sales_item.reload 
+      @initial_on_delivery_item = @has_production_sales_item.on_delivery 
+      @initial_fulfilled = @has_production_sales_item.fulfilled_order
+  
+  
+      @delivery.reload 
+      @delivery.finalize(@admin)
+      @delivery.reload
+  
+      # @delivery.finalize(@admin)  
+      @has_production_sales_item.reload
+  
+      @sales_return = @delivery.sales_return 
+      @sales_return_entry = @sales_return.sales_return_entries.first
+    end
+    
+    it 'should have one sales return entry' do
+      @sales_return.sales_return_entries.count.should == 1 
+      @sales_return_entry.should be_valid 
+    end
+    
+    it 'should  be allowed to be confirmed if total_sum of production + post_production  == quantity_returned' do
+      sales_return_repair_post_production_quantity = 1
+      sales_return_production_repair_quantity = 1  
+      sales_return_production_quantity =  @quantity_returned - sales_return_repair_post_production_quantity
+      @sales_return_entry.update_return_handling( {
+        :quantity_for_production => sales_return_production_quantity, 
+        :weight_for_production => "#{sales_return_production_quantity*7}",
+        :quantity_for_production_repair => sales_return_production_repair_quantity, 
+        :weight_for_production_repair => "#{sales_return_production_repair_quantity*7}",
+        
+        :quantity_for_post_production => sales_return_repair_post_production_quantity,
+        :weight_for_post_production => "#{sales_return_repair_post_production_quantity*7}"
+      })
+      
+      @sales_return_entry.validate_return_handling 
+      @sales_return_entry.errors.size.should == 0 
+    end
+    
+    it 'should not allow negative value' do
+      sales_return_repair_post_production_quantity = -1 
+      sales_return_production_quantity =  4  #@quantity_returned - sales_return_repair_post_production_quantity
+      sales_return_production_repair_quantity =1
+      @sales_return_entry.update_return_handling( {
+        :quantity_for_production => sales_return_production_quantity, 
+        :weight_for_production => "#{sales_return_production_quantity*7}",
+        
+        :quantity_for_production_repair => sales_return_production_repair_quantity, 
+        :weight_for_production_repair => "#{sales_return_production_repair_quantity*7}",
+        
+        :quantity_for_post_production => sales_return_repair_post_production_quantity,
+        :weight_for_post_production => "#{1*7}"
+      })
+      
+      @sales_return_entry.validate_return_handling 
+      @sales_return_entry.errors.size.should_not == 0
+    end
+    
+    it 'should not allow production + post production != quantity_returned' do
+      sales_return_repair_post_production_quantity = 1
+      sales_return_production_repair_quantity = 1 
+      extra_for_error  = 1 
+      sales_return_production_quantity =  @quantity_returned - 
+                                          sales_return_repair_post_production_quantity + 
+                                          sales_return_production_repair_quantity + 
+                                          extra_for_error
+                                          
+      @sales_return_entry.update_return_handling( {
+        :quantity_for_production => sales_return_production_quantity, 
+        :weight_for_production => "#{sales_return_production_quantity*7}",
+        
+        :quantity_for_production_repair => sales_return_production_repair_quantity, 
+        :weight_for_production_repair => "#{sales_return_production_repair_quantity*7}",
+        
+        :quantity_for_post_production => sales_return_repair_post_production_quantity,
+        :weight_for_post_production => "#{sales_return_repair_post_production_quantity*7}"
+      })
+      
+      @sales_return_entry.validate_return_handling 
+      @sales_return_entry.errors.size.should_not == 0
+    end
+    
+    context 'sales_return confirmation' do
+      before(:each) do
+        @has_production_sales_item.reload 
+        @initial_pending_production = @has_production_sales_item.pending_production
+        @initial_pending_post_production = @has_production_sales_item.pending_post_production
+       
+        
+        @sales_return_repair_post_production_quantity = 1 
+        @sales_return_production_repair_quantity =  1 
+        @sales_return_production_quantity =  @quantity_returned - 
+                    @sales_return_repair_post_production_quantity - 
+                    @sales_return_production_repair_quantity
+        @sales_return_entry.update_return_handling( {
+          :quantity_for_production => @sales_return_production_quantity, 
+          :weight_for_production => "#{@sales_return_production_quantity*7}",
+          
+          :quantity_for_production_repair => @sales_return_production_repair_quantity, 
+          :weight_for_production_repair => "#{@sales_return_production_repair_quantity*7}",
+    
+          :quantity_for_post_production => @sales_return_repair_post_production_quantity,
+          :weight_for_post_production => "#{@sales_return_repair_post_production_quantity*7}"
+        })
+        
+        
+        
+        @sales_return.confirm( @admin )
+        @sales_return.reload
+        @sales_return_entry.reload 
+        @has_production_sales_item.reload 
+        
+        @template_sales_item.reload 
+     
+      end
+      
+      it 'should have  confirmed sales return' do 
+        @sales_return.is_confirmed.should be_true  
+      end
+      
+      it 'should have confirmed sales_return_entry' do
+        puts "Total errors: #{@sales_return_entry.errors.size}"
+        @sales_return_entry.errors.messages.each do |msg|
+          puts "msg: #{msg}"
+        end
+        @sales_return_entry.is_confirmed.should be_true 
+      end
+      
+      # it 'should have increased the pending production' do
+      #   
+      #   @final_pending_production = @has_production_sales_item.pending_production
+      #  
+      #   
+      #   diff = @final_pending_production - @initial_pending_production
+      #   
+      #   diff.should == @sales_return_production_quantity
+      # end
+      # 
+      # it 'should have increased the pending post production'  do
+      #     
+      #   
+      #   @final_pending_post_production = @has_production_sales_item.pending_post_production
+      #   diff =  @final_pending_post_production - @initial_pending_post_production
+      #   
+      #   diff.should == @sales_return_repair_post_production_quantity
+      # end
+    end
+  end
+  
+  
 end

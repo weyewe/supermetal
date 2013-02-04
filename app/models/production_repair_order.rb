@@ -26,11 +26,11 @@ class ProductionRepairOrder < ActiveRecord::Base
   
    
   
-  def ProductionOrder.generate_sales_return_production_order( sales_return_entry )
+  def self.generate_sales_return_production_repair_order( sales_return_entry )
     # puts "We are inside the production order\n"*10
     # return nil if post_production_history.broken_quantity == 0 
     return nil if sales_return_entry.nil? 
-    quantity = sales_return_entry.quantity_for_production
+    quantity = sales_return_entry.quantity_for_production_repair
     return nil if quantity == 0  
     template_sales_item = sales_return_entry.sales_item.template_sales_item 
     

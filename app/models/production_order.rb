@@ -106,11 +106,10 @@ class ProductionOrder < ActiveRecord::Base
   
   def ProductionOrder.generate_sales_return_production_order( sales_return_entry )
     return nil if sales_return_entry.quantity_for_production ==0 
-    sales_item = sales_return_entry.delivery_entry.sales_item
+    template_sales_item = sales_return_entry.delivery_entry.sales_item.template_sales_item 
     ProductionOrder.create(
-      :sales_item_id            => sales_item.id       ,
-      :sales_item_subcription_id => sales_item.sales_item_subcription_id , 
-      :template_sales_item_id    => sales_item.template_sales_item_id  ,
+      :sales_item_subcription_id =>  nil , 
+      :template_sales_item_id    => template_sales_item.id  ,
       
       :case                     => PRODUCTION_ORDER[:sales_return]     ,
       :quantity                 => sales_return_entry.quantity_for_production     ,

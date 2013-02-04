@@ -44,15 +44,16 @@ class PostProductionOrder < ActiveRecord::Base
     )
   end
   
-  def PostProductionOrder.generate_sales_return_repair_post_production_order( sales_return_entry )
-    # puts "\n$$$$$$$$$$$$$$$$$$$$ called from post production order: sales return repair \n"
+  def PostProductionOrder.generate_sales_return_repair_post_production_order( sales_return_entry )    
+    return nil if sales_return_entry.nil? 
+    quantity = sales_return_entry.quantity_for_post_production
+    return nil if quantity == 0  
+    template_sales_item = sales_return_entry.sales_item.template_sales_item
     
-    return nil if sales_return_entry.quantity_for_post_production == 0 
     PostProductionOrder.create(
-      :sales_item_id            => sales_return_entry.delivery_entry.sales_item_id      ,
+      :template_sales_item_id => template_sales_item.id , 
       :case                     =>  POST_PRODUCTION_ORDER[:sales_return_repair]  ,
       :quantity                 => sales_return_entry.quantity_for_post_production, 
-      
       :source_document_entry    => sales_return_entry.class.to_s          ,
       :source_document_entry_id => sales_return_entry.id                  ,
       :source_document          => sales_return_entry.sales_return.class.to_s          ,
