@@ -89,5 +89,94 @@ class TemplateSalesItem < ActiveRecord::Base
     total_quantity_ordered - total_quantity_finished
   end
   
+###################################################
+###################################################
+################# =>    Only Post Production 
+###################################################
+###################################################
+  def pending_bad_source
+    return 0 if not self.is_internal_production
+    template_sales_item_id = self.id 
+    total_bad_source = self.post_production_results.where(:is_confirmed => true ) .sum('bad_source_quantity')
+    quantity_sent =  DeliveryEntry.joins(:sales_item).where(
+      :sales_item => {
+        :template_sales_item_id => template_sales_item_id
+      },
+      :is_confirmed => true,
+      :is_finalized => false 
+    ).sum('quantity_sent')
+    
+    quantity_confirmed = DeliveryEntry.joins(:sales_item).where(
+        :sales_item => {
+          :template_sales_item_id => template_sales_item_id
+        },
+        :is_confirmed => true,
+        :is_finalized => true 
+      ).sum('quantity_confirmed')
+    
+    quantity_lost = DeliveryEntry.joins(:sales_item).where(
+        :sales_item => {
+          :template_sales_item_id => template_sales_item_id
+        },
+        :is_confirmed => true,
+        :is_finalized => true 
+      ).sum('quantity_lost')
+      
+    total_bad_source_delivered =  quantity_sent +   quantity_confirmed + quantity_lost 
+    
+    
+    
+    total_bad_source - total_bad_source_delivered
+  end
   
+  def pending_broken_quantity
+    return 0 if not self.is_internal_production
+    
+    total_broken_quantity = self.post_production_results.where(:is_confirmed => true ) .sum('broken_quantity')
+    quantity_sent =  DeliveryEntry.joins(:sales_item).where(
+      :sales_item => {
+        :template_sales_item_id => template_sales_item_id
+      },
+      :is_confirmed => true,
+      :is_finalized => false 
+    ).sum('quantity_sent')
+    
+    quantity_confirmed = DeliveryEntry.joins(:sales_item).where(
+        :sales_item => {
+          :template_sales_item_id => template_sales_item_id
+        },
+        :is_confirmed => true,
+        :is_finalized => true 
+      ).sum('quantity_confirmed')
+    
+    quantity_lost = DeliveryEntry.joins(:sales_item).where(
+        :sales_item => {
+          :template_sales_item_id => template_sales_item_id
+        },
+        :is_confirmed => true,
+        :is_finalized => true 
+      ).sum('quantity_lost')
+      
+      
+    
+    total_broken_quantity_delivered =  quantity_sent + quantity_confirmed + quantity_lost 
+    
+    total_broken_quantity - total_broken_quantity_delivered
+  end
+  
+  def pending_post_production_only_post_production
+    return 0 if not self.is_internal_production
+    sales_item_id_list = self.sales_items.map{|x| x.id }
+    template_sales_item_id = self.id 
+    total_quantity_received = ItemReceivalEntry.joins(:sales_item).where(
+              :sales_item => {
+                :template_sales_item_id => template_sales_item_id
+              },
+              :is_confirmed => true 
+              ).sum('quantity')
+              
+    total_quantity_worked = self.post_production_results.where(:is_confirmed => true).sum('processed_quantity')
+    
+    total_quantity_received - total_quantity_worked
+  end
 end

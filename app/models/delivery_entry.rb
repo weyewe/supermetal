@@ -10,6 +10,7 @@ class DeliveryEntry < ActiveRecord::Base
   validate   :quantity_sent_weight_is_not_zero_and_less_than_ready_quantity 
   validate   :uniqueness_of_sales_item
   validate   :customer_ownership_to_sales_item
+  validate :no_overcharge
   
   def quantity_sent_is_not_zero_and_less_than_ready_quantity
     sales_item = self.sales_item
@@ -64,6 +65,112 @@ class DeliveryEntry < ActiveRecord::Base
     if delivery.customer_id != self.sales_item.sales_order.customer_id 
       errors.add(:sales_item_id , "Sales item #{self.sales_item.code} tidak terdaftar di daftar penjualan." ) 
     end
+  end
+  
+  
+  def valid_delivery_entry_combination
+    
+    # CASE: only production 
+    if sales_item.is_production and not sales_item.is_post_production
+      if item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:production] 
+        
+        # if quantity_sent <= sales_item.pending_fulfilment  # don't block.. keep charging.. doesn't matter
+        
+        if entry_case == DELIVERY_ENTRY_CASE[:normal] and sales_item.pending_fulfillment < quantity_sent  
+          errors.add(:entry_case , "Tidak bisa pengiriman normal untuk sales item ini. Max: #{sales_item.pending_fulfillment}" ) 
+        elsif entry_case == DELIVERY_ENTRY_CASE[:premature]
+          # can't happen
+          errors.add(:entry_case , "Hanya ada permintaan untuk casting. Pilihan prematur tidak valid" ) 
+        elsif entry_case == DELIVERY_ENTRY_CASE[:guarantee_return] and sales_item.pending_guarantee_return < quantity_sent
+          errors.add(:entry_case , "Tidak bisa pengiriman untuk retur garansi. Max: #{sales_item.pending_guarantee_return}" ) 
+        elsif entry_case == DELIVERY_ENTRY_CASE[:bad_source_fail_post_production]
+          # can't happen
+          errors.add(:entry_case , "Hanya ada permintaan untuk casting. pengembalian barang keropos tidak valid" ) 
+        elsif entry_case == DELIVERY_ENTRY_CASE[:technical_failure_post_production]
+          errors.add(:entry_case , "Hanya ada permintaan untuk casting. Gagal bubut tidak valid" ) 
+        elsif entry_case == DELIVERY_ENTRY_CASE[:cancel_post_production_only]
+          errors.add(:entry_case , "Hanya ada permintaan untuk casting. Pengembalian batal bubut tidak valid" ) 
+        end
+          
+      end
+    end
+    
+    # Case: production + post production 
+    if sales_item.is_production and  sales_item.is_post_production
+      # if sending out the production ready item 
+      if item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:production] 
+        
+        # if quantity_sent <= sales_item.pending_fulfilment  # don't block.. keep charging.. doesn't matter
+        
+        if entry_case == DELIVERY_ENTRY_CASE[:normal] and sales_item.pending_fulfillment < quantity_sent  
+          errors.add(:entry_case , "Tidak bisa pengiriman normal untuk sales item ini. Max: #{sales_item.pending_fulfillment}" ) 
+        elsif entry_case == DELIVERY_ENTRY_CASE[:premature] and sales_item.pending_fulfillment < quantity_sent  
+          # can't happen
+          errors.add(:entry_case , "Tidak bisa pengiriman normal untuk sales item ini. Max: #{sales_item.pending_fulfillment}" ) 
+        elsif entry_case == DELIVERY_ENTRY_CASE[:guarantee_return] 
+          errors.add(:entry_case , "Tidak bisa pengiriman untuk retur garansi karena item yang dipilih belum dibubut" ) 
+        elsif entry_case == DELIVERY_ENTRY_CASE[:bad_source_fail_post_production]
+          # can't happen
+          errors.add(:entry_case , "Hanya ada permintaan untuk casting. pengembalian barang keropos tidak valid" ) 
+        elsif entry_case == DELIVERY_ENTRY_CASE[:technical_failure_post_production]
+          errors.add(:entry_case , "Hanya ada permintaan untuk casting. Gagal bubut tidak valid" ) 
+        elsif entry_case == DELIVERY_ENTRY_CASE[:cancel_post_production_only]
+          errors.add(:entry_case , "Hanya ada permintaan untuk casting. Pengembalian batal bubut tidak valid" ) 
+        end
+          
+      end
+   
+      # if sendind out the post production ready item 
+      if item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:post_production] 
+
+        # if quantity_sent <= sales_item.pending_fulfilment  # don't block.. keep charging.. doesn't matter
+        # pending_fulfillment doesn't need to be confirmed 
+        if entry_case == DELIVERY_ENTRY_CASE[:normal] and sales_item.pending_fulfillment < quantity_sent  
+          errors.add(:entry_case , "Tidak bisa pengiriman normal untuk sales item ini. Max: #{sales_item.pending_fulfillment}" ) 
+        elsif entry_case == DELIVERY_ENTRY_CASE[:premature]  
+          # can't happen
+          errors.add(:entry_case , "Tidak bisa pengiriman prematur untuk sales item ini karena sudah terpilih item bubut" ) 
+        elsif entry_case == DELIVERY_ENTRY_CASE[:guarantee_return] and sales_item.pending_guarantee_return < quantity_sent
+          errors.add(:entry_case , "Tidak bisa pengiriman untuk retur garansi. Max: #{sales_item.pending_guarantee_return}" ) 
+        elsif entry_case == DELIVERY_ENTRY_CASE[:bad_source_fail_post_production]
+          # can't happen
+          errors.add(:entry_case , "Hanya ada permintaan untuk casting. pengembalian barang keropos tidak valid" ) 
+        elsif entry_case == DELIVERY_ENTRY_CASE[:technical_failure_post_production]
+          errors.add(:entry_case , "Hanya ada permintaan untuk casting. Gagal bubut tidak valid" ) 
+        elsif entry_case == DELIVERY_ENTRY_CASE[:cancel_post_production_only]
+          errors.add(:entry_case , "Hanya ada permintaan untuk casting. Pengembalian batal bubut tidak valid" ) 
+        end
+      end
+    end
+    
+    
+    # only post production (pure service)
+    if not sales_item.is_production and sales_item.is_post_production
+      if item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:production]
+        errors.add(:item_condition , "Tidak bisa pengiriman barang hasil cor. Harus hasil bubut" ) 
+      end 
+
+      if item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
+        # if quantity_sent <= sales_item.pending_fulfilment  # don't block.. keep charging.. doesn't matter
+        # pending_fulfillment doesn't need to be confirmed 
+        if entry_case == DELIVERY_ENTRY_CASE[:normal] and sales_item.pending_fulfillment < quantity_sent  
+          errors.add(:entry_case , "Tidak bisa pengiriman normal untuk sales item ini. Max: #{sales_item.pending_fulfillment}" ) 
+        elsif entry_case == DELIVERY_ENTRY_CASE[:premature]  
+          # can't happen
+          errors.add(:entry_case , "Tidak bisa pengiriman prematur untuk sales item ini karena casting tidak dilakukan di sini" ) 
+        elsif entry_case == DELIVERY_ENTRY_CASE[:guarantee_return] and sales_item.pending_guarantee_return < quantity_sent
+          errors.add(:entry_case , "Tidak bisa pengiriman untuk retur garansi. Max: #{sales_item.pending_guarantee_return}" ) 
+        elsif entry_case == DELIVERY_ENTRY_CASE[:bad_source_fail_post_production] and sales_item.template_sales_item.pending_bad_source < quantity_sent
+          # can't happen
+          errors.add(:entry_case , "Tidak bisa pengembalian barang keropos. Max: #{sales_item.template_sales_item.pending_bad_source}" ) 
+        elsif entry_case == DELIVERY_ENTRY_CASE[:technical_failure_post_production] and sales_item.template_sales_item.pending_bad_source < quantity_sent
+          errors.add(:entry_case , "Tidak bisa pengembalian gagal bubut. Max: #{sales_item.template_sales_item.pending_broken_quantity}" ) 
+        elsif entry_case == DELIVERY_ENTRY_CASE[:cancel_post_production_only] and sales_item.template_sales_item.pending_post_production_only_post_production < quantity_sent
+          errors.add(:entry_case , "Tidak bisa pengembalian gagal bubut. Max: #{sales_item.template_sales_item.pending_post_production}" ) 
+        end
+      end
+    end
+    
   end
   
   

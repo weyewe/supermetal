@@ -136,12 +136,14 @@ describe DeliveryEntry do
   end
   
   it 'should not create delivery entry if  quantity sent > ready ' do 
+    @ready_production = @template_sales_item.ready_production
+    
     @delivery_entry = DeliveryEntry.create_delivery_entry( @admin, @delivery,   {
-        :quantity_sent => @has_production_sales_item.ready + 1  , 
+        :quantity_sent => @ready_production + 1  , 
         :quantity_sent_weight => "324" ,
         :sales_item_id =>  @has_production_sales_item.id,
-        :entry_case => DELIVERY_ENTRY_CASE[:post_production], 
-        :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
+        :entry_case => DELIVERY_ENTRY_CASE[:production], 
+        :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:production]
       })
     @delivery_entry.should_not be_valid
   end

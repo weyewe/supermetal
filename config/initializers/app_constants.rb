@@ -247,23 +247,25 @@ DELIVERY_ENTRY_ITEM_CONDITION = {
 
 # related to the billing 
 DELIVERY_ENTRY_CASE = {
-  :production                  => 1 ,   # counted as production fulfillment => fee = pre produce + production 
-  :post_production             => 2,  # counted as post production fulfillment 
+  :normal                  => 1 ,   # counted as production fulfillment => fee = pre produce + production 
+  :premature               => 2,  # counted as post production while item going out is production 
+  
   :guarantee_return                  => 11 , # counted as guarantee_return fulfillment 
   
   # only available @ only_post_production 
   # if these things are chosen, the DELIVERY_ENTRY_ITEM_CONDITION must be :post_production 
   :bad_source_fail_post_production   => 21,  # counted as bad source fulfillment => charge for the service
   :technical_failure_post_production => 22,   # our fault. not charge for the service 
-  :cancel_post_production => 23  # reducing the number of post production order, not charged 
+  :cancel_post_production_only => 23  # reducing the number of post production order, not charged 
 }
 
 DELIVERY_ENTRY_CASE_VALUE = {
-  :ready_production                  =>  "Selesai Cast", 
-  :ready_post_production             => "Selesai Bubut", 
+  :normal                  =>  "Normal", 
+  :premature             => "Prematur: pengeluaran hasil cor, padahal yg dipesan bubut", 
   :guarantee_return                  => "Retur Garansi" ,
   :bad_source_fail_post_production   => "Cast Keropos (hanya bubut)", 
-  :technical_failure_post_production => "Gagal bubut (hanya bubut)"  
+  :technical_failure_post_production => "Gagal bubut (hanya bubut)" ,
+  :guarantee_return_failure_post_production => "Gagal bubut (hanya bubut) untuk item garansi" ,
 }
 
 # http://www.mangareader.net/303-55068-12/drifters/chapter-14.html
