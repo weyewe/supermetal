@@ -217,10 +217,11 @@ describe SalesReturnEntry do
       @sales_return_entry.should be_valid 
     end
     
-    it 'should  be allowed to be confirmed if total_sum of production + post_production  == quantity_returned' do
+    it 'should  be allowed to be confirmed if total_sum of production + post_production + production repair  == quantity_returned' do
       sales_return_repair_post_production_quantity = 1
       sales_return_production_repair_quantity = 1  
-      sales_return_production_quantity =  @quantity_returned - sales_return_repair_post_production_quantity
+      sales_return_production_quantity =  @quantity_returned - sales_return_repair_post_production_quantity-
+                sales_return_production_repair_quantity
       @sales_return_entry.update_return_handling( {
         :quantity_for_production => sales_return_production_quantity, 
         :weight_for_production => "#{sales_return_production_quantity*7}",
