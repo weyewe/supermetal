@@ -237,12 +237,24 @@ CASH_ACCOUNT_CASE = {
 }
 
 
+# related to the stock 
+DELIVERY_ENTRY_ITEM_CONDITION = {
+  :production => 1,  
+  :post_production => 2 
+}
+
+
+# related to the billing 
 DELIVERY_ENTRY_CASE = {
-  :ready_production                  => 1 , 
-  :ready_post_production             => 2, 
-  :guarantee_return                  => 11 ,
-  :bad_source_fail_post_production   => 21, 
-  :technical_failure_post_production => 22  
+  :production                  => 1 ,   # counted as production fulfillment => fee = pre produce + production 
+  :post_production             => 2,  # counted as post production fulfillment 
+  :guarantee_return                  => 11 , # counted as guarantee_return fulfillment 
+  
+  # only available @ only_post_production 
+  # if these things are chosen, the DELIVERY_ENTRY_ITEM_CONDITION must be :post_production 
+  :bad_source_fail_post_production   => 21,  # counted as bad source fulfillment => charge for the service
+  :technical_failure_post_production => 22,   # our fault. not charge for the service 
+  :cancel_post_production => 23  # reducing the number of post production order, not charged 
 }
 
 DELIVERY_ENTRY_CASE_VALUE = {

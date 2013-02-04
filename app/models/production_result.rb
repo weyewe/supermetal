@@ -1,6 +1,6 @@
 class ProductionResult < ActiveRecord::Base
   # attr_accessible :title, :body
-  belongs_to :template_sales_item_id 
+  belongs_to :template_sales_item
    
   validates_presence_of   :ok_quantity,  :broken_quantity,  :repairable_quantity,
                           :ok_weight,   :broken_weight,  :repairable_weight,
@@ -103,16 +103,11 @@ class ProductionResult < ActiveRecord::Base
     
     template_sales_item = TemplateSalesItem.find_by_id params[:template_sales_item_id]
     return nil if template_sales_item.has_unconfirmed_production_result? 
+    puts "the template_sales_item: #{template_sales_item}"
     
     new_object  = self.new 
-    new_object.template_sales_item_id = template_sales_item.id 
+    new_object.template_sales_item_id = params[:template_sales_item_id]
     new_object.creator_id = employee.id 
-     
-  
-    # if not params[:ok_quantity].nil? and params[:ok_quantity].to_i > sales_item_subcription.pending_production 
-    #   new_object.errors.add(:ok_quantity , "Maksimal pending production: #{sales_item_subcription.pending_production}" ) 
-    #   return new_object 
-    # end
     
     new_object.ok_quantity         = params[:ok_quantity]
     new_object.repairable_quantity = params[:repairable_quantity]
@@ -125,6 +120,7 @@ class ProductionResult < ActiveRecord::Base
 
     
     if new_object.save   
+      new_object.update_processed_quantity
     end
     
    
@@ -147,7 +143,7 @@ class ProductionResult < ActiveRecord::Base
     self.finished_at         = params[:finished_at]
 
     if self.save  
-      # new_object.update_processed_quantity 
+      new_object.update_processed_quantity 
       # sales_item.update_pre_production_statistics 
     end
     
@@ -179,13 +175,11 @@ class ProductionResult < ActiveRecord::Base
     puts "pass the is_confirmed check"
     
     ActiveRecord::Base.transaction do
-      
-      
-      
       self.is_confirmed = true 
       self.confirmer_id = employee.id
       self.confirmed_at = DateTime.now 
       self.save
+      
       
       puts "Total error in confirm: #{self.errors.size}"
       if  self.errors.size != 0  
@@ -194,6 +188,16 @@ class ProductionResult < ActiveRecord::Base
           puts "#{msg}"
         end
         raise ActiveRecord::Rollback, "Call tech support!" 
+      end
+      
+      if self.broken_quantity != 0 
+        # create the production order => fail production 
+        ProductionOrder.generate_production_failure_production_order( self )
+      end
+      
+      if self.repairable_quantity != 0 
+        # create the production repair order => glitch production? 
+        ProductionRepairOrder.create_repairable_production_repair_order( self   )
       end
     end
   end

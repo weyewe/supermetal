@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130203140432) do
+ActiveRecord::Schema.define(:version => 20130203145546) do
 
   create_table "banks", :force => true do |t|
     t.datetime "created_at", :null => false
@@ -74,6 +74,8 @@ ActiveRecord::Schema.define(:version => 20130203140432) do
     t.string   "code"
     t.integer  "quantity_sent",                                           :default => 0
     t.decimal  "quantity_sent_weight",      :precision => 7, :scale => 2, :default => 0.0
+    t.integer  "item_condition",                                          :default => 1
+    t.integer  "template_sales_item_id"
     t.integer  "quantity_confirmed",                                      :default => 0
     t.integer  "quantity_returned",                                       :default => 0
     t.decimal  "quantity_returned_weight",  :precision => 7, :scale => 2, :default => 0.0
@@ -136,13 +138,15 @@ ActiveRecord::Schema.define(:version => 20130203140432) do
     t.integer  "sales_item_id"
     t.integer  "guarantee_return_id"
     t.string   "code"
-    t.integer  "quantity_for_post_production",                               :default => 0
-    t.decimal  "weight_for_post_production",   :precision => 7, :scale => 2, :default => 0.0
-    t.integer  "quantity_for_production",                                    :default => 0
-    t.decimal  "weight_for_production",        :precision => 7, :scale => 2, :default => 0.0
-    t.boolean  "is_confirmed",                                               :default => false
-    t.datetime "created_at",                                                                    :null => false
-    t.datetime "updated_at",                                                                    :null => false
+    t.integer  "quantity_for_post_production",                                 :default => 0
+    t.decimal  "weight_for_post_production",     :precision => 7, :scale => 2, :default => 0.0
+    t.integer  "quantity_for_production",                                      :default => 0
+    t.decimal  "weight_for_production",          :precision => 7, :scale => 2, :default => 0.0
+    t.integer  "quantity_for_production_repair",                               :default => 0
+    t.decimal  "weight_for_production_repair",   :precision => 7, :scale => 2, :default => 0.0
+    t.boolean  "is_confirmed",                                                 :default => false
+    t.datetime "created_at",                                                                      :null => false
+    t.datetime "updated_at",                                                                      :null => false
   end
 
   create_table "guarantee_returns", :force => true do |t|
@@ -256,7 +260,7 @@ ActiveRecord::Schema.define(:version => 20130203140432) do
   end
 
   create_table "post_production_orders", :force => true do |t|
-    t.integer  "sales_item_id"
+    t.integer  "template_sales_item_id"
     t.integer  "creator_id"
     t.integer  "case",                      :default => 2
     t.integer  "quantity"
@@ -267,12 +271,25 @@ ActiveRecord::Schema.define(:version => 20130203140432) do
     t.datetime "created_at",                               :null => false
     t.datetime "updated_at",                               :null => false
     t.integer  "sales_item_subcription_id"
-    t.integer  "template_sales_item_id"
   end
 
   create_table "post_production_results", :force => true do |t|
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.integer  "template_sales_item_id"
+    t.integer  "creator_id"
+    t.integer  "processed_quantity",                                   :default => 0
+    t.integer  "ok_quantity",                                          :default => 0
+    t.integer  "broken_quantity",                                      :default => 0
+    t.decimal  "ok_weight",              :precision => 7, :scale => 2, :default => 0.0
+    t.decimal  "broken_weight",          :precision => 7, :scale => 2, :default => 0.0
+    t.datetime "started_at"
+    t.datetime "finished_at"
+    t.boolean  "is_confirmed",                                         :default => false
+    t.integer  "confirmer_id"
+    t.datetime "confirmed_at"
+    t.integer  "bad_source_quantity",                                  :default => 0
+    t.decimal  "bad_source_weight",      :precision => 7, :scale => 2, :default => 0.0
+    t.datetime "created_at",                                                              :null => false
+    t.datetime "updated_at",                                                              :null => false
   end
 
   create_table "pre_production_histories", :force => true do |t|
@@ -292,8 +309,18 @@ ActiveRecord::Schema.define(:version => 20130203140432) do
   end
 
   create_table "pre_production_results", :force => true do |t|
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.integer  "template_sales_item_id"
+    t.integer  "creator_id"
+    t.integer  "processed_quantity",     :default => 0
+    t.integer  "ok_quantity",            :default => 0
+    t.integer  "broken_quantity",        :default => 0
+    t.datetime "started_at"
+    t.datetime "finished_at"
+    t.boolean  "is_confirmed",           :default => false
+    t.integer  "confirmer_id"
+    t.datetime "confirmed_at"
+    t.datetime "created_at",                                :null => false
+    t.datetime "updated_at",                                :null => false
   end
 
   create_table "production_histories", :force => true do |t|
@@ -319,7 +346,7 @@ ActiveRecord::Schema.define(:version => 20130203140432) do
   end
 
   create_table "production_orders", :force => true do |t|
-    t.integer  "sales_item_id"
+    t.integer  "template_sales_item_id"
     t.integer  "creator_id"
     t.integer  "case",                      :default => 1
     t.integer  "quantity"
@@ -330,17 +357,57 @@ ActiveRecord::Schema.define(:version => 20130203140432) do
     t.datetime "created_at",                               :null => false
     t.datetime "updated_at",                               :null => false
     t.integer  "sales_item_subcription_id"
+  end
+
+  create_table "production_repair_orders", :force => true do |t|
     t.integer  "template_sales_item_id"
+    t.integer  "creator_id"
+    t.integer  "case",                     :default => 1
+    t.integer  "quantity"
+    t.string   "source_document_entry"
+    t.integer  "source_document_entry_id"
+    t.string   "source_document"
+    t.integer  "source_document_id"
+    t.datetime "created_at",                              :null => false
+    t.datetime "updated_at",                              :null => false
   end
 
   create_table "production_repair_results", :force => true do |t|
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.integer  "template_sales_item_id"
+    t.integer  "creator_id"
+    t.integer  "processed_quantity",                                   :default => 0
+    t.integer  "ok_quantity",                                          :default => 0
+    t.integer  "broken_quantity",                                      :default => 0
+    t.decimal  "ok_weight",              :precision => 7, :scale => 2, :default => 0.0
+    t.decimal  "broken_weight",          :precision => 7, :scale => 2, :default => 0.0
+    t.datetime "started_at"
+    t.datetime "finished_at"
+    t.boolean  "is_confirmed",                                         :default => false
+    t.integer  "confirmer_id"
+    t.datetime "confirmed_at"
+    t.datetime "created_at",                                                              :null => false
+    t.datetime "updated_at",                                                              :null => false
   end
 
   create_table "production_results", :force => true do |t|
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.integer  "template_sales_item_id"
+    t.integer  "creator_id"
+    t.integer  "processed_quantity",                                   :default => 0
+    t.integer  "ok_quantity",                                          :default => 0
+    t.integer  "broken_quantity",                                      :default => 0
+    t.integer  "repairable_quantity",                                  :default => 0
+    t.decimal  "ok_weight",              :precision => 7, :scale => 2, :default => 0.0
+    t.decimal  "broken_weight",          :precision => 7, :scale => 2, :default => 0.0
+    t.decimal  "repairable_weight",      :precision => 7, :scale => 2, :default => 0.0
+    t.datetime "started_at"
+    t.datetime "finished_at"
+    t.boolean  "is_confirmed",                                         :default => false
+    t.integer  "confirmer_id"
+    t.datetime "confirmed_at"
+    t.decimal  "ok_tap_weight",          :precision => 7, :scale => 2, :default => 0.0
+    t.decimal  "repairable_tap_weight",  :precision => 7, :scale => 2, :default => 0.0
+    t.datetime "created_at",                                                              :null => false
+    t.datetime "updated_at",                                                              :null => false
   end
 
   create_table "responsibilities", :force => true do |t|
@@ -536,8 +603,9 @@ ActiveRecord::Schema.define(:version => 20130203140432) do
 
   create_table "template_sales_items", :force => true do |t|
     t.string   "code"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.boolean  "is_internal_production", :default => true
+    t.datetime "created_at",                               :null => false
+    t.datetime "updated_at",                               :null => false
   end
 
   create_table "users", :force => true do |t|

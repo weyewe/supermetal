@@ -14,10 +14,11 @@ class ProductionRepairOrder < ActiveRecord::Base
 
         :case                     => PRODUCTION_REPAIR_ORDER[:production_repair] ,
         :quantity                 => production_result.repairable_quantity  ,
-        :source_document_entry    => nil  , 
-        :source_document_entry_id => nil  , 
-        :source_document          => nil  , 
-        :source_document_id       => nil
+        # no document entry. it is just doing repair per normal 
+        :source_document_entry    => production_result.class.to_s  , 
+        :source_document_entry_id => production_result.id  , 
+        :source_document          => production_result.class.to_s  , 
+        :source_document_id       => production_result.id 
       )
   end
   

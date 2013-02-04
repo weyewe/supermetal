@@ -73,15 +73,16 @@ class PostProductionResult < ActiveRecord::Base
   end
   
   def prevent_excess_post_production
-    sales_item_subcription = self.sales_item_subcription
-    pending_post_production = sales_item_subcription.pending_post_production
+    template_sales_item = self.template_sales_item 
+    pending_post_production = template_sales_item.pending_post_production 
     # puts "pending post production from validation: #{pending_post_production}"
     
     if ok_quantity.present? and broken_quantity.present? and bad_source_quantity.present?  and 
           ( ok_quantity + broken_quantity + bad_source_quantity > pending_post_production  ) 
-      errors.add(:ok_quantity , "Jumlah kuantitas oK, gagal, dan kuantitas rusak tidak boleh lebih dari #{pending_post_production}" )   
-      errors.add(:broken_quantity , "Jumlah kuantitas oK, gagal, dan kuantitas rusak tidak boleh lebih dari #{pending_post_production}" )
-      errors.add(:bad_source_quantity , "Jumlah kuantitas oK, gagal, dan kuantitas rusak tidak boleh lebih dari #{pending_post_production}" )
+      err_msg = "Jumlah kuantitas oK, gagal, dan kuantitas rusak tidak boleh lebih dari #{pending_post_production}"
+      errors.add(:ok_quantity         , err_msg)   
+      errors.add(:broken_quantity     , err_msg)
+      errors.add(:bad_source_quantity , err_msg)
     end
   end
   

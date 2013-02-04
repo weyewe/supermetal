@@ -81,6 +81,7 @@ describe SalesItem do
         :post_production_price => "150000"
       })
       
+      @only_machining_sales_quantity  = 15 
       @only_machining_sales_item = SalesItem.create_sales_item( @admin, @sales_order,  {
         :material_id => @copper.id, 
         :is_pre_production => true , 
@@ -88,7 +89,7 @@ describe SalesItem do
         :is_post_production => true, 
         :is_delivered => true, 
         :delivery_address => "Perumahan Citra Garden 1 Blok AC2/3G",
-        :quantity => 15,
+        :quantity => @only_machining_sales_quantity,
         :description => "Bla bla bla bla bla", 
         :delivery_address => "Yeaaah babyy", 
         :requested_deadline => Date.new(2013, 3,5 ),
@@ -129,7 +130,8 @@ describe SalesItem do
     end
     
     it 'should link production order with sales_item_subcription + abstract_sales_item' do
-      production_order = @has_production_sales_item.production_orders.first 
+      template_sales_item = @has_production_sales_item.template_sales_item
+      production_order = template_sales_item.production_orders.first  
       production_order.template_sales_item_id.should == @has_production_sales_item.template_sales_item_id 
       production_order.sales_item_subcription_id.should == @has_production_sales_item.sales_item_subcription_id 
     end
@@ -144,24 +146,28 @@ describe SalesItem do
       @only_machining_sales_item.is_confirmed.should be_true 
     end
     
-    it 'should produce 1 production order for those including production phase' do
+    it 'should produce 1 production order and 1 Post Production order for those including production phase + post produciton phase' do
       ProductionOrder.count.should == 1 
-      PostProductionOrder.count.should == 0 
-      @has_production_sales_item.production_orders.count.should == 1 
-      @has_production_sales_item.post_production_orders.count.should == 0 
+      PostProductionOrder.count.should == 2 
       
-      @only_machining_sales_item.production_orders.count.should == 0 
-      @only_machining_sales_item.post_production_orders.count.should == 0
+      template_sales_item = @has_production_sales_item.template_sales_item
+      template_sales_item.production_orders.count.should == 1 
+      template_sales_item.post_production_orders.count.should == 1
+      
+      only_machining_template = @only_machining_sales_item.template_sales_item 
+      
+      only_machining_template.production_orders.count.should == 0 
+      only_machining_template.post_production_orders.count.should == 1
     end
     
     it 'should update the pending_production' do
-      @final_has_production_pending_production = @has_production_sales_item.pending_production
+      template_sales_item = @has_production_sales_item.template_sales_item
+      template_sales_item.pending_production.should == @has_production_quantity
+      template_sales_item.pending_post_production.should == @has_production_quantity
       
-      delta = @final_has_production_pending_production - @initial_has_production_pending_production
-      # 
-      # puts "initial_pending_production: #{@initial_has_production_pending_production}"
-      # puts "final_has_production_pending_production: #{@final_has_production_pending_production}"
-      delta.should == @has_production_quantity
+      only_machining_template = @only_machining_sales_item.template_sales_item 
+      only_machining_template.pending_production.should == 0 
+      only_machining_template.pending_post_production.should == @only_machining_sales_quantity
     end
   end # on confirming sales order 
   

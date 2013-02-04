@@ -1,5 +1,5 @@
 class ProductionOrder < ActiveRecord::Base
-  attr_accessible   :sales_item_subcription_id, :template_sales_item_id, 
+  attr_accessible    :sales_item_subcription_id, :template_sales_item_id, 
                   :case, :quantity,
                   :source_document_entry, :source_document_entry_id,
                   :source_document, :source_document_id
@@ -8,8 +8,9 @@ class ProductionOrder < ActiveRecord::Base
   belongs_to :template_sales_item
   
   def ProductionOrder.create_sales_production_order( sales_item  )
+    
+    # deduce the sales item from document entry 
       ProductionOrder.create(
-        :sales_item_id            => sales_item.id                ,
         :sales_item_subcription_id => sales_item.sales_item_subcription_id , 
         :template_sales_item_id    => sales_item.template_sales_item_id  , 
 
@@ -22,20 +23,18 @@ class ProductionOrder < ActiveRecord::Base
       )
   end
   
-  def ProductionOrder.generate_production_failure_production_order( production_history )
-    return nil if production_history.broken_quantity == 0 
-    sales_item = production_history.sales_item 
-    ProductionOrder.create(
-      :sales_item_id             => sales_item.id            ,
-      :sales_item_subcription_id => sales_item.sales_item_subcription_id , 
-      :template_sales_item_id    => sales_item.template_sales_item_id  ,
+  def ProductionOrder.generate_production_failure_production_order( production_result )
+    return nil if production_result.broken_quantity == 0  
+    ProductionOrder.create(       
+      :sales_item_subcription_id =>  nil , 
+      :template_sales_item_id    => production_result.template_sales_item_id  ,
       
       :case                     => PRODUCTION_ORDER[:production_failure]     ,
-      :quantity                 => production_history.broken_quantity     ,
-      :source_document_entry    => production_history.class.to_s          ,
-      :source_document_entry_id => production_history.id                  ,
-      :source_document          => production_history.class.to_s          ,
-      :source_document_id       => production_history.id  
+      :quantity                 => production_result.broken_quantity     ,
+      :source_document_entry    => production_result.class.to_s          ,
+      :source_document_entry_id => production_result.id                  ,
+      :source_document          => production_result.class.to_s          ,
+      :source_document_id       => production_result.id  
     ) 
   end
   

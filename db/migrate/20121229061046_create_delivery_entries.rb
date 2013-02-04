@@ -21,6 +21,8 @@ class CreateDeliveryEntries < ActiveRecord::Migration
       t.decimal     :quantity_sent_weight , :precision => 7, :scale => 2 , :default => 0 
       
       
+      t.integer :item_condition , :default => DELIVERY_ENTRY_ITEM_CONDITION[:production]
+      t.integer :template_sales_item_id 
 =begin
   After customer approval 
 =end

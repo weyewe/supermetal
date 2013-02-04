@@ -367,11 +367,20 @@ class SalesItem < ActiveRecord::Base
     
     self.generate_customer_subcription
     self.reload 
+    
+    if self.is_production?
+      production_order = ProductionOrder.create_sales_production_order( self )
+    end
+    
+    if self.is_post_production?
+      production_order = PostProductionOrder.generate_sales_post_production_order( self )
+    end
+    
     if self.only_machining?
        
     elsif self.casting_included?
-      production_order = ProductionOrder.create_sales_production_order( self )
-      self.update_on_confirm 
+      
+      # self.update_on_confirm 
     end    
     
   end
