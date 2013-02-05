@@ -406,6 +406,8 @@ class TemplateSalesItem < ActiveRecord::Base
         :is_confirmed => true,
         :is_finalized => false 
       ).sum('quantity_sent')
+      
+    return items_on_delivery
   end
   
    

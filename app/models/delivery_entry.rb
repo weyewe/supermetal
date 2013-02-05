@@ -19,12 +19,12 @@ class DeliveryEntry < ActiveRecord::Base
     ready_post_production = self.sales_item.template_sales_item.ready_post_production
     
     if self.item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:production]
-      if quantity_sent.present? and ( quantity_sent > ready_production  or quantity_sent <= 0 ) 
+      if quantity_sent.present? and (self.is_confirmed == false ) and ( quantity_sent > ready_production  or quantity_sent <= 0 ) 
         errors.add(:quantity_sent , "Kuantitas harus lebih dari 0 dan kurang atau sama dengan #{ready_production}" )  
       end
       
     elsif self.item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
-      if quantity_sent.present? and ( quantity_sent > ready_post_production  or quantity_sent <= 0 ) 
+      if quantity_sent.present? and (self.is_confirmed == false ) and ( quantity_sent > ready_post_production  or quantity_sent <= 0 ) 
         errors.add(:quantity_sent , "Kuantitas harus lebih dari 0 dan kurang atau sama dengan #{ready_post_production}" )  
       end
     end

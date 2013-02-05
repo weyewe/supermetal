@@ -222,7 +222,7 @@ describe Delivery do
           @delivery.is_finalized.should be_false
         end
         
-       
+               
         
         
         it 'should not finalize if quantity_sent != quantity_confirmed + quantity return + quantity loss ' do
@@ -321,7 +321,7 @@ describe Delivery do
             
           end 
         end # end of "confirm all"
-        
+
         context "FINALIZE: confirm partial, return partial" do
           before(:each) do
             # puts "\n"

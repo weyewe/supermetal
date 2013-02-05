@@ -170,7 +170,7 @@ describe SalesItem do
       
       only_machining_template = @only_machining_sales_item.template_sales_item 
       only_machining_template.pending_production.should == 0 
-      only_machining_template.pending_post_production.should == @only_machining_sales_quantity
+      only_machining_template.pending_post_production_only_post_production.should == @only_machining_sales_quantity
     end
     
     it 'should give template sales item the appropriate status: internal production?' do
