@@ -177,18 +177,21 @@ class DeliveryEntry < ActiveRecord::Base
       if item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
         # if quantity_sent <= sales_item.pending_fulfilment  # don't block.. keep charging.. doesn't matter
         # pending_fulfillment doesn't need to be confirmed 
-        if entry_case == DELIVERY_ENTRY_CASE[:normal] and sales_item.pending_fulfillment < quantity_sent  
+        if entry_case == DELIVERY_ENTRY_CASE[:normal] and 
+            self.is_confirmed == false and sales_item.pending_fulfillment_post_production < quantity_sent  
           errors.add(:entry_case , "Tidak bisa pengiriman normal untuk sales item ini. Max: #{sales_item.pending_fulfillment}" ) 
         elsif entry_case == DELIVERY_ENTRY_CASE[:premature]  
           # can't happen
           errors.add(:entry_case , "Tidak bisa pengiriman prematur untuk sales item ini karena casting tidak dilakukan di sini" ) 
-        elsif entry_case == DELIVERY_ENTRY_CASE[:guarantee_return] and sales_item.pending_guarantee_return < quantity_sent
+        elsif entry_case == DELIVERY_ENTRY_CASE[:guarantee_return] and
+            self.is_confirmed == false and sales_item.pending_guarantee_return < quantity_sent
           errors.add(:entry_case , "Kelebihan jumlah  pengiriman garansi retur. Max: #{sales_item.pending_guarantee_return}" ) 
-        elsif entry_case == DELIVERY_ENTRY_CASE[:bad_source_fail_post_production] and sales_item.template_sales_item.pending_bad_source < quantity_sent
-          # can't happen
-          errors.add(:entry_case , "Kelebihan jumlah  pengembalian barang keropos. Max: #{sales_item.template_sales_item.pending_bad_source}" ) 
-        elsif entry_case == DELIVERY_ENTRY_CASE[:technical_failure_post_production] and sales_item.template_sales_item.pending_bad_source < quantity_sent
-          errors.add(:entry_case , "Kelebihan jumlah  pengembalian pengembalian gagal bubut. Max: #{sales_item.template_sales_item.pending_broken_quantity}" ) 
+        elsif entry_case == DELIVERY_ENTRY_CASE[:bad_source_fail_post_production] and
+            self.is_confirmed == false and sales_item.template_sales_item.pending_delivery_bad_source < quantity_sent
+          errors.add(:entry_case , "Kelebihan jumlah  pengembalian barang keropos. Max: #{sales_item.template_sales_item.pending_delivery_bad_source}" )
+        elsif entry_case == DELIVERY_ENTRY_CASE[:technical_failure_post_production] and 
+            self.is_confirmed == false and sales_item.template_sales_item.pending_delivery_broken_quantity < quantity_sent
+          errors.add(:entry_case , "Kelebihan jumlah  pengembalian pengembalian gagal bubut. Max: #{sales_item.template_sales_item.pending_delivery_broken_quantity}" ) 
         elsif entry_case == DELIVERY_ENTRY_CASE[:cancel_post_production_only] 
           errors.add(:entry_case , "Hanya bisa cancel untuk barang yang belum dibubut"  ) 
         end
@@ -394,6 +397,12 @@ class DeliveryEntry < ActiveRecord::Base
     
     validate_pricing_availability
     
+    puts "\n\n"
+    puts "inside the delivery_entry confirm\n"*15
+    puts "Total errors: #{self.errors.size}" 
+    self.errors.messages.each do |msg|
+      puts "MSG: #{msg}"
+    end
     if  self.errors.size != 0  
       raise ActiveRecord::Rollback, "Call tech support!" 
     end

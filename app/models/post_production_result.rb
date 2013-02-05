@@ -74,7 +74,13 @@ class PostProductionResult < ActiveRecord::Base
   
   def prevent_excess_post_production
     template_sales_item = self.template_sales_item 
-    pending_post_production = template_sales_item.pending_post_production 
+    pending_post_production = 0 
+    if template_sales_item.is_internal_production
+      pending_post_production = template_sales_item.pending_post_production 
+    else
+      pending_post_production = template_sales_item.pending_post_production_only_post_production 
+    end
+    
     # puts "pending post production from validation: #{pending_post_production}"
     
     if ok_quantity.present? and broken_quantity.present? and bad_source_quantity.present?  and 
@@ -161,6 +167,7 @@ class PostProductionResult < ActiveRecord::Base
   
   
   def update_processed_quantity 
+    puts "3321 we are in update processed quantity\n"*10
     self.processed_quantity = self.ok_quantity  + 
                                   self.broken_quantity + self.bad_source_quantity 
     self.save
@@ -188,7 +195,7 @@ class PostProductionResult < ActiveRecord::Base
       self.confirmer_id = employee.id
       self.confirmed_at = DateTime.now 
       self.save
-      # self.update_processed_quantity
+      self.update_processed_quantity
       if  self.errors.size != 0  
         raise ActiveRecord::Rollback, "Call tech support!" 
       end
@@ -207,6 +214,7 @@ class PostProductionResult < ActiveRecord::Base
           ProductionOrder.generate_post_production_technical_failure_production_order( self )
         end
       else
+        # don't create anything. we cant create it inhouse anyway 
       end 
     end
     
