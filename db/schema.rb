@@ -461,25 +461,14 @@ ActiveRecord::Schema.define(:version => 20130203145546) do
     t.boolean  "is_delivered",                                                      :default => false
     t.decimal  "weight_per_piece",                   :precision => 7,  :scale => 2, :default => 0.0
     t.integer  "quantity"
+    t.integer  "quantity_for_production",                                           :default => 0
+    t.integer  "quantity_for_post_production",                                      :default => 0
     t.text     "delivery_address"
     t.boolean  "is_sales_order_delivery_address",                                   :default => false
     t.string   "name"
     t.text     "description"
     t.date     "requested_deadline"
     t.date     "estimated_internal_deadline"
-    t.integer  "number_of_pre_production",                                          :default => 0
-    t.integer  "number_of_production",                                              :default => 0
-    t.integer  "number_of_post_production",                                         :default => 0
-    t.integer  "number_of_delivery",                                                :default => 0
-    t.integer  "number_of_sales_return",                                            :default => 0
-    t.integer  "number_of_delivery_lost",                                           :default => 0
-    t.integer  "number_of_failed_production",                                       :default => 0
-    t.integer  "number_of_failed_post_production",                                  :default => 0
-    t.integer  "pending_production",                                                :default => 0
-    t.integer  "pending_post_production",                                           :default => 0
-    t.integer  "ready",                                                             :default => 0
-    t.integer  "on_delivery",                                                       :default => 0
-    t.integer  "fulfilled_order",                                                   :default => 0
     t.boolean  "is_confirmed",                                                      :default => false
     t.boolean  "is_deleted",                                                        :default => false
     t.datetime "created_at",                                                                           :null => false

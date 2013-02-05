@@ -72,7 +72,8 @@ describe SalesOrder do
             :is_post_production => true, 
             :is_delivered => true, 
             :delivery_address => "Perumahan Citra Garden 1 Blok AC2/3G",
-            :quantity => @quantity_in_sales_item,
+            :quantity_for_production => @quantity_in_sales_item ,
+            :quantity_for_post_production => @quantity_in_sales_item, 
             :description => "Bla bla bla bla bla", 
             :delivery_address => "Yeaaah babyy", 
             :requested_deadline => Date.new(2013, 3,5 ),
@@ -84,6 +85,14 @@ describe SalesOrder do
             :production_price      => "20000",
             :post_production_price => "150000"
           }) 
+      end
+      
+      it 'should have 1 valid sales item' do
+        puts "Total errors: #{@has_production_sales_item.errors.size}"
+        @has_production_sales_item.errors.messages.each do |msg|
+          puts "Msg: #{msg}"
+        end
+        @has_production_sales_item.should be_valid 
       end
       
       it 'should have 1 sales_item' do

@@ -8,6 +8,7 @@ class ProductionOrder < ActiveRecord::Base
   belongs_to :template_sales_item
   
   def ProductionOrder.create_sales_production_order( sales_item  )
+    return nil if sales_item.quantity_for_production == 0 
     
     # deduce the sales item from document entry 
       ProductionOrder.create(
@@ -15,7 +16,7 @@ class ProductionOrder < ActiveRecord::Base
         :template_sales_item_id    => sales_item.template_sales_item_id  , 
 
         :case                     => PRODUCTION_ORDER[:sales_order] ,
-        :quantity                 => sales_item.quantity            ,
+        :quantity                 => sales_item.quantity_for_production           ,
         :source_document_entry    => sales_item.class.to_s          ,
         :source_document_entry_id => sales_item.id                  ,
         :source_document          => sales_item.sales_order.to_s    ,

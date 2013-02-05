@@ -1,0 +1,35 @@
+rspec ./spec/models/guarantee_return_entry_variants/only_production_spec.rb:158 # GuaranteeReturnEntry should not allow post  production repair treatment
+rspec ./spec/models/guarantee_return_entry_variants/only_production_spec.rb:195 # GuaranteeReturnEntry creating the complete service guarantee return: can only accept post production or production treatment should create guarantee return entry
+rspec ./spec/models/guarantee_return_entry_variants/only_production_spec.rb:213 # GuaranteeReturnEntry creating the complete service guarantee return: can only accept post production or production treatment confirm guarantee return should confirm guarantee return
+rspec ./spec/models/guarantee_return_entry_variants/only_production_spec.rb:217 # GuaranteeReturnEntry creating the complete service guarantee return: can only accept post production or production treatment confirm guarantee return should confirm guarantee return entry
+rspec ./spec/models/guarantee_return_entry_variants/only_production_spec.rb:221 # GuaranteeReturnEntry creating the complete service guarantee return: can only accept post production or production treatment confirm guarantee return should generate production order
+rspec ./spec/models/guarantee_return_entry_variants/only_production_spec.rb:229 # GuaranteeReturnEntry creating the complete service guarantee return: can only accept post production or production treatment confirm guarantee return should generate production order
+rspec ./spec/models/guarantee_return_entry_variants/only_production_spec.rb:237 # GuaranteeReturnEntry creating the complete service guarantee return: can only accept post production or production treatment confirm guarantee return should NOT  generate post production repair order
+rspec ./spec/models/guarantee_return_entry_variants/only_production_spec.rb:245 # GuaranteeReturnEntry creating the complete service guarantee return: can only accept post production or production treatment confirm guarantee return should increase pending production
+rspec ./spec/models/guarantee_return_entry_variants/only_production_spec.rb:251 # GuaranteeReturnEntry creating the complete service guarantee return: can only accept post production or production treatment confirm guarantee return should increase pending production repair 
+rspec ./spec/models/guarantee_return_entry_variants/only_production_spec.rb:257 # GuaranteeReturnEntry creating the complete service guarantee return: can only accept post production or production treatment confirm guarantee return should NOT increase pending post production
+rspec ./spec/models/guarantee_return_entry_variants/only_production_spec.rb:264 # GuaranteeReturnEntry creating the complete service guarantee return: can only accept post production or production treatment confirm guarantee return should increase the number of pending return guarantee return
+rspec ./spec/models/guarantee_return_spec.rb:165 # GuaranteeReturn should finalize the delivery 
+rspec ./spec/models/guarantee_return_spec.rb:169 # GuaranteeReturn should finalze delivery entry
+rspec ./spec/models/guarantee_return_spec.rb:202 # GuaranteeReturn doing the guarantee return should create guarantee return
+rspec ./spec/models/guarantee_return_spec.rb:206 # GuaranteeReturn doing the guarantee return should create guarantee return entry
+rspec ./spec/models/sales_item_spec.rb:116 # SalesItem upon sales order confirmation should have id
+rspec ./spec/models/sales_item_spec.rb:120 # SalesItem upon sales order confirmation should be linked to the customer
+rspec ./spec/models/sales_item_spec.rb:124 # SalesItem upon sales order confirmation should create sales_item_subcription
+rspec ./spec/models/sales_item_spec.rb:129 # SalesItem upon sales order confirmation should create abstract sales item
+rspec ./spec/models/sales_item_spec.rb:135 # SalesItem upon sales order confirmation should link production order with sales_item_subcription + abstract_sales_item
+rspec ./spec/models/sales_item_spec.rb:142 # SalesItem upon sales order confirmation should not allow only_machining
+rspec ./spec/models/sales_item_spec.rb:147 # SalesItem upon sales order confirmation should have propagate the sales order confirmation to the sales item
+rspec ./spec/models/sales_item_spec.rb:152 # SalesItem upon sales order confirmation should produce 1 production order and 1 Post Production order for those including production phase + post produciton phase
+rspec ./spec/models/sales_item_spec.rb:166 # SalesItem upon sales order confirmation should update the pending_production
+rspec ./spec/models/sales_item_spec.rb:176 # SalesItem upon sales order confirmation should give template sales item the appropriate status: internal production?
+rspec ./spec/models/sales_return_entry_spec.rb:174 # SalesReturnEntry no returned sales item should have no sales return 
+rspec ./spec/models/sales_return_entry_spec.rb:178 # SalesReturnEntry no returned sales item should be finalized
+rspec ./spec/models/sales_return_entry_spec.rb:217 # SalesReturnEntry has returned sales item should have one sales return entry
+rspec ./spec/models/sales_return_entry_spec.rb:222 # SalesReturnEntry has returned sales item should  be allowed to be confirmed if total_sum of production + post_production + production repair  == quantity_returned
+rspec ./spec/models/sales_return_entry_spec.rb:241 # SalesReturnEntry has returned sales item should not allow negative value
+rspec ./spec/models/sales_return_entry_spec.rb:260 # SalesReturnEntry has returned sales item should not allow production + post production != quantity_returned
+rspec ./spec/models/sales_return_entry_spec.rb:318 # SalesReturnEntry has returned sales item sales_return confirmation should have  confirmed sales return
+rspec ./spec/models/sales_return_entry_spec.rb:322 # SalesReturnEntry has returned sales item sales_return confirmation should have confirmed sales_return_entry
+rspec ./spec/models/sales_return_spec.rb:167 # Delivery should give sales return to delivery
+rspec ./spec/models/sales_return_spec.rb:172 # Delivery should produce exact copy of returned delivery entry as its sales return entry

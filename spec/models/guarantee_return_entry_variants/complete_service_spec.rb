@@ -35,7 +35,8 @@ describe GuaranteeReturnEntry do
       :is_post_production => true, 
       :is_delivered => true, 
       :delivery_address => "Perumahan Citra Garden 1 Blok AC2/3G",
-      :quantity => @has_production_quantity,
+      :quantity_for_production => @has_production_quantity, 
+      :quantity_for_post_production => @has_production_quantity,
       :description => "Bla bla bla bla bla", 
       :delivery_address => "Yeaaah babyy", 
       :requested_deadline => Date.new(2013, 3,5 ),
@@ -148,7 +149,7 @@ describe GuaranteeReturnEntry do
     
     @has_production_sales_item.reload 
     @initial_on_delivery_item = @has_production_sales_item.on_delivery 
-    @initial_fulfilled = @has_production_sales_item.fulfilled_order
+    @initial_fulfilled = @has_production_sales_item.fulfilled_post_production
     
     
     @delivery.reload 

@@ -20,11 +20,12 @@ class PostProductionOrder < ActiveRecord::Base
   
   
   def PostProductionOrder.generate_sales_post_production_order( sales_item ) 
+    return nil if sales_item.quantity_for_post_production == 0 
     template_sales_item = sales_item.template_sales_item
     PostProductionOrder.create(
       :template_sales_item_id            => template_sales_item.id       ,
       :case                     =>  POST_PRODUCTION_ORDER[:sales_order]  ,
-      :quantity                 =>  sales_item.quantity  ,
+      :quantity                 => sales_item.quantity_for_post_production  ,
       :source_document_entry    => sales_item.class.to_s         ,
       :source_document_entry_id => sales_item.id                 ,
       :source_document          => sales_item.sales_order.class.to_s         ,

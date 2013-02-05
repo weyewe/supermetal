@@ -21,6 +21,9 @@ class CreateSalesItems < ActiveRecord::Migration
       t.decimal :weight_per_piece, :precision => 7, :scale => 2 , :default => 0  
       t.integer :quantity 
       
+      t.integer :quantity_for_production      , :default => 0 
+      t.integer :quantity_for_post_production , :default => 0 
+      
       
       t.text        :delivery_address 
       t.boolean     :is_sales_order_delivery_address , :default => false 
@@ -32,31 +35,31 @@ class CreateSalesItems < ActiveRecord::Migration
       t.date        :estimated_internal_deadline 
 
       
-      
-      
-      
-      # statistics  ( internal )
-      t.integer :number_of_pre_production             , :default    =>  0  # PreProductionHistory 
-      
-      
-      t.integer :number_of_production                 , :default   =>  0  # ProductionHistory
-      t.integer :number_of_post_production            , :default   =>  0  # PostProductionHistory
-      t.integer :number_of_delivery                   , :default   =>  0  # DeliveryEntry 
-      t.integer :number_of_sales_return               , :default   =>  0  # SalesReturnEntry
-      t.integer :number_of_delivery_lost              , :default   =>  0  # DeliveryLostEntry
-      t.integer :number_of_failed_production          , :default   =>  0
-      t.integer :number_of_failed_post_production     , :default =>  0
-
-                                                
-      t.integer :pending_production                , :default =>  0  # ProductionOrder, the work
-      t.integer :pending_post_production           , :default =>  0  # PostProductionOrder 
-      t.integer :ready                             , :default =>  0 
-      t.integer :on_delivery                       , :default =>  0 
-      
+         #    
+         # 
+         # 
+         # # statistics  ( internal )
+         # t.integer :number_of_pre_production             , :default    =>  0  # PreProductionHistory 
+         # 
+         # 
+         # t.integer :number_of_production                 , :default   =>  0  # ProductionHistory
+         # t.integer :number_of_post_production            , :default   =>  0  # PostProductionHistory
+         # t.integer :number_of_delivery                   , :default   =>  0  # DeliveryEntry 
+         # t.integer :number_of_sales_return               , :default   =>  0  # SalesReturnEntry
+         # t.integer :number_of_delivery_lost              , :default   =>  0  # DeliveryLostEntry
+         # t.integer :number_of_failed_production          , :default   =>  0
+         # t.integer :number_of_failed_post_production     , :default =>  0
+         # 
+         #                                           
+         # t.integer :pending_production                , :default =>  0  # ProductionOrder, the work
+         # t.integer :pending_post_production           , :default =>  0  # PostProductionOrder 
+         # t.integer :ready                             , :default =>  0 
+         # t.integer :on_delivery                       , :default =>  0 
+         # 
       # fulfilled order => when it is approved by the customer
       # if there is sales return, deduct the fulfilled order 
       # LAST ONE THAT WE NEED => actual fulfilled order 
-      t.integer :fulfilled_order                , :default =>  0 
+      # t.integer :fulfilled_order                , :default =>  0 
        
      t.boolean :is_confirmed, :default => false  
      

@@ -35,7 +35,8 @@ describe Delivery do
       :is_post_production => true, 
       :is_delivered => true, 
       :delivery_address => "Perumahan Citra Garden 1 Blok AC2/3G",
-      :quantity => @has_production_quantity,
+      :quantity_for_production => @has_production_quantity, 
+      :quantity_for_post_production => @has_production_quantity,
       :description => "Bla bla bla bla bla", 
       :delivery_address => "Yeaaah babyy", 
       :requested_deadline => Date.new(2013, 3,5 ),
@@ -286,7 +287,7 @@ describe Delivery do
             
             @has_production_sales_item.reload 
             @initial_on_delivery_item = @has_production_sales_item.on_delivery 
-            @initial_fulfilled = @has_production_sales_item.fulfilled_order
+            @initial_fulfilled = @has_production_sales_item.fulfilled_post_production
             
             
             @delivery.reload 
@@ -312,7 +313,7 @@ describe Delivery do
           
           it 'should not deduct the quantity of fulfilled order: optimistic!' do
             puts "Gonna call the fulfilled order\n"*10
-            @final_fulfilled = @has_production_sales_item.fulfilled_order
+            @final_fulfilled = @has_production_sales_item.fulfilled_post_production
             
             delta = @final_fulfilled - @initial_fulfilled
             puts "The final fulfilled: #{@final_fulfilled}"
@@ -344,7 +345,7 @@ describe Delivery do
             
             @has_production_sales_item.reload 
             @initial_on_delivery_item = @has_production_sales_item.on_delivery 
-            @initial_fulfilled = @has_production_sales_item.fulfilled_order
+            @initial_fulfilled = @has_production_sales_item.fulfilled_post_production
             
             
             @delivery.reload 
@@ -373,9 +374,8 @@ describe Delivery do
           end
           
           it 'should deduct the quantity of confirmed item' do
-            @final_fulfilled = @has_production_sales_item.fulfilled_order
+            @final_fulfilled = @has_production_sales_item.fulfilled_post_production
         
-        # because sales return is not counted as fulfilled order 
             delta = @initial_fulfilled - @final_fulfilled  
             delta.should == @quantity_returned
           end
@@ -419,7 +419,8 @@ describe Delivery do
             
             @has_production_sales_item.reload 
             @initial_on_delivery_item = @has_production_sales_item.on_delivery 
-            @initial_fulfilled = @has_production_sales_item.fulfilled_order
+            @initial_fulfilled = @has_production_sales_item.fulfilled_post_production
+            @initial_fulfilled_production = @has_production_sales_item.fulfilled_production
             
             
             @delivery.reload 
@@ -436,9 +437,18 @@ describe Delivery do
           end
           
           it 'should reduce the fulfilled order because of quantity returned and quantity lost' do
-            @final_fulfilled = @has_production_sales_item.fulfilled_order
+            @final_fulfilled = @has_production_sales_item.fulfilled_post_production
             diff = @initial_fulfilled -  @final_fulfilled 
             diff.should == @quantity_lost 
+          end
+          
+          it 'should not change the fulfilled_production' do
+            @final_fulfilled_production =  @has_production_sales_item.fulfilled_production
+            diff = @final_fulfilled_production - @initial_fulfilled_production
+            @initial_fulfilled_production.should == 0 
+            @final_fulfilled_production.should == 0 
+            diff.should == 0 
+            
           end
         
           

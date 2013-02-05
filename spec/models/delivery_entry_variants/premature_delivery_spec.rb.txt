@@ -1,6 +1,25 @@
+# it 'should consider sending premature item as delivery fulfilment: 
+  # reduce post production and add fulfilled order'
+
+# what if the premature delivery spec is lost? 
+# => production order must increase and post production order must increase 
+# => fulfilled == reduced
+
+# what if the premature delivery spec is returned?
+# => 1. for those going for production repair 
+# => 2. for those going for production
+# => 3. for those going for post production 
+# => GENERAL POLICY on sales return of premature item (can only go for production or post production):
+  # => 1.Production  ( remake ) 
+  # => 2. Post Production ( fix it )  
+  # NO PRODUCTION REPAIR (based on visual assestment, such thing is impossible)
+  
+
+# it can't be selected for production only or post production only 
+# it can't exceed the quantity of pending fulfilled order from the related sales item 
 require 'spec_helper'
 
-describe DeliveryEntry do
+describe GuaranteeReturn do
   before(:each) do
     role = {
       :system => {
@@ -35,9 +54,7 @@ describe DeliveryEntry do
       :is_post_production => true, 
       :is_delivered => true, 
       :delivery_address => "Perumahan Citra Garden 1 Blok AC2/3G",
-      # :quantity => @has_production_quantity,
-      :quantity_for_production => @has_production_quantity, 
-      :quantity_for_post_production => @has_production_quantity, 
+      :quantity => @has_production_quantity,
       :description => "Bla bla bla bla bla", 
       :delivery_address => "Yeaaah babyy", 
       :requested_deadline => Date.new(2013, 3,5 ),
@@ -114,103 +131,39 @@ describe DeliveryEntry do
       :delivery_address   => "some address",    
       :delivery_date     => Date.new(2012, 12, 15)
     })
-  end
-   
-  it 'should have ready production and ready post production' do
-    @template_sales_item.ready_production.should == @ok_production_quantity
-    @template_sales_item.ready_post_production.should == @ok_post_production_quantity
-  end
   
-  it 'should have delivery' do
-    @delivery.should be_valid
-  end
-  
-  it 'should not create delivery entry if   quantity sent ==  0  ' do
-    @delivery_entry = DeliveryEntry.create_delivery_entry( @admin, @delivery, {
-        :quantity_sent => 0 , 
-        :quantity_sent_weight => "324",
-        :sales_item_id =>  @has_production_sales_item.id, # for pricing 
-        :entry_case => DELIVERY_ENTRY_CASE[:normal],  # pricing level 
-        :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]  # quantity deduction 
-      })
-      
-    @delivery_entry.should_not be_valid 
-  end
-  
-  it 'should not create delivery entry if  quantity sent > ready ' do 
-    @ready_post_production = @template_sales_item.ready_post_production
+    @template_sales_item = @has_production_sales_item.template_sales_item 
+    @ready_post_production = @template_sales_item.ready_post_production 
+
+    @quantity_sent = 1 
+    if @ready_post_production > 1 
+      @quantity_sent = @ready_post_production - 1 
+    end
+
     
-    @delivery_entry = DeliveryEntry.create_delivery_entry( @admin, @delivery,   {
-        :quantity_sent => @ready_post_production + 1  , 
-        :quantity_sent_weight => "324" ,
-        :sales_item_id =>  @has_production_sales_item.id,
-        :entry_case => DELIVERY_ENTRY_CASE[:normal], 
-        :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
-      })
-    @delivery_entry.should_not be_valid
   end
   
-  it 'should create delivery entry if quantity_sent < ready' do
-    @ready_post_production = @template_sales_item.ready_post_production
-    
-    @delivery_entry = DeliveryEntry.create_delivery_entry( @admin, @delivery,   {
-        :quantity_sent => @ready_post_production   , 
-        :quantity_sent_weight => "324" ,
-        :sales_item_id =>  @has_production_sales_item.id,
-        :entry_case => DELIVERY_ENTRY_CASE[:normal], 
-        :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
-      })
-    @delivery_entry.should be_valid
-  end
-  
-  it 'should not create delivery entry if  weight > 0 ' do 
-    @ready_post_production = @template_sales_item.ready_post_production
+  it 'should allow normal delivery + condition post production' do
     @delivery_entry = DeliveryEntry.create_delivery_entry( @admin, @delivery,  {
-        :quantity_sent => @ready_post_production  , 
-        :quantity_sent_weight => "-5" ,
-        :sales_item_id => @has_production_sales_item.id ,
-        :entry_case => DELIVERY_ENTRY_CASE[:normal], 
-        :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
+      :quantity_sent => @quantity_sent, 
+      :quantity_sent_weight => "#{@quantity_sent * 10}" ,
+      :sales_item_id => @has_production_sales_item.id,
+      :entry_case => DELIVERY_ENTRY_CASE[:normal], 
+      :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
       })
-    @delivery_entry.should_not be_valid
-    
-    
+    @delivery_entry.should be_valid 
+  end
+  
+  it 'should not allow normal delivery + condition  production' do
     @delivery_entry = DeliveryEntry.create_delivery_entry( @admin, @delivery,  {
-      :quantity_sent => @ready_post_production , 
-      :quantity_sent_weight => "0" ,
-      :sales_item_id => @has_production_sales_item.id ,
+      :quantity_sent => @quantity_sent, 
+      :quantity_sent_weight => "#{@quantity_sent * 10}" ,
+      :sales_item_id => @has_production_sales_item.id,
       :entry_case => DELIVERY_ENTRY_CASE[:normal], 
       :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
       })
     @delivery_entry.should_not be_valid
   end
   
-  it 'should not create double delivery entries' do
-    @ready_post_production = @template_sales_item.ready_post_production
-    first_delivery_quantity =  1 
-    second_delivery_quantity = @ready_post_production - first_delivery_quantity 
-    
-    @delivery_entry = DeliveryEntry.create_delivery_entry( @admin, @delivery,  {
-      :quantity_sent => first_delivery_quantity , 
-      :quantity_sent_weight => "#{first_delivery_quantity*10}" ,
-      :sales_item_id => @has_production_sales_item.id ,
-      :entry_case => DELIVERY_ENTRY_CASE[:normal], 
-      :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
-    })
-    @delivery_entry.should be_valid
-    
-    
-    @delivery_entry = DeliveryEntry.create_delivery_entry( @admin, @delivery,  {
-      :quantity_sent => second_delivery_quantity  , 
-      :quantity_sent_weight => "#{second_delivery_quantity*10}" ,
-      :sales_item_id => @has_production_sales_item.id ,
-      :entry_case => DELIVERY_ENTRY_CASE[:normal], 
-      :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
-    })
-    @delivery_entry.should_not be_valid
-  end
   
-  # test this in the delivery_entry_variants 
-  it 'should have matching entry_case, item_condition, sales_item_id + quantity must be available' do
-  end
 end
