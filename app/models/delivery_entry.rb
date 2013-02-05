@@ -3,14 +3,16 @@ class DeliveryEntry < ActiveRecord::Base
   belongs_to :delivery
   belongs_to :sales_item 
   has_one :sales_return_entry
+  has_one :delivery_lost_entry 
   
-  validates_presence_of :item_condition, :entry_case, :sales_item_id 
+  validates_presence_of :item_condition, :entry_case, :sales_item_id, :template_sales_item_id 
   
   validate   :quantity_sent_is_not_zero_and_less_than_ready_quantity
   validate   :quantity_sent_weight_is_not_zero_and_less_than_ready_quantity 
   validate   :uniqueness_of_sales_item
   validate   :customer_ownership_to_sales_item
   validate :valid_delivery_entry_combination
+  belongs_to :template_sales_item 
   
   def quantity_sent_is_not_zero_and_less_than_ready_quantity
     ready_production = self.sales_item.template_sales_item.ready_production
@@ -199,11 +201,12 @@ class DeliveryEntry < ActiveRecord::Base
   
   def DeliveryEntry.create_delivery_entry( employee, delivery,  params ) 
     return nil if employee.nil?
-    
+    sales_item = SalesItem.find_by_id params[:sales_item_id]
     new_object = DeliveryEntry.new
     new_object.creator_id = employee.id 
     new_object.delivery_id = delivery.id 
     new_object.sales_item_id = params[:sales_item_id] 
+    new_object.template_sales_item_id = sales_item.template_sales_item_id 
     
     new_object.quantity_sent        = params[:quantity_sent]       
     new_object.quantity_sent_weight = BigDecimal( params[:quantity_sent_weight ])
@@ -223,14 +226,15 @@ class DeliveryEntry < ActiveRecord::Base
   def update_delivery_entry( employee, delivery,  params ) 
     return nil if employee.nil?
     
-   
+    sales_item = SalesItem.find_by_id params[:sales_item_id]
     self.creator_id           = employee.id 
     self.delivery_id          = delivery.id 
     self.sales_item_id        = params[:sales_item_id] 
+    self.template_sales_item_id = sales_item.template_sales_item_id 
     self.quantity_sent        = params[:quantity_sent]       
     self.quantity_sent_weight = BigDecimal( params[:quantity_sent_weight ])
     self.entry_case           = params[:entry_case] 
-    new_object.item_condition           = params[:item_condition]
+    self.item_condition           = params[:item_condition]
 
     # new_object.generate_delivery_entry_case
     if self.save 

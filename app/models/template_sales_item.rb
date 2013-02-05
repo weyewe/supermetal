@@ -14,6 +14,8 @@ class TemplateSalesItem < ActiveRecord::Base
   has_many :production_repair_orders
   has_many :post_production_orders 
   
+  has_many :delivery_entries 
+  
   validates_presence_of :code 
   
   def has_unconfirmed_production_result?
@@ -51,19 +53,55 @@ class TemplateSalesItem < ActiveRecord::Base
     total_quantity_finished = self.production_results.where(:is_confirmed => true ) .sum("ok_quantity") +
                               self.production_repair_results.where(:is_confirmed => true ) .sum("ok_quantity")
      
-    total_quantity_going_out = DeliveryEntry.where(:template_sales_item_id => self.id, 
-              :entry_case => DELIVERY_ENTRY_ITEM_CONDITION[:production], :is_confirmed => true ).sum("quantity_confirmed")                 
+    total_quantity_going_out = self.delivery_entries.where( 
+              :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:production],  
+              :is_confirmed => true,
+              :is_finalized => false  ).sum("quantity_sent")             
+                  
+    confirmed_total_quantity_going_out = self.delivery_entries.where(
+              :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:production], 
+              :is_confirmed => true,
+              :is_finalized => true ).sum("quantity_confirmed")
     
-    total_quantity_finished - total_quantity_going_out
+    confirmed_total_quantity_returned =           self.delivery_entries.where(
+                        :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:production], 
+                        :is_confirmed => true,
+                        :is_finalized => true ).sum("quantity_returned")
+                        
+    confirmed_total_quantity_lost =                     self.delivery_entries.where(
+                                  :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:production], 
+                                  :is_confirmed => true,
+                                  :is_finalized => true ).sum("quantity_lost")
+              
+    total_quantity_finished - total_quantity_going_out - confirmed_total_quantity_going_out - 
+                confirmed_total_quantity_returned - confirmed_total_quantity_lost
   end
   
   def ready_post_production
     total_quantity_finished = self.post_production_results.where(:is_confirmed => true ) .sum("ok_quantity") 
      
-    total_quantity_going_out = DeliveryEntry.where(:template_sales_item_id => self.id, 
-              :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production], :is_confirmed => true ).sum("quantity_confirmed")                 
+    total_quantity_going_out = self.delivery_entries.where(
+              :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production], 
+              :is_confirmed => true,
+              :is_finalized => false  ).sum("quantity_sent")     
+              
+    confirmed_total_quantity_going_out = self.delivery_entries.where(
+              :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production], 
+              :is_confirmed => true,
+              :is_finalized => true  ).sum("quantity_confirmed")       
+              
+     confirmed_total_quantity_returned =           self.delivery_entries.where(
+                        :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production], 
+                        :is_confirmed => true,
+                        :is_finalized => true ).sum("quantity_returned")
+
+    confirmed_total_quantity_lost =                     self.delivery_entries.where(
+                                  :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production], 
+                                  :is_confirmed => true,
+                                  :is_finalized => true ).sum("quantity_lost")     
     
-    total_quantity_finished - total_quantity_going_out
+    total_quantity_finished - total_quantity_going_out - confirmed_total_quantity_going_out                               - 
+                      confirmed_total_quantity_returned - confirmed_total_quantity_lost
   end
   
   

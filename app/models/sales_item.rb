@@ -638,7 +638,7 @@ class SalesItem < ActiveRecord::Base
   def premature_delivery
     delivery = self.delivery_entries.where(
       :is_confirmed => true, 
-      :is_finalized => true,
+      :is_finalized => false,
       :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:production],
       :entry_case =>  DELIVERY_ENTRY_CASE[:premature]
     ).sum("quantity_sent")
