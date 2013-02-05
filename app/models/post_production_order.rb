@@ -76,9 +76,10 @@ class PostProductionOrder < ActiveRecord::Base
   end
   
   def PostProductionOrder.generate_guarantee_return_post_production_order( guarantee_return_entry ) 
-    return nil if guarantee_return_entry.quantity_for_post_production ==0  
+    return nil if guarantee_return_entry.quantity_for_post_production == 0  
+    template_sales_item = guarantee_return_entry.sales_item.template_sales_item 
     PostProductionOrder.create(
-      :sales_item_id            => guarantee_return_entry.sales_item_id      ,
+      :template_sales_item_id => template_sales_item.id , 
       :case                     =>  POST_PRODUCTION_ORDER[:guarantee_return]  ,
       :quantity                 => guarantee_return_entry.quantity_for_post_production, 
       

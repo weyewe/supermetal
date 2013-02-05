@@ -180,6 +180,62 @@ class TemplateSalesItem < ActiveRecord::Base
     total_quantity_received - total_quantity_worked
   end
   
+  
+  def total_guarantee_return
+    template_sales_item_id = self.id 
+    production = GuaranteeReturnEntry.joins(:sales_item).where(
+      :sales_item => {
+        :template_sales_item_id => template_sales_item_id
+      },
+      :is_confirmed => true 
+    ).sum("quantity_for_production")
+    
+    post_production = GuaranteeReturnEntry.joins(:sales_item).where(
+      :sales_item => {
+        :template_sales_item_id => template_sales_item_id
+      },
+      :is_confirmed => true 
+    ).sum("quantity_for_post_production")
+    
+    production_repair = GuaranteeReturnEntry.joins(:sales_item).where(
+      :sales_item => {
+        :template_sales_item_id => template_sales_item_id
+      },
+      :is_confirmed => true 
+    ).sum("quantity_for_production_repair")
+    
+    return production + post_production + production_repair
+  end
+  
+  def delivered_guarantee_return
+    
+    template_sales_item_id = self.id 
+    unfinalized = DeliveryEntry.joins(:sales_item).where(
+      :sales_item => {
+        :template_sales_item_id => template_sales_item_id
+      },
+      :is_confirmed => true ,
+      :is_finalized => false , 
+      :entry_case => DELIVERY_ENTRY_CASE[:guarantee_return]
+    ).sum("quantity_sent")
+    
+    finalized = DeliveryEntry.joins(:sales_item).where(
+      :sales_item => {
+        :template_sales_item_id => template_sales_item_id
+      },
+      :is_confirmed => true ,
+      :is_finalized => true , 
+      :entry_case => DELIVERY_ENTRY_CASE[:guarantee_return]
+    ).sum("quantity_confirmed")
+    
+    return unfinalized + finalized 
+  end
+  
+  # the guarantee return that is not returned yet 
+  def pending_guarantee_return
+    total_guarantee_return - delivered_guarantee_return 
+  end
+  
 
 ###################################################
 ###################################################

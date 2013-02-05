@@ -143,10 +143,10 @@ class ProductionOrder < ActiveRecord::Base
   def ProductionOrder.generate_guarantee_return_production_order( guarantee_return_entry )
     return nil if guarantee_return_entry.quantity_for_production == 0 
     sales_item = guarantee_return_entry.sales_item
+    template_sales_item = sales_item.template_sales_item 
     ProductionOrder.create(
-      :sales_item_id            => sales_item.id       ,
       :sales_item_subcription_id => sales_item.sales_item_subcription_id , 
-      :template_sales_item_id    => sales_item.template_sales_item_id  ,
+      :template_sales_item_id    => template_sales_item.id  ,
       
       :case                     => PRODUCTION_ORDER[:guarantee_return]     ,
       :quantity                 => guarantee_return_entry.quantity_for_production     ,

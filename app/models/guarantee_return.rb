@@ -5,6 +5,7 @@ class GuaranteeReturn < ActiveRecord::Base
   
   belongs_to :customer 
   has_many :guarantee_return_entries 
+   
 
   def self.create_by_employee( employee, params ) 
     return nil if employee.nil? 

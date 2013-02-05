@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe GuaranteeReturn do
+describe GuaranteeReturnEntry do
   before(:each) do
     role = {
       :system => {
@@ -159,34 +159,43 @@ describe GuaranteeReturn do
     @delivery_entry.reload   
     @has_production_sales_item.reload 
     @template_sales_item.reload
+    
+    @guarantee_return = GuaranteeReturn.create_by_employee(@admin, {
+      :customer_id => @customer.id ,
+      :receival_date => Date.new( 2012,12,8)
+    })
+    
+    # quantity_sent == 10 
+    
   end
   
-  it 'should finalize the delivery ' do
-    @delivery.is_finalized.should be_true 
+  it 'should not allow production repair treatment' do
+    @gre_post_production = 3
+    @gre_production = 1  
+    @gre_production_repair = 1 
+   
+    
+    @guarantee_return_entry = GuaranteeReturnEntry.create_guarantee_return_entry( @admin, @guarantee_return ,  {
+      :sales_item_id                  => @has_production_sales_item.id ,
+      :quantity_for_post_production   => @gre_post_production,
+      :quantity_for_production        => @gre_production,
+      :quantity_for_production_repair        => @gre_production_repair,
+      :weight_for_post_production     => "#{@gre_post_production*10}", 
+      :weight_for_production          => "#{@gre_production*10}",
+      :weight_for_production_repair          => "#{@gre_production_repair*10}"
+    } )
+    
+    @guarantee_return_entry.should_not be_valid
   end
   
-  it 'should finalze delivery entry' do
-    puts "Total error: #{@delivery_entry.errors.size}"
-    @delivery_entry.errors.messages.each do |msg|
-      puts "The error messasge is : #{msg}"
-    end
-    @delivery_entry.is_finalized.should be_true 
-  end
   
-  
-  context "doing the guarantee return" do
+  context "creating the complete service guarantee return: can only accept post production or production treatment" do
     before(:each) do
-      @guarantee_return = GuaranteeReturn.create_by_employee(@admin, {
-        :customer_id => @customer.id ,
-        :receival_date => Date.new( 2012,12,8)
-      })
-      
-      # quantity_sent == 10 
       @gre_post_production = 3
       @gre_production = 1  
       @gre_production_repair = 0 
-     
-      
+
+
       @guarantee_return_entry = GuaranteeReturnEntry.create_guarantee_return_entry( @admin, @guarantee_return ,  {
         :sales_item_id                  => @has_production_sales_item.id ,
         :quantity_for_post_production   => @gre_post_production,
@@ -195,89 +204,72 @@ describe GuaranteeReturn do
         :weight_for_post_production     => "#{@gre_post_production*10}", 
         :weight_for_production          => "#{@gre_production*10}",
         :weight_for_production_repair          => "#{@gre_production_repair*10}"
-      } )                              
+      } )
     end
-    
-    it 'should create guarantee return' do
-      @guarantee_return.should be_valid 
+    it 'should create guarantee return entry' do
+      @guarantee_return_entry.should be_valid
     end
-    
-    it 'should create guarantee return entry'  do
-      puts "Total errors: #{@guarantee_return_entry.errors.size }"
-      @guarantee_return_entry.errors.messages.each do |x|
-        puts "Msg: #{x}"
+
+    context 'confirm guarantee return' do
+      before(:each) do
+        @template_sales_item.reload
+
+        @initial_pending_production = @template_sales_item.pending_production
+        @initial_pending_post_production = @template_sales_item.pending_post_production
+        @initial_pending_guarantee_return = @template_sales_item.pending_guarantee_return 
+        @guarantee_return.confirm(@admin)
+        @has_production_sales_item.reload 
+        @template_sales_item.reload
+        @guarantee_return_entry.reload 
       end
-      @guarantee_return_entry.should be_valid 
+
+      it 'should confirm guarantee return' do
+        @guarantee_return.is_confirmed.should be_true 
+      end
+
+      it 'should confirm guarantee return entry' do
+        @guarantee_return_entry.is_confirmed.should be_true 
+      end
+
+      it 'should generate production order' do
+        ProductionOrder.where(
+          :source_document_entry => @guarantee_return_entry.class.to_s,
+          :source_document_entry_id => @guarantee_return_entry.id,
+          :case => PRODUCTION_ORDER[:guarantee_return]  
+        ).count.should == 1 
+      end
+
+      it 'should generate post production repair order' do
+        PostProductionOrder.where(
+          :source_document_entry => @guarantee_return_entry.class.to_s,
+          :source_document_entry_id => @guarantee_return_entry.id,
+          :case => POST_PRODUCTION_ORDER[:guarantee_return] 
+        ).count.should == 1
+      end
+
+      it 'should increase pending production' do
+        @final_pending_production = @template_sales_item.pending_production
+        diff = @final_pending_production - @initial_pending_production
+        diff.should == @gre_production
+      end
+
+      it 'should increase pending post production' do
+        @final_pending_post_production = @template_sales_item.pending_post_production
+        diff = @final_pending_post_production  -@initial_pending_post_production
+
+        diff.should == @gre_post_production
+      end
+
+      it 'should increase the number of pending return guarantee return' do
+        @final_pending_guarantee_return = @template_sales_item.pending_guarantee_return 
+        diff = @final_pending_guarantee_return - @initial_pending_guarantee_return
+
+        diff.should ==  @gre_post_production  + @gre_production 
+      end
     end
-    
-    # context "confirming the guarantee return" do
-    #   before(:each) do
-    #     @has_production_sales_item.reload 
-    #     @template_sales_item = @has_production_sales_item.template_sales_item 
-    #     @initial_pending_production = @template_sales_item.pending_production 
-    #     @initial_pending_post_production = @template_sales_item.pending_post_production 
-    #     # @initial_number_of_guarantee_return = @template_sales_item.number_of_guarantee_return
-    #     # @initial_pending_guarantee_return_delivery = @template_sales_item.pending_guarantee_return_delivery
-    #     
-    #     @guarantee_return.confirm(@admin)
-    #     @has_production_sales_item.reload 
-    #     @template_sales_item.reload 
-    #   end
-    #   
-    #   # sales item statistic
-    #   # it 'should increase number_of_guarantee_return' do
-    #   #   @final_number_of_guarantee_return = @has_production_sales_item.number_of_guarantee_return
-    #   #   diff = @final_number_of_guarantee_return - @initial_number_of_guarantee_return
-    #   #   diff.should == @gre_post_production + @gre_production
-    #   # end
-    #   # 
-    #   # it 'should increase pending_guarantee_return_delivery' do
-    #   #   @final_pending_guarantee_return_delivery = @has_production_sales_item.pending_guarantee_return_delivery
-    #   #   diff = @final_pending_guarantee_return_delivery - @initial_pending_guarantee_return_delivery
-    #   #   diff.should == @gre_post_production + @gre_production
-    #   # end
-    #   
-    #   it 'should increase the pending production'   do
-    #     @final_pending_production = @template_sales_item.pending_production 
-    #     diff = @final_pending_production - @initial_pending_production
-    #     diff.should == @gre_production
-    #   end
-    #   
-    #   it 'should create production order' do
-    #     ProductionOrder.where(
-    #       :sales_item_id            => @has_production_sales_item.id       ,
-    #       :case                     => PRODUCTION_ORDER[:guarantee_return]     ,
-    #       :quantity                 => @gre_production     ,
-    #   
-    #       :source_document_entry    => @guarantee_return_entry.class.to_s          ,
-    #       :source_document_entry_id => @guarantee_return_entry.id                  ,
-    #       :source_document          => @guarantee_return_entry.guarantee_return.class.to_s          ,
-    #       :source_document_id       => @guarantee_return_entry.guarantee_return_id
-    #     ).count.should == 1 
-    #   end
-    #   
-    #   it 'should increase the pending post production' do
-    #     @final_pending_post_production = @has_production_sales_item.pending_post_production 
-    #     diff = @final_pending_post_production - @initial_pending_post_production
-    #     diff.should == @gre_post_production
-    #   end
-    #   
-    #   it 'should create post production order' do 
-    #     PostProductionOrder.where(
-    #       :sales_item_id            => @has_production_sales_item.id       ,
-    #       :case                     => POST_PRODUCTION_ORDER[:guarantee_return]     ,
-    #       :quantity                 => @gre_post_production     ,
-    #   
-    #       :source_document_entry    => @guarantee_return_entry.class.to_s          ,
-    #       :source_document_entry_id => @guarantee_return_entry.id                  ,
-    #       :source_document          => @guarantee_return_entry.guarantee_return.class.to_s          ,
-    #       :source_document_id       => @guarantee_return_entry.guarantee_return_id
-    #     ).count.should == 1
-    #     
-    #   end
-    #   
-    #   
-    # end # "confirming the guarantee return"
   end
-    
+  
+  
+  
+  
 end

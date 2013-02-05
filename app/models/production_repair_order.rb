@@ -34,7 +34,7 @@ class ProductionRepairOrder < ActiveRecord::Base
     return nil if quantity == 0  
     template_sales_item = sales_return_entry.sales_item.template_sales_item 
     
-    ProductionOrder.create(
+    self.create(
       :template_sales_item_id    => template_sales_item.id   ,
       
       :case                     => PRODUCTION_REPAIR_ORDER[:sales_return]     ,
@@ -50,7 +50,7 @@ class ProductionRepairOrder < ActiveRecord::Base
    
   
   
-  def ProductionOrder.generate_guarantee_return_production_order( guarantee_return_entry )
+  def self.generate_guarantee_return_production_repair_order( guarantee_return_entry )
     
     return nil if guarantee_return_entry.nil? 
     quantity = guarantee_return_entry.quantity_for_production_repair
@@ -59,7 +59,7 @@ class ProductionRepairOrder < ActiveRecord::Base
     
      
     
-    ProductionOrder.create(
+    self.create(
       :template_sales_item_id    => template_sales_item.id   ,
       
       :case                     => PRODUCTION_REPAIR_ORDER[:guarantee_return]     ,
