@@ -621,9 +621,9 @@ class SalesItem < ActiveRecord::Base
     all_post_production_guarantee_return_entries = self.guarantee_return_entries.where(:is_confirmed => true,
       :item_condition => GUARANTEE_RETURN_ENTRY_ITEM_CONDITION[:post_production] )
       
-    quantity_for_production = all_production_guarantee_return_entries.sum('quantity_for_production')
+    quantity_for_production = all_post_production_guarantee_return_entries.sum('quantity_for_production')
       
-    quantity_for_post_production = all_production_guarantee_return_entries.sum('quantity_for_post_production')
+    quantity_for_post_production = all_post_production_guarantee_return_entries.sum('quantity_for_post_production')
     
     return  quantity_for_production + quantity_for_post_production
   end

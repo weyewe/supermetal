@@ -145,6 +145,7 @@ ActiveRecord::Schema.define(:version => 20130203145546) do
     t.integer  "quantity_for_production_repair",                               :default => 0
     t.decimal  "weight_for_production_repair",   :precision => 7, :scale => 2, :default => 0.0
     t.boolean  "is_confirmed",                                                 :default => false
+    t.integer  "item_condition",                                               :default => 1
     t.datetime "created_at",                                                                      :null => false
     t.datetime "updated_at",                                                                      :null => false
   end

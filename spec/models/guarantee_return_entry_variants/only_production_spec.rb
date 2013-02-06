@@ -100,11 +100,11 @@ describe GuaranteeReturnEntry do
     })
   
    @template_sales_item = @has_production_sales_item.template_sales_item 
-    @ready_post_production = @template_sales_item.ready_post_production 
+    @ready_production = @template_sales_item.ready_production 
     
     @quantity_sent = 1 
-    if @ready_post_production > 1 
-      @quantity_sent = @ready_post_production - 1 
+    if @ready_production > 1 
+      @quantity_sent = @ready_production - 1 
     end
     
     @delivery_entry = DeliveryEntry.create_delivery_entry( @admin, @delivery,  {
@@ -168,7 +168,8 @@ describe GuaranteeReturnEntry do
       :quantity_for_production_repair        => @gre_production_repair,
       :weight_for_post_production     => "#{@gre_post_production*10}", 
       :weight_for_production          => "#{@gre_production*10}",
-      :weight_for_production_repair          => "#{@gre_production_repair*10}"
+      :weight_for_production_repair          => "#{@gre_production_repair*10}",
+      :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:production]
     } )
     
     @guarantee_return_entry.should_not be_valid
@@ -180,8 +181,8 @@ describe GuaranteeReturnEntry do
       @gre_post_production = 0
       @gre_production = 1  
       @gre_production_repair = 3
-
-
+  
+  
       @guarantee_return_entry = GuaranteeReturnEntry.create_guarantee_return_entry( @admin, @guarantee_return ,  {
         :sales_item_id                  => @has_production_sales_item.id ,
         :quantity_for_post_production   => @gre_post_production,
@@ -189,13 +190,15 @@ describe GuaranteeReturnEntry do
         :quantity_for_production_repair        => @gre_production_repair,
         :weight_for_post_production     => "#{@gre_post_production*10}", 
         :weight_for_production          => "#{@gre_production*10}",
-        :weight_for_production_repair          => "#{@gre_production_repair*10}"
+        :weight_for_production_repair          => "#{@gre_production_repair*10}",
+        :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:production]
       } )
     end
+    
     it 'should create guarantee return entry' do
       @guarantee_return_entry.should be_valid
     end
-
+  
     context 'confirm guarantee return' do
       before(:each) do
         @template_sales_item.reload

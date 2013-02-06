@@ -91,6 +91,8 @@ class GuaranteeReturnEntry < ActiveRecord::Base
   
   def prevent_excess_guarantee_return 
     return nil if self.sales_item.nil? 
+    # don't check this out if it is confirmed 
+    return nil if self.is_confirmed ==  true 
     
     # if item coming in is in the form of production 
     if item_condition == GUARANTEE_RETURN_ENTRY_ITEM_CONDITION[:production]

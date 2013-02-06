@@ -183,7 +183,8 @@ describe GuaranteeReturnEntry do
       :quantity_for_production_repair        => @gre_production_repair,
       :weight_for_post_production     => "#{@gre_post_production*10}", 
       :weight_for_production          => "#{@gre_production*10}",
-      :weight_for_production_repair          => "#{@gre_production_repair*10}"
+      :weight_for_production_repair          => "#{@gre_production_repair*10}",
+      :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
     } )
     
     @guarantee_return_entry.should_not be_valid
@@ -204,7 +205,8 @@ describe GuaranteeReturnEntry do
         :quantity_for_production_repair        => @gre_production_repair,
         :weight_for_post_production     => "#{@gre_post_production*10}", 
         :weight_for_production          => "#{@gre_production*10}",
-        :weight_for_production_repair          => "#{@gre_production_repair*10}"
+        :weight_for_production_repair          => "#{@gre_production_repair*10}",
+        :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
       } )
     end
     it 'should create guarantee return entry' do
