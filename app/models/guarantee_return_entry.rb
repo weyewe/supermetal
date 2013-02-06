@@ -2,7 +2,7 @@ class GuaranteeReturnEntry < ActiveRecord::Base
   belongs_to :guarantee_return 
   belongs_to :sales_item 
   
-  validates_presence_of :sales_item_id,   :guarantee_return_id,
+  validates_presence_of :sales_item_id,   :guarantee_return_id, :item_condition, 
                         :quantity_for_production_repair , :quantity_for_post_production, :quantity_for_production,
                         :weight_for_production_repair , :weight_for_post_production, :weight_for_production
   
@@ -10,7 +10,11 @@ class GuaranteeReturnEntry < ActiveRecord::Base
   validate :not_all_quantity_zero
   validate :prevent_negative_quantity 
   validate :prevent_non_synced_quantity_weight
-  validate :prevent_extra_service
+  validate :prevent_excess_guarantee_return
+  # validate :prevent_extra_service
+  
+  # validate :returned_quantity_not_exceeding_delivered
+  # validate :matching_treatment_for_the_given_item_condition
   
   
   
@@ -85,60 +89,90 @@ class GuaranteeReturnEntry < ActiveRecord::Base
     end
   end
   
-  def prevent_extra_service
-    if sales_item.is_production? and sales_item.is_post_production?
-      # no production repair 
-      if ( quantity_for_production_repair.present?  and quantity_for_production_repair > 0 ) or 
-          ( weight_for_production_repair.present?  and weight_for_production_repair > BigDecimal('0') ) 
-        msg = "Tidak menerima perbaiki hasil cor"
-        errors.add(:quantity_for_production_repair , msg)  
-        errors.add(:weight_for_production_repair , msg)  
-      end
-    end
+  def prevent_excess_guarantee_return 
+    return nil if self.sales_item.nil? 
     
-    if sales_item.is_production? and not sales_item.is_post_production?
-      # no post production 
-      if ( quantity_for_post_production.present?  and quantity_for_post_production > 0 ) or 
-          ( weight_for_post_production.present?  and weight_for_post_production > BigDecimal('0') ) 
-        msg = "Tidak menerima perbaiki hasil bubut"
-        errors.add(:quantity_for_post_production , msg)  
-        errors.add(:weight_for_post_production , msg)  
-      end
-    end
-    
-    if not sales_item.is_production? and sales_item.is_post_production?
-      # no production repair  + no production 
-      
-      if (quantity_for_production.present? and quantity_for_production > 0 ) or 
-          ( weight_for_production.present?  and weight_for_production > BigDecimal('0') ) 
-        msg = "Tidak menerima lebur ulang"
-        errors.add(:quantity_for_production , msg)  
-        errors.add(:weight_for_production , msg)  
+    # if item coming in is in the form of production 
+    if item_condition == GUARANTEE_RETURN_ENTRY_ITEM_CONDITION[:production]
+      if  quantity_for_production.present? and quantity_for_production_repair.present? and 
+        ( quantity_for_production + quantity_for_production_repair > sales_item.receivable_guarantee_return_normal_production )
+      # sales_item.delivered_normal_production
+        errors.add(:item_condition , "Maks jumlah lebur ulang dan perbaiki cor tidak boleh lebih dari: #{sales_item.receivable_guarantee_return_normal_production}")
       end
       
-      if ( quantity_for_production_repair.present? and quantity_for_production_repair > 0 ) or 
-          ( weight_for_production_repair.present?  and  weight_for_production_repair > BigDecimal('0') ) 
-        msg = "Tidak menerima  perbaiki cor"
-        errors.add(:quantity_for_production_repair , msg)  
-        errors.add(:weight_for_production_repair , msg)  
+      if quantity_for_post_production.present? and quantity_for_post_production !=  0 
+        errors.add(:quantity_for_post_production , "Untuk garansi retur hasil cor, tidak bisa perbaiki bubut")
+      end
+      
+      
+    elsif item_condition == GUARANTEE_RETURN_ENTRY_ITEM_CONDITION[:post_production]
+      # sales_item.delivered_normal_post_production
+      if quantity_for_production.present? and quantity_for_post_production.present? and 
+           ( quantity_for_production + quantity_for_post_production > sales_item.receivable_guarantee_return_normal_post_production )
+      # sales_item.delivered_normal_production
+        errors.add(:item_condition , "Maks jumlah lebur ulang dan perbaiki bubut tidak boleh lebih dari: #{sales_item.receivable_guarantee_return_normal_post_production}")
+      end
+      
+      if quantity_for_production_repair.present? and quantity_for_production_repair !=  0 
+        errors.add(:quantity_for_production_repair , "Untuk garansi retur hasil bubut, tidak bisa perbaiki cor")
       end
     end
   end
+  
+  # def prevent_extra_service
+  #   return nil if self.sales_item.nil? 
+  #   
+  #   
+  #   if sales_item.is_production? and sales_item.is_post_production?
+  #     # no production repair 
+  #     if ( quantity_for_production_repair.present?  and quantity_for_production_repair > 0 )  
+  #       msg = "Tidak menerima perbaiki hasil cor"
+  #       errors.add(:quantity_for_production_repair , msg)  
+  #       errors.add(:weight_for_production_repair , msg)  
+  #     end
+  #   end
+  #   
+  #   if sales_item.is_production? and not sales_item.is_post_production?
+  #     # no post production 
+  #     if ( quantity_for_post_production.present?  and quantity_for_post_production > 0 )  
+  #       msg = "Tidak menerima perbaiki hasil bubut"
+  #       errors.add(:quantity_for_post_production , msg)  
+  #       errors.add(:weight_for_post_production , msg)  
+  #     end
+  #   end
+  #   
+  #   if not sales_item.is_production? and sales_item.is_post_production?
+  #     # no production repair  + no production 
+  #     
+  #     if (quantity_for_production.present? and quantity_for_production > 0 )  
+  #       msg = "Tidak menerima lebur ulang"
+  #       errors.add(:quantity_for_production , msg)  
+  #       errors.add(:weight_for_production , msg)  
+  #     end
+  #     
+  #     if ( quantity_for_production_repair.present? and quantity_for_production_repair > 0 ) or 
+  #         ( weight_for_production_repair.present?  and  weight_for_production_repair > BigDecimal('0') ) 
+  #       msg = "Tidak menerima  perbaiki cor"
+  #       errors.add(:quantity_for_production_repair , msg)  
+  #       errors.add(:weight_for_production_repair , msg)  
+  #     end
+  #   end
+  # end
 
   def self.create_guarantee_return_entry( employee, guarantee_return,  params ) 
     return nil if employee.nil?
     
-    new_object = self.new
-    new_object.creator_id       = employee.id 
-    new_object.guarantee_return_id          = guarantee_return.id 
-    new_object.sales_item_id                = params[:sales_item_id] 
-    new_object.quantity_for_post_production = params[:quantity_for_post_production]      
-    new_object.quantity_for_production      = params[:quantity_for_production]
-    new_object.quantity_for_production_repair      = params[:quantity_for_production_repair]
-    new_object.weight_for_post_production   = BigDecimal( params[:weight_for_post_production] )     
-    new_object.weight_for_production        = BigDecimal( params[:weight_for_production] ) 
-    new_object.weight_for_production_repair        = BigDecimal( params[:weight_for_production_repair] )
-
+    new_object                                = self.new
+    new_object.creator_id                     = employee.id 
+    new_object.guarantee_return_id            = guarantee_return.id 
+    new_object.sales_item_id                  = params[:sales_item_id] 
+    new_object.quantity_for_post_production   = params[:quantity_for_post_production]      
+    new_object.quantity_for_production        = params[:quantity_for_production]
+    new_object.quantity_for_production_repair = params[:quantity_for_production_repair]
+    new_object.weight_for_post_production     = BigDecimal( params[:weight_for_post_production] )     
+    new_object.weight_for_production          = BigDecimal( params[:weight_for_production] ) 
+    new_object.weight_for_production_repair   = BigDecimal( params[:weight_for_production_repair] )
+    new_object.item_condition                 = params[:item_condition]
     
     if new_object.save 
       new_object.generate_code 
@@ -151,16 +185,16 @@ class GuaranteeReturnEntry < ActiveRecord::Base
     return nil if employee.nil?
     
    
-    self.creator_id        = employee.id 
-    self.guarantee_return_id = guarantee_return.id 
-    self.sales_item_id                = params[:sales_item_id] 
-    self.quantity_for_post_production = params[:quantity_for_post_production]      
-    self.quantity_for_production      = params[:quantity_for_production]
-    self.quantity_for_production_repair      = params[:quantity_for_production_repair]
-    self.weight_for_post_production   = BigDecimal( params[:weight_for_post_production] )     
-    self.weight_for_production        = BigDecimal( params[:weight_for_production] )
-    self.weight_for_production_repair        = BigDecimal( params[:weight_for_production_repair] )
-     
+    self.creator_id                     = employee.id 
+    self.guarantee_return_id            = guarantee_return.id 
+    self.sales_item_id                  = params[:sales_item_id] 
+    self.quantity_for_post_production   = params[:quantity_for_post_production]      
+    self.quantity_for_production        = params[:quantity_for_production]
+    self.quantity_for_production_repair = params[:quantity_for_production_repair]
+    self.weight_for_post_production     = BigDecimal( params[:weight_for_post_production] )     
+    self.weight_for_production          = BigDecimal( params[:weight_for_production] )
+    self.weight_for_production_repair   = BigDecimal( params[:weight_for_production_repair] )
+    self.item_condition                 = params[:item_condition]
     if self.save 
     end
     

@@ -21,6 +21,7 @@ class CreateGuaranteeReturnEntries < ActiveRecord::Migration
       t.boolean :is_confirmed, :default => false
       
       
+      t.integer :item_condition, :default => GUARANTEE_RETURN_ENTRY_ITEM_CONDITION[:production]
       
       t.timestamps
     end

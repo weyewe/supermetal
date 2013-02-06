@@ -458,145 +458,7 @@ class SalesItem < ActiveRecord::Base
     )
   end
   
-  
-  # def delivered_production_only_quantity 
-  #   normal_delivery = self.delivery_entries.where(
-  #     :is_confirmed => true, 
-  #     :is_finalized => false,
-  #     :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:production],
-  #     :entry_case =>  DELIVERY_ENTRY_CASE[:normal]
-  #   ).sum("quantity_sent")
-  # 
-  #   confirmed_normal_delivery = self.delivery_entries.where(
-  #     :is_confirmed => true, 
-  #     :is_finalized => true,
-  #     :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:production],
-  #     :entry_case =>  DELIVERY_ENTRY_CASE[:normal]
-  #   ).sum("quantity_confirmed")
-  #   
-  #   return normal_delivery + confirmed_normal_delivery
-  # end
-  # 
-  # def delivered_production_and_post_production_quantity
-  #   
-  #   normal_delivery = self.delivery_entries.where(
-  #     :is_confirmed => true, 
-  #     :is_finalized => false,
-  #     :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production],
-  #     :entry_case =>  DELIVERY_ENTRY_CASE[:normal]
-  #   ).sum("quantity_sent")
-  # 
-  #   confirmed_normal_delivery = self.delivery_entries.where(
-  #     :is_confirmed => true, 
-  #     :is_finalized => true,
-  #     :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production],
-  #     :entry_case =>  DELIVERY_ENTRY_CASE[:normal]
-  #   ).sum("quantity_confirmed")
-  #   
-  #   premature_delivery = self.delivery_entries.where(
-  #     :is_confirmed => true, 
-  #     :is_finalized => true,
-  #     :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:production],
-  #     :entry_case =>  DELIVERY_ENTRY_CASE[:premature]
-  #   ).sum("quantity_sent")
-  #   
-  #   confirmed_premature_delivery = self.delivery_entries.where(
-  #     :is_confirmed => true, 
-  #     :is_finalized => true,
-  #     :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:production],
-  #     :entry_case =>  DELIVERY_ENTRY_CASE[:premature]
-  #   ).sum("quantity_confirmed")
-  #   
-  #   return normal_delivery + confirmed_normal_delivery + 
-  #           premature_delivery + confirmed_premature_delivery
-  # end
-  # 
-  # def delivered_only_post_production_quantity
-  #   # the normal: finished post production 
-  #   normal_delivery = self.delivery_entries.where(
-  #     :is_confirmed => true, 
-  #     :is_finalized => false,
-  #     :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production],
-  #     :entry_case =>  DELIVERY_ENTRY_CASE[:normal]
-  #   ).sum("quantity_sent")
-  # 
-  #   confirmed_normal_delivery = self.delivery_entries.where(
-  #     :is_confirmed => true, 
-  #     :is_finalized => true,
-  #     :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production],
-  #     :entry_case =>  DELIVERY_ENTRY_CASE[:normal]
-  #   ).sum("quantity_confirmed")
-  #   
-  #   # abnormal : cancel post production 
-  #   cancel_order_delivery = self.delivery_entries.where(
-  #     :is_confirmed => true, 
-  #     :is_finalized => false,
-  #     :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:production],
-  #     :entry_case =>  DELIVERY_ENTRY_CASE[:cancel_post_production_only]
-  #   ).sum("quantity_sent")
-  # 
-  #   confirmed_cancel_order_delivery =  self.delivery_entries.where(
-  #     :is_confirmed => true, 
-  #     :is_finalized => true,
-  #     :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:production],
-  #     :entry_case =>  DELIVERY_ENTRY_CASE[:cancel_post_production_only]
-  #   ).sum("quantity_confirmed")
-  # 
-  #   # bad source: fail post production because of the incoming material is bad 
-  #   bad_source_delivery = self.delivery_entries.where(
-  #     :is_confirmed => true, 
-  #     :is_finalized => false,
-  #     :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production],
-  #     :entry_case =>  DELIVERY_ENTRY_CASE[:bad_source_fail_post_production]
-  #   ).sum("quantity_sent")
-  # 
-  #   confirmed_bad_source_delivery  =  self.delivery_entries.where(
-  #     :is_confirmed => true, 
-  #     :is_finalized => true,
-  #     :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production],
-  #     :entry_case =>  DELIVERY_ENTRY_CASE[:bad_source_fail_post_production]
-  #   ).sum("quantity_confirmed")
-  #   
-  #   # fail post production, our mistake
-  #   technical_failure_delivery = self.delivery_entries.where(
-  #     :is_confirmed => true, 
-  #     :is_finalized => false,
-  #     :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production],
-  #     :entry_case =>  DELIVERY_ENTRY_CASE[:technical_failure_post_production]
-  #   ).sum("quantity_sent")
-  #   
-  #   confirmed_technical_failure_delivery  =self.delivery_entries.where(
-  #     :is_confirmed => true, 
-  #     :is_finalized => true,
-  #     :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production],
-  #     :entry_case =>  DELIVERY_ENTRY_CASE[:technical_failure_post_production]
-  #   ).sum("quantity_confirmed")
-  #   
-  #   return normal_delivery + confirmed_normal_delivery +
-  #           cancel_order_delivery + confirmed_cancel_order_delivery + 
-  #           bad_source_delivery + confirmed_bad_source_delivery +  
-  #           technical_failure_delivery+  confirmed_technical_failure_delivery
-  # end
-  # 
-  # 
-  # def pending_fulfillment
-  #   total = self.quantity 
-  #   
-  #   # if it is only production 
-  #   if self.is_production and not self.is_post_production 
-  #     return total - delivered_production_only_quantity
-  #   end
-  #   
-  #   # if it is only production + post production
-  #   if self.is_production and self.is_post_production
-  #     return total - delivered_production_and_post_production_quantity
-  #   end
-  #   
-  #   # only post production 
-  #   if not self.is_production and self.is_post_production
-  #     return total - delivered_only_post_production_quantity
-  #   end
-  # end
+   
   
   
   def normal_post_production_delivery
@@ -708,6 +570,64 @@ class SalesItem < ActiveRecord::Base
     return delivery + confirmed_delivery
   end
   
+  def production_guarantee_return_delivery
+    delivery = self.delivery_entries.where(
+      :is_confirmed => true, 
+      :is_finalized => false,
+      :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:production],
+      :entry_case =>  DELIVERY_ENTRY_CASE[:guarantee_return]
+    ).sum("quantity_sent")
+    
+    confirmed_delivery  = self.delivery_entries.where(
+      :is_confirmed => true, 
+      :is_finalized => true,
+      :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:production],
+      :entry_case =>  DELIVERY_ENTRY_CASE[:guarantee_return]
+    ).sum("quantity_confirmed")
+    
+    return delivery + confirmed_delivery
+  end
+  
+  def post_production_guarantee_return_delivery
+    delivery = self.delivery_entries.where(
+      :is_confirmed => true, 
+      :is_finalized => false,
+      :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production],
+      :entry_case =>  DELIVERY_ENTRY_CASE[:guarantee_return]
+    ).sum("quantity_sent")
+    
+    confirmed_delivery  = self.delivery_entries.where(
+      :is_confirmed => true, 
+      :is_finalized => true,
+      :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production],
+      :entry_case =>  DELIVERY_ENTRY_CASE[:guarantee_return]
+    ).sum("quantity_confirmed")
+    
+    return delivery + confirmed_delivery
+  end
+  
+  def production_guarantee_return_receival
+    all_production_guarantee_return_entries = self.guarantee_return_entries.where(:is_confirmed => true,
+      :item_condition => GUARANTEE_RETURN_ENTRY_ITEM_CONDITION[:production] )
+      
+    quantity_for_production = all_production_guarantee_return_entries.sum('quantity_for_production')
+      
+    quantity_for_production_repair = all_production_guarantee_return_entries.sum('quantity_for_production_repair')
+    
+    return  quantity_for_production + quantity_for_production_repair
+  end
+  
+  def post_production_guarantee_return_receival
+    all_post_production_guarantee_return_entries = self.guarantee_return_entries.where(:is_confirmed => true,
+      :item_condition => GUARANTEE_RETURN_ENTRY_ITEM_CONDITION[:post_production] )
+      
+    quantity_for_production = all_production_guarantee_return_entries.sum('quantity_for_production')
+      
+    quantity_for_post_production = all_production_guarantee_return_entries.sum('quantity_for_post_production')
+    
+    return  quantity_for_production + quantity_for_post_production
+  end
+  
   
   
   def pending_fulfillment_post_production
@@ -768,23 +688,20 @@ class SalesItem < ActiveRecord::Base
     ).sum("quantity_sent")
   end
   
+=begin
+  Guarantee return
+=end
+  # equal to the number of items @customer 
+  def receivable_guarantee_return_normal_production
+    # for production type of items 
+    return normal_production_delivery + premature_delivery + production_guarantee_return_delivery - 
+      production_guarantee_return_receival
+  end
   
-  # def fulfilled_order
-  #   # if it is only production 
-  #   if self.is_production and not self.is_post_production 
-  #     return  delivered_production_only_quantity
-  #   end
-  #   
-  #   # if it is only production + post production
-  #   if self.is_production and self.is_post_production
-  #     puts "Call the fulfilled order, fancy part\n"
-  #     return   delivered_production_and_post_production_quantity
-  #   end
-  #   
-  #   # only post production 
-  #   if not self.is_production and self.is_post_production
-  #     return  delivered_only_post_production_quantity
-  #   end
-  # end
+  def receivable_guarantee_return_normal_post_production
+    return normal_post_production_delivery + post_production_guarantee_return_delivery - 
+      post_production_guarantee_return_receival
+  end
+   
   
 end

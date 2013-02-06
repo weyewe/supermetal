@@ -244,6 +244,11 @@ DELIVERY_ENTRY_ITEM_CONDITION = {
   :post_production => 2 
 }
 
+GUARANTEE_RETURN_ENTRY_ITEM_CONDITION = {
+  :production => 1 , 
+  :post_production => 2
+}
+
 
 # related to the billing 
 DELIVERY_ENTRY_CASE = {
