@@ -11,6 +11,7 @@ class GuaranteeReturnEntry < ActiveRecord::Base
   validate :prevent_negative_quantity 
   validate :prevent_non_synced_quantity_weight
   validate :prevent_excess_guarantee_return
+  validate :prevent_production_treatment_for_non_internal_item
   # validate :prevent_extra_service
   
   # validate :returned_quantity_not_exceeding_delivered
@@ -117,6 +118,22 @@ class GuaranteeReturnEntry < ActiveRecord::Base
       
       if quantity_for_production_repair.present? and quantity_for_production_repair !=  0 
         errors.add(:quantity_for_production_repair , "Untuk garansi retur hasil bubut, tidak bisa perbaiki cor")
+      end
+    end
+  end
+  
+  def prevent_production_treatment_for_non_internal_item
+    sales_item = self.sales_item
+    template_sales_item = sales_item.template_sales_item 
+    
+    if not template_sales_item.is_internal_production
+      msg = "Untuk item hanya bubut, tidak boleh ada peleburan ulang atau perbaikan cor"
+      if quantity_for_production.present? and quantity_for_production > 0 
+        errors.add(:quantity_for_production , msg)
+      end
+      
+      if quantity_for_production_repair.present? and quantity_for_production_repair > 0 
+        errors.add(:quantity_for_production_repair , msg)
       end
     end
   end

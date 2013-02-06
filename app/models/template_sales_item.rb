@@ -130,8 +130,11 @@ class TemplateSalesItem < ActiveRecord::Base
   
   def pending_post_production
     return 0 if not self.is_internal_production
+    
     total_quantity_ordered = self.post_production_orders.sum("quantity") 
     total_quantity_finished = self.post_production_results.where(:is_confirmed => true ) .sum("ok_quantity")
+    
+    
     
     total_quantity_ordered - total_quantity_finished
   end
