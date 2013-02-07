@@ -80,7 +80,7 @@ class Invoice < ActiveRecord::Base
       total_amount +=  de.total_delivery_entry_price
     end
     
-    self.amount_payable = total_amount
+    self.amount_payable =  (1.0 + 0.1)*total_amount # with the tax 
     self.save  
   end
   

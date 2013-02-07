@@ -247,7 +247,10 @@ describe GuaranteeReturn do
     it 'should produce amount to be paid based on the delivered goods' do
       puts "amount payable: #{@invoice.amount_payable.to_s}"
       puts "delivery_entry_price: #{@delivery_entry.total_delivery_entry_price}"
-      @invoice.amount_payable.should == @delivery_entry.total_delivery_entry_price
+      base_payable = @delivery_entry.total_delivery_entry_price.to_f
+      tax =  (0.1)*base_payable
+      
+      @invoice.amount_payable.should == BigDecimal( (base_payable + tax).to_s )
     end
   end
   
@@ -291,7 +294,7 @@ describe GuaranteeReturn do
         :delivery_address   => "some address",    
         :delivery_date     => Date.new(2012, 12, 15)
       })
-
+  
       @delivery_entry_gr = DeliveryEntry.create_delivery_entry( @admin, @delivery,  {
           :quantity_sent => @guarantee_return_quantity_sent, 
           :quantity_sent_weight => "#{@guarantee_return_quantity_sent * 10}" ,
@@ -299,7 +302,7 @@ describe GuaranteeReturn do
           :entry_case => DELIVERY_ENTRY_CASE[:guarantee_return], 
           :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
         })
-
+  
       @delivery_entry_normal = DeliveryEntry.create_delivery_entry( @admin, @delivery,  {
           :quantity_sent => @normal_post_production_quantity_sent, 
           :quantity_sent_weight => "#{@normal_post_production_quantity_sent * 10}" ,
@@ -307,7 +310,7 @@ describe GuaranteeReturn do
           :entry_case => DELIVERY_ENTRY_CASE[:normal], 
           :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
         })
-
+  
       @delivery.confirm(@admin)
       @delivery_entry_gr.reload 
       @delivery_entry_normal.reload 
@@ -320,7 +323,12 @@ describe GuaranteeReturn do
     it 'should produce amount to be paid based on the delivered goods' do
       puts "amount payable: #{@invoice.amount_payable.to_s}"
       puts "delivery_entry_price: #{@delivery_entry.total_delivery_entry_price}"
-      @invoice.amount_payable.should == @delivery_entry_gr.total_delivery_entry_price +  @delivery_entry_normal.total_delivery_entry_price
+      # @invoice.amount_payable.should == ( 1.1)*(  @delivery_entry_gr.total_delivery_entry_price +  @delivery_entry_normal.total_delivery_entry_price )
+      
+      base_payable = (@delivery_entry_gr.total_delivery_entry_price +  @delivery_entry_normal.total_delivery_entry_price ).to_f
+      tax =  (0.1)*base_payable
+      
+      @invoice.amount_payable.should == BigDecimal( (base_payable + tax).to_s )
       
       @delivery_entry_gr.total_delivery_entry_price.should == BigDecimal('0')
     end
