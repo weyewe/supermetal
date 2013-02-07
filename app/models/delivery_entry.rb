@@ -123,7 +123,7 @@ class DeliveryEntry < ActiveRecord::Base
               # so, sending the production. but, the quantity sent is more than ready production stock
           msg = "Kelebihan kuantitas pengiriman. Hasil bubut yang belum terkirim: #{sales_item.pending_fulfillment_post_production}"
           errors.add(:entry_case , msg )
-        elsif entry_case == DELIVERY_ENTRY_CASE[:guarantee_return] 
+        elsif entry_case == DELIVERY_ENTRY_CASE[:guarantee_return]  and sales_item.receivable_guarantee_return_normal_production < quantity_sent
           errors.add(:entry_case , "Tidak bisa pengiriman untuk retur garansi karena item yang dipilih belum dibubut" ) 
         elsif entry_case == DELIVERY_ENTRY_CASE[:bad_source_fail_post_production]
           # can't happen
@@ -146,7 +146,7 @@ class DeliveryEntry < ActiveRecord::Base
         elsif entry_case == DELIVERY_ENTRY_CASE[:premature]  
           # can't happen
           errors.add(:item_condition , "Untuk pengiriman premature, pilih jenis barang sebagai hasil bubut" ) 
-        elsif entry_case == DELIVERY_ENTRY_CASE[:guarantee_return] and sales_item.pending_guarantee_return < quantity_sent
+        elsif entry_case == DELIVERY_ENTRY_CASE[:guarantee_return] and sales_item.receivable_guarantee_return_normal_post_production < quantity_sent
           errors.add(:entry_case , "Kelebihan jumlah untuk pengiriman retur garansi. Max: #{sales_item.pending_guarantee_return}" ) 
         elsif entry_case == DELIVERY_ENTRY_CASE[:bad_source_fail_post_production]
           # can't happen
@@ -532,37 +532,86 @@ class DeliveryEntry < ActiveRecord::Base
     
     total_amount = BigDecimal("0")
     
-    if self.normal_delivery_entry? 
-      if sales_item.is_pre_production?
-        total_amount += sales_item.pre_production_price * quantity
+    if self.item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:production]
+      if self.entry_case == DELIVERY_ENTRY_CASE[:normal] or 
+          self.entry_case == DELIVERY_ENTRY_CASE[:premature]
+        if sales_item.is_pre_production?
+          total_amount += sales_item.pre_production_price * quantity
+        end
+
+        if sales_item.is_production? 
+          if sales_item.is_pricing_by_weight? 
+            total_amount += sales_item.production_price * weight
+          else
+            total_amount += sales_item.production_price * quantity
+          end
+        end
+      elsif self.entry_case == DELIVERY_ENTRY_CASE[:guarantee_return]
+        # total amount is 0, by default 
+      elsif self.entry_case == DELIVERY_ENTRY_CASE[:bad_source_fail_post_production]  
+        #impossible case 
+      elsif self.entry_case == DELIVERY_ENTRY_CASE[:technical_failure_post_production]
+        #impossible case 
+      elsif self.entry_case == DELIVERY_ENTRY_CASE[:cancel_post_production_only]
+        #impossible case 
       end
-    
-      if sales_item.is_production? 
-        if sales_item.is_pricing_by_weight? 
-          total_amount += sales_item.production_price * weight
-        else
+    elsif self.item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
+      if self.entry_case == DELIVERY_ENTRY_CASE[:normal] 
+        if sales_item.is_pre_production?
+          total_amount += sales_item.pre_production_price * quantity
+        end
+
+        if sales_item.is_production? 
+          if sales_item.is_pricing_by_weight? 
+            total_amount += sales_item.production_price * weight
+          else
+            total_amount += sales_item.production_price * quantity
+          end
+        end
+        
+        if sales_item.is_post_production? 
           total_amount += sales_item.production_price * quantity
         end
+        
+      elsif self.entry_case == DELIVERY_ENTRY_CASE[:premature]
+        if sales_item.is_pre_production?
+          total_amount += sales_item.pre_production_price * quantity
+        end
+
+        if sales_item.is_production? 
+          if sales_item.is_pricing_by_weight? 
+            total_amount += sales_item.production_price * weight
+          else
+            total_amount += sales_item.production_price * quantity
+          end
+        end
+      elsif self.entry_case == DELIVERY_ENTRY_CASE[:guarantee_return]
+        #free
+      elsif self.entry_case == DELIVERY_ENTRY_CASE[:bad_source_fail_post_production] 
+        # can only send this out for only_post_production
+         if sales_item.is_pre_production?
+           total_amount += sales_item.pre_production_price * quantity
+         end
+
+         if sales_item.is_production? 
+           if sales_item.is_pricing_by_weight? 
+             total_amount += sales_item.production_price * weight
+           else
+             total_amount += sales_item.production_price * quantity
+           end
+         end
+
+         if sales_item.is_post_production? 
+           total_amount += sales_item.production_price * quantity
+         end
+      elsif self.entry_case == DELIVERY_ENTRY_CASE[:technical_failure_post_production]
+        #free , only available for post production 
+      elsif self.entry_case == DELIVERY_ENTRY_CASE[:cancel_post_production_only]
+        # return total_amount 
       end
-  
-    
-      if sales_item.is_post_production?
-        total_amount += sales_item.post_production_price * quantity
-      end
-    else
-      if self.entry_case == DELIVERY_ENTRY_CASE[:guarantee_return]
-        # price == FREE 
-      end
-      
-      if self.entry_case == DELIVERY_ENTRY_CASE[:technical_failure_post_production]
-        # price == FREE.. in fact.. we have to pay this guy some $$$ 
-      end
-      
-      if self.entry_case == DELIVERY_ENTRY_CASE[:bad_source_fail_post_production]
-        total_amount += sales_item.post_production_price * quantity
-      end
-       
     end
+    
+   
     
     return total_amount
   end

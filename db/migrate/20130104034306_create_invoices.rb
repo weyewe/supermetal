@@ -17,9 +17,11 @@ class CreateInvoices < ActiveRecord::Migration
       t.integer :confirmer_id 
       t.datetime :confirmed_at 
       
+      # t.boolean :is_any_pending_pricing, :default => true 
       
       # just a guard  => when delivery cost is finalized
       t.boolean :is_finalized, :default => false 
+      
       
        
       
