@@ -152,9 +152,9 @@ class ProductionRepairResult < ActiveRecord::Base
   
   def confirm( employee )
     return nil if employee.nil? 
-    puts "pass the employee check"
+    # puts "pass the employee check"
     return nil if self.is_confirmed == true 
-    puts "pass the is_confirmed check"
+    # puts "pass the is_confirmed check"
     
     ActiveRecord::Base.transaction do
       

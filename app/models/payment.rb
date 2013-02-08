@@ -281,11 +281,11 @@ class Payment < ActiveRecord::Base
   end
   
   def addition_downpayment
-    self.downpayments.where(:case => DOWNPAYMENT_CASE[:addition]).first
+    self.downpayment_histories.where(:case => DOWNPAYMENT_CASE[:addition]).first
   end
   
   def deduction_downpayment
-    self.downpayments.where(:case => DOWNPAYMENT_CASE[:deduction]).first
+    self.downpayment_histories.where(:case => DOWNPAYMENT_CASE[:deduction]).first
   end
    
   
@@ -315,17 +315,26 @@ class Payment < ActiveRecord::Base
   FROM PRICING CHANGE
 =end
   def add_or_create_downpayment_from_price_adjustment(amount)
-    if self.addition_downpayment.nil?
+    # puts "in the payment#add_or_create_downpayment_from_price_adjustment"
+    #  puts "amount: #{amount}"
+    if not self.addition_downpayment.nil?
+      puts "not nil, just add"
       dp = self.addition_downpayment 
       dp.amount += amount
       dp.save 
       self.downpayment_addition_amount += amount
       self.save
     else
+      # puts "nil shite, create downpayment history, amount:#{amount} "
       self.downpayment_addition_amount = amount
       self.save 
       DownpaymentHistory.create_downpayment_addition_history( self ) 
     end
+    
+    
+    customer  = self.customer
+    
+    customer.update_remaining_downpayment
     
   end
   

@@ -322,7 +322,7 @@ class DeliveryEntry < ActiveRecord::Base
     
     
     self.validate_post_production_update
-    puts "after validate_post_production_update, errors: #{self.errors.size.to_s}"
+    # puts "after validate_post_production_update, errors: #{self.errors.size.to_s}"
     self.errors.messages.each do |message|
       puts "The message: #{message}"
     end
@@ -373,17 +373,7 @@ class DeliveryEntry < ActiveRecord::Base
       errors.add(:pricing , "Harga untuk sales item ini belum tersedia" )  
     end
   end
-  
-  # def generate_delivery_entry_case 
-  #   if self.entry_case.nil? 
-  #     sales_item  = self.sales_item 
-  #     if sales_item.is_post_production? # contains post production.. don't really care about production 
-  #       self.entry_case = DELIVERY_ENTRY_CASE[:ready_post_production]
-  #     elsif sales_item.only_production?
-  #       self.entry_case = DELIVERY_ENTRY_CASE[:ready_production]
-  #     end
-  #   end
-  # end
+   
   
   def confirm 
     return nil if self.is_confirmed == true  
@@ -395,14 +385,14 @@ class DeliveryEntry < ActiveRecord::Base
     
     # self.generate_delivery_entry_case 
     
-    validate_pricing_availability
+    # validate_pricing_availability
     
-    puts "\n\n"
-    puts "inside the delivery_entry confirm\n"*15
-    puts "Total errors: #{self.errors.size}" 
-    self.errors.messages.each do |msg|
-      puts "MSG: #{msg}"
-    end
+    # puts "\n\n"
+    # puts "inside the delivery_entry confirm\n"*15
+    # puts "Total errors: #{self.errors.size}" 
+    # self.errors.messages.each do |msg|
+    #   puts "MSG: #{msg}"
+    # end
     if  self.errors.size != 0  
       raise ActiveRecord::Rollback, "Call tech support!" 
     end
@@ -519,6 +509,10 @@ class DeliveryEntry < ActiveRecord::Base
   end
   
   def total_delivery_entry_price
+    if self.sales_item.is_pending_pricing?
+      return BigDecimal("0")
+    end
+    
     sales_item = self.sales_item 
     quantity = 0 
     weight = BigDecimal('0')
@@ -530,6 +524,8 @@ class DeliveryEntry < ActiveRecord::Base
       weight = self.quantity_confirmed_weight 
     end 
     
+    
+    puts "quantity in delivery_entry: #{quantity}"
     total_amount = BigDecimal("0")
     
     if self.item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:production]
@@ -556,12 +552,18 @@ class DeliveryEntry < ActiveRecord::Base
         #impossible case 
       end
     elsif self.item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
+      
+      puts "item_condition == post production"
       if self.entry_case == DELIVERY_ENTRY_CASE[:normal] 
+        # puts "case : normal "
+        # puts "quantity: #{quantity}"
         if sales_item.is_pre_production?
+          # puts "pre_production_price: #{sales_item.pre_production_price.to_s} "
           total_amount += sales_item.pre_production_price * quantity
         end
 
         if sales_item.is_production? 
+          # puts "production_price: #{sales_item.production_price.to_s} "
           if sales_item.is_pricing_by_weight? 
             total_amount += sales_item.production_price * weight
           else
@@ -570,7 +572,8 @@ class DeliveryEntry < ActiveRecord::Base
         end
         
         if sales_item.is_post_production? 
-          total_amount += sales_item.production_price * quantity
+          # puts "post_production_price: #{sales_item.post_production_price.to_s} "
+          total_amount += sales_item.post_production_price * quantity
         end
         
       elsif self.entry_case == DELIVERY_ENTRY_CASE[:premature]
@@ -602,7 +605,7 @@ class DeliveryEntry < ActiveRecord::Base
          end
 
          if sales_item.is_post_production? 
-           total_amount += sales_item.production_price * quantity
+           total_amount += sales_item.post_production_price * quantity
          end
       elsif self.entry_case == DELIVERY_ENTRY_CASE[:technical_failure_post_production]
         #free , only available for post production 

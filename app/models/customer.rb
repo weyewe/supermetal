@@ -152,11 +152,14 @@ class Customer < ActiveRecord::Base
   end
   
   def update_remaining_downpayment
-    total = BigDecimal("0")
-    
+
+    # puts "inside customer.update_remaining_downpayment"
     total_addition = self.downpayment_histories.where(:case => DOWNPAYMENT_CASE[:addition]).sum("amount")
     total_deduction = self.downpayment_histories.where(:case => DOWNPAYMENT_CASE[:deduction]).sum("amount")
     
+    total_downpayment_histories = self.downpayment_histories.where(:case => DOWNPAYMENT_CASE[:addition]).count
+    # puts "total_downpayment_histories: #{total_downpayment_histories}"
+    # puts "total addition: #{total_addition} "
     self.remaining_downpayment = total_addition - total_deduction 
     self.save 
   end

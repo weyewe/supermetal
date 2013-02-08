@@ -253,7 +253,9 @@ class SalesItem < ActiveRecord::Base
   def update_invoice
     # noprice -> price 
     
+    puts "inside the update invoice"
     self.related_invoices.each do |invoice|
+      puts "\n===== propagate price change"
       invoice.propagate_price_change 
     end
     
@@ -357,8 +359,11 @@ class SalesItem < ActiveRecord::Base
     
     self.valid? 
     self.validate_post_confirm_update
+    self.save 
     
     if self.errors.size  == 0 
+      
+      
       
       # update price in invoice 
       if  self.pre_production_price_changed?    or 
@@ -380,7 +385,7 @@ class SalesItem < ActiveRecord::Base
       end
     end
     
-    self.save 
+    
     
     return self 
   end

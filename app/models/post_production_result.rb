@@ -167,7 +167,7 @@ class PostProductionResult < ActiveRecord::Base
   
   
   def update_processed_quantity 
-    puts "3321 we are in update processed quantity\n"*10
+    # puts "3321 we are in update processed quantity\n"*10
     self.processed_quantity = self.ok_quantity  + 
                                   self.broken_quantity + self.bad_source_quantity 
     self.save

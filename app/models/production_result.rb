@@ -103,7 +103,7 @@ class ProductionResult < ActiveRecord::Base
     
     template_sales_item = TemplateSalesItem.find_by_id params[:template_sales_item_id]
     return nil if template_sales_item.has_unconfirmed_production_result? 
-    puts "the template_sales_item: #{template_sales_item}"
+    # puts "the template_sales_item: #{template_sales_item}"
     
     new_object  = self.new 
     new_object.template_sales_item_id = params[:template_sales_item_id]
@@ -170,9 +170,9 @@ class ProductionResult < ActiveRecord::Base
   
   def confirm( employee )
     return nil if employee.nil? 
-    puts "pass the employee check"
+    # puts "pass the employee check"
     return nil if self.is_confirmed == true 
-    puts "pass the is_confirmed check"
+    # puts "pass the is_confirmed check"
     
     ActiveRecord::Base.transaction do
       self.is_confirmed = true 
@@ -181,7 +181,7 @@ class ProductionResult < ActiveRecord::Base
       self.save
       
       
-      puts "Total error in confirm: #{self.errors.size}"
+      # puts "Total error in confirm: #{self.errors.size}"
       if  self.errors.size != 0  
         puts "There is rollback!! on confirm"
         self.errors.messages.each do |msg|

@@ -3,6 +3,8 @@ class DownpaymentHistory < ActiveRecord::Base
   belongs_to :payment 
   belongs_to :customer 
   def DownpaymentHistory.create_downpayment_addition_history( payment  ) 
+    # puts "in the downpaymenthistory.create_downpayment_addition_history"
+    # puts "amount: #{payment.downpayment_addition_amount}"
     new_object             = self.new 
     new_object.payment_id  = payment.id 
     new_object.customer_id = payment.customer_id 
