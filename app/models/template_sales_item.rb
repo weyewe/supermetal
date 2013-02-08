@@ -33,20 +33,26 @@ class TemplateSalesItem < ActiveRecord::Base
   def self.create_based_on_sales_item( sales_item )
     new_object = self.new
     new_object.code = sales_item.code 
+    new_object.main_sales_item_id = sales_item.id 
+    new_object.name = sales_item.name
+    new_object.description = sales_item.description
   
-    puts "Creating the template based on sales item\n"*10
     
     if not sales_item.is_production? and sales_item.is_post_production? 
-      puts "set the internal production == false "
       new_object.is_internal_production  = false 
     elsif sales_item.is_production?  
-      puts "set the internal production == true "
       new_object.is_internal_production = true 
     end
     
     new_object.save 
     
     return new_object 
+  end
+  
+  def update_from_sales_item(sales_item) 
+    self.name = sales_item.name
+    self.description = sales_item.description 
+    self.save 
   end
   
   def confirmed_sales_items

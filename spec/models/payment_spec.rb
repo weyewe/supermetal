@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe GuaranteeReturn do
+describe Payment do
   before(:each) do
     role = {
       :system => {
@@ -21,6 +21,12 @@ describe GuaranteeReturn do
     @customer = FactoryGirl.create(:customer,  :name => "Weyewe",
                                             :contact_person => "Willy" )  
                                             
+    @bank_mandiri = CashAccount.create({
+      :case =>  CASH_ACCOUNT_CASE[:bank][:value]  ,
+      :name => "Bank mandiri 234325321",
+      :description => "Spesial untuk non taxable payment"
+    })   
+                                           
     @sales_order   = SalesOrder.create_by_employee( @admin , {
       :customer_id    => @customer.id,          
       :payment_term   => PAYMENT_TERM[:cash],    
@@ -196,173 +202,108 @@ describe GuaranteeReturn do
     @template_sales_item.reload
   end
   
-  it 'should create invoice on delivery confirm' do
-    @delivery.invoice.should be_valid  # the base first delivery 
-  end
-  
-  
-  it 'should not create invoice if the delivery entry is all non billable' do
-    @quantity_sent = 1 
-    @delivery   = Delivery.create_by_employee( @admin , {
-      :customer_id    => @customer.id,          
-      :delivery_address   => "some address",    
-      :delivery_date     => Date.new(2012, 12, 15)
+  it 'should allow payment creation' do
+    payment = Payment.create_by_employee(@admin, {
+      :payment_method => PAYMENT_METHOD[:bank_transfer],
+      :customer_id    => @customer.id , 
+      :note           => "Dibayarkan dengan nomor transaksi AC/2323flkajfeaij",
+      :amount_paid => "50000",
+      :cash_account_id => @bank_mandiri.id,
+      :downpayment_addition_amount => "0",
+      :downpayment_usage_amount => "0" 
     })
+  
     
-    @delivery_entry = DeliveryEntry.create_delivery_entry( @admin, @delivery,  {
-        :quantity_sent => @quantity_sent, 
-        :quantity_sent_weight => "#{@quantity_sent * 10}" ,
-        :sales_item_id => @has_production_sales_item.id,
-        :entry_case => DELIVERY_ENTRY_CASE[:guarantee_return], 
-        :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
-      })
-      
-    @delivery.confirm(@admin)
-    @delivery.should be_valid 
-    @delivery.invoice.should be_nil 
+    payment.should be_valid
   end
   
-  context "normal delivery: send 1 item, only production" do
+  it 'should not allow confirmation if there is no invoice payment' do
+    payment = Payment.create_by_employee(@admin, {
+      :payment_method => PAYMENT_METHOD[:bank_transfer],
+      :customer_id    => @customer.id , 
+      :note           => "Dibayarkan dengan nomor transaksi AC/2323flkajfeaij",
+      :amount_paid => "50000",
+      :cash_account_id => @bank_mandiri.id,
+      :downpayment_addition_amount => "0",
+      :downpayment_usage_amount => "0" 
+    })
+     
+    
+    payment.confirm( @admin) 
+    payment.is_confirmed.should  be_false 
+  end
+  
+  context 'after creating payment, need to add invoice payment' do
     before(:each) do
-      @quantity_sent = 1 
-      @delivery   = Delivery.create_by_employee( @admin , {
-        :customer_id    => @customer.id,          
-        :delivery_address   => "some address",    
-        :delivery_date     => Date.new(2012, 12, 15)
+      @pending_payment =  @delivery.invoice.confirmed_pending_payment
+      @total_sum = ( @pending_payment*0.1 ).to_s
+      @payment = Payment.create_by_employee(@admin, {
+        :payment_method => PAYMENT_METHOD[:bank_transfer],
+        :customer_id    => @customer.id , 
+        :note           => "Dibayarkan dengan nomor transaksi AC/2323flkajfeaij",
+        :amount_paid => @total_sum,
+        :cash_account_id => @bank_mandiri.id,
+        :downpayment_addition_amount => "0",
+        :downpayment_usage_amount => "0" 
       })
-
-      @delivery_entry = DeliveryEntry.create_delivery_entry( @admin, @delivery,  {
-          :quantity_sent => @quantity_sent, 
-          :quantity_sent_weight => "#{@quantity_sent * 10}" ,
-          :sales_item_id => @has_production_sales_item.id,
-          :entry_case => DELIVERY_ENTRY_CASE[:normal], 
-          :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
-        })
+    end
+    
+    it 'should produce valid payment' do 
+      @payment.should be_valid 
+    end
+    
+    it 'should  allow confirmation if total amount of invoice payments is not 0 and the total sum is equal' do 
+      
+      invoice_payment = InvoicePayment.create_invoice_payment( @admin, @payment,  {
+        :invoice_id  => @delivery.invoice.id , 
+        :amount_paid => @total_sum
+      } ) 
+      
+      invoice_payment.should be_valid 
+      
+      @payment.confirm( @admin) 
+      @payment.is_confirmed.should  be_true 
+    end 
+    
+    it 'should  not allow confirmation if total amount of invoice payments is not 0 and the total sum is not equal' do 
+      
+      invoice_payment = InvoicePayment.create_invoice_payment( @admin, @payment,  {
+        :invoice_id  => @delivery.invoice.id ,
+        :amount_paid => '10000'
+      } ) 
+      
+      invoice_payment.should be_valid 
+      
+      @payment.confirm( @admin) 
+      @payment.is_confirmed.should  be_false  
+    end
+    
+    context "confirming the payment" do
+      before(:each) do
+        @invoice_payment = InvoicePayment.create_invoice_payment( @admin, @payment,  {
+          :invoice_id  => @delivery.invoice.id , 
+          :amount_paid => @total_sum
+        } ) 
+    
+        @invoice_payment.should be_valid 
+        @customer = @payment.customer 
+        @initial_outstanding_payment = @customer.outstanding_payment
+        @payment.confirm( @admin)
+        @customer.reload 
+      end
+      
+      it 'should change the amount of outstanding payment' do
+        @payment.is_confirmed.should be_true 
         
-      @delivery.confirm(@admin)
-      @delivery_entry.reload 
-      @invoice = @delivery.invoice
-    end
+        @final_outstanding_payment = @customer.outstanding_payment
+        diff = @initial_outstanding_payment - @final_outstanding_payment
+        diff.should == BigDecimal( @total_sum )
+      end
+      
+    end #"confirming the payment"
     
-    it 'should produce amount to be paid based on the delivered goods' do
-      puts "amount payable: #{@invoice.amount_payable.to_s}"
-      puts "delivery_entry_price: #{@delivery_entry.total_delivery_entry_price}"
-      base_payable = @delivery_entry.total_delivery_entry_price.to_f
-      tax =  (0.1)*base_payable
-      
-      @invoice.amount_payable.should == BigDecimal( (base_payable + tax).to_s )
-    end
-  end
+  end #'after creating payment, need to add invoice payment'
   
   
-  it 'should create invoice if the delivery entry is mixed: invoicable and non invoicable' do
-    @guarantee_return_quantity_sent = 1 
-    @normal_post_production_quantity_sent = 1 
-    @delivery   = Delivery.create_by_employee( @admin , {
-      :customer_id    => @customer.id,          
-      :delivery_address   => "some address",    
-      :delivery_date     => Date.new(2012, 12, 15)
-    })
-    
-    @delivery_entry = DeliveryEntry.create_delivery_entry( @admin, @delivery,  {
-        :quantity_sent => @guarantee_return_quantity_sent, 
-        :quantity_sent_weight => "#{@guarantee_return_quantity_sent * 10}" ,
-        :sales_item_id => @has_production_sales_item.id,
-        :entry_case => DELIVERY_ENTRY_CASE[:guarantee_return], 
-        :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
-      })
-      
-    @delivery_entry = DeliveryEntry.create_delivery_entry( @admin, @delivery,  {
-        :quantity_sent => @normal_post_production_quantity_sent, 
-        :quantity_sent_weight => "#{@normal_post_production_quantity_sent * 10}" ,
-        :sales_item_id => @has_production_sales_item.id,
-        :entry_case => DELIVERY_ENTRY_CASE[:normal], 
-        :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
-      })
-      
-    @delivery.confirm(@admin)
-    @delivery.should be_valid 
-    @delivery.invoice.should be_valid 
-  end
-  
-  context "mixed delivery: invoicable and non invoicable " do
-    before(:each) do
-      @guarantee_return_quantity_sent = 1 
-      @normal_post_production_quantity_sent = 1 
-      @delivery   = Delivery.create_by_employee( @admin , {
-        :customer_id    => @customer.id,          
-        :delivery_address   => "some address",    
-        :delivery_date     => Date.new(2012, 12, 15)
-      })
-  
-      @delivery_entry_gr = DeliveryEntry.create_delivery_entry( @admin, @delivery,  {
-          :quantity_sent => @guarantee_return_quantity_sent, 
-          :quantity_sent_weight => "#{@guarantee_return_quantity_sent * 10}" ,
-          :sales_item_id => @has_production_sales_item.id,
-          :entry_case => DELIVERY_ENTRY_CASE[:guarantee_return], 
-          :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
-        })
-  
-      @delivery_entry_normal = DeliveryEntry.create_delivery_entry( @admin, @delivery,  {
-          :quantity_sent => @normal_post_production_quantity_sent, 
-          :quantity_sent_weight => "#{@normal_post_production_quantity_sent * 10}" ,
-          :sales_item_id => @has_production_sales_item.id,
-          :entry_case => DELIVERY_ENTRY_CASE[:normal], 
-          :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
-        })
-  
-      @delivery.confirm(@admin)
-      @delivery_entry_gr.reload 
-      @delivery_entry_normal.reload 
-      
-      @delivery.should be_valid 
-      @delivery.invoice.should be_valid
-      @invoice = @delivery.invoice
-    end
-    
-    it 'should produce amount to be paid based on the delivered goods' do
-      puts "amount payable: #{@invoice.amount_payable.to_s}"
-      puts "delivery_entry_price: #{@delivery_entry.total_delivery_entry_price}"
-      # @invoice.amount_payable.should == ( 1.1)*(  @delivery_entry_gr.total_delivery_entry_price +  @delivery_entry_normal.total_delivery_entry_price )
-      
-      base_payable = (@delivery_entry_gr.total_delivery_entry_price +  @delivery_entry_normal.total_delivery_entry_price ).to_f
-      tax =  (0.1)*base_payable
-      
-      @invoice.amount_payable.should == BigDecimal( (base_payable + tax).to_s )
-      
-      @delivery_entry_gr.total_delivery_entry_price.should == BigDecimal('0')
-    end
-    
-    
-  end
-  
-  
-  
-  # non invoicable delivery should not be mixed with invoice-able delivery? 
-  # so, if the non invoice is transformed to the invoice, can't make any delivery 
-  
-  # pay => free, no problem, just change the invoice value to 0 
-  # free => pay => fucking big problem. The invoice number? 
-  # case => ah, we sent the wrong shite. How? uppps.. just cancel the delivery
-  # create new delivery. send it again, this time with the billing. no problemo.
-  
-  # case : partial bill, all billing 
-  
-=begin
-  If in 1 invoice, there are several invoice entries
-  
-  Some of them are without price. Invoice will still be created. But the invoice can't be paid. 
-  # pay to the downpayment. 
-  # if a delivery entry is cancelled, the invoice will have less delivery entry billed. So? 
-  # they must have the 2 versions (old version printed) and the new version attached to the old version
-=end
-
-=begin
-  How about for those invoice with pricing, then changed to be no pricing? 
-  Solution? 
-  
-  # can't change the is_pricing status if invoice has been created 
-=end
-  
-    
+  # WARNING! we haven't checked the validation of single customer 
 end

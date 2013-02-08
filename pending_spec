@@ -1,0 +1,7 @@
+it 'should not allow payment for invoice that contains non-priced item' 
+
+#	on cancel sales item
+
+# on update sales item
+it 'on price change: it should not update the price in which invoice has been produced + paid' 
+

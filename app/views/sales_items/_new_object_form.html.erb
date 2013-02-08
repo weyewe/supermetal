@@ -24,7 +24,7 @@
 	
 	
 	<hr />
-		<%= f.input :quantity, :label =>"Kuantitas"   %>
+		
 		<%= f.input :weight_per_piece, :label =>"Berat satuan", 
 				:hint => "Dalam kilogram, sensitif sampai 2 decimal. Contoh: <b>2.15</b>kg"   %> 
 
@@ -40,6 +40,7 @@
 							
 		<br />
 		<%= f.input :is_production, :label =>"Casting?", :hint => "Termasuk jasa casting?"  %>
+		<%= f.input :quantity_for_production, :label =>"Jumlah Cast"   %>
 		<%= f.input :production_price, :label =>"Biaya Cetak",
 		   	:hint => "Dalam rupiah. Langsung isi tanpa koma. <br />"+ 
 							"Contoh untuk isi sembilan puluh lima ribu:"  + 
@@ -49,6 +50,7 @@
 		<br />
 		
 		<%= f.input :is_post_production, :label =>"Machining?", :hint => "Termasuk jasa bubut?"  %>
+		<%= f.input :quantity_for_production, :label =>"Jumlah Bubut"   %>
 		<%= f.input :post_production_price, :label =>"Biaya Bubut",
 		   	:hint => "Dalam rupiah. Langsung isi tanpa koma. <br />"+ 
 							"Contoh untuk isi sembilan puluh lima ribu:"  + 

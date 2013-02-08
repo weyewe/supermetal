@@ -281,11 +281,11 @@ class Payment < ActiveRecord::Base
   end
   
   def addition_downpayment
-    self.downpayments.where(:case => DOWNPAYMENT_CASE[:addition])
+    self.downpayments.where(:case => DOWNPAYMENT_CASE[:addition]).first
   end
   
   def deduction_downpayment
-    self.downpayments.where(:case => DOWNPAYMENT_CASE[:deduction])
+    self.downpayments.where(:case => DOWNPAYMENT_CASE[:deduction]).first
   end
    
   
@@ -309,6 +309,24 @@ class Payment < ActiveRecord::Base
                       cac[:value] ]  
     end
     return result
+  end
+  
+=begin
+  FROM PRICING CHANGE
+=end
+  def add_or_create_downpayment_from_price_adjustment(amount)
+    if self.addition_downpayment.nil?
+      dp = self.addition_downpayment 
+      dp.amount += amount
+      dp.save 
+      self.downpayment_addition_amount += amount
+      self.save
+    else
+      self.downpayment_addition_amount = amount
+      self.save 
+      DownpaymentHistory.create_downpayment_addition_history( self ) 
+    end
+    
   end
   
 =begin

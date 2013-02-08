@@ -101,11 +101,108 @@ class Invoice < ActiveRecord::Base
   end
   
   def confirmed_pending_payment
-    amount_payable - self.invoice_payments.where(:is_confirmed => true ).sum("amount_paid") 
+    amount_payable - confirmed_amount_paid 
+  end
+  
+  def confirmed_amount_paid
+     self.invoice_payments.where(:is_confirmed => true ).sum("amount_paid") 
   end
   
   def has_pending_payment_confirmation?
     self.invoice_payments.where(:is_confirmed => false ).count != 0
+  end
+ 
+=begin
+  On Update price change
+=end
+
+  def propagate_price_change
+    initial_amount_payable = self.amount_payable 
+    new_amount_payable = BigDecimal("0")
+    delivery.delivery_entries.each do |de|
+      new_amount_payable +=  de.total_delivery_entry_price
+    end
+    
+    amount_paid = self.confirmed_amount_paid
+    # add the tax 
+    new_amount_payable =  (1.0 + 0.1)*new_amount_payable
+    
+    if initial_amount_payable > new_amount_payable 
+      if amount_paid > new_amount_payable 
+        #  we must distribute the excess to downpayment history
+        # how can we distribute it? 
+        # find the 
+        diff = amount_paid -  new_amount_payable
+        self.is_paid = true
+        self.save
+        
+        # invoice => InvoicePayment <= Payment 
+        
+        # initial combination = 1,000 + 1,000 + 1,000   ( total = 3000 ), amount payable == 5000
+        #  then, it changes.. amount payable == 2000 
+        # thus, we have excess 1000. From which invoice payment are we creating the excess?
+        # and, by creating the excess, it means that we are creating downpayment history (or addition)
+        
+        # algorithm: from all invoice payments, deduct the amount_paid amount.
+        # if the deduction can make the amount_paid to be 0 , delete the given invoice payment. 
+        # add the downpayment history 
+        # if it is the only one, and there is element of downpayment withdrawal, 
+        # delete the downpayment withdrawal, add it to the downpayment history 
+        
+        # if it is not the only one in the Payment, just move the diff to the downpayment history 
+        self.distribute_excess_payment( diff ) 
+        # amount_for_downpayment_addition = BigDecimal("0")
+        # self.invoice_payments.each do |ip|
+        #   if ip.amount_paid  > diff 
+        #     amount_for_downpayment_addition += ip.amount_paid - diff 
+        #     ip.amount_paid = diff
+        #   end
+        # end
+        
+      elsif amount_paid < new_amount_payable
+        self.is_paid = false 
+      elsif amount_paid ==  new_amount_payable
+        self.is_paid = true 
+      end
+      
+    elsif initial_amount_payable < new_amount_payable
+      # set is_paid status to be false 
+    elsif initial_amount_payable  ==  new_amount_payable
+      # do nothing .. no change in price then. 
+    end
+    
+    self.save 
+    
+  end
+  
+  def distribute_excess_payment(amount_to_be_distributed)
+    
+    last_confirmed_invoice_payment = self.invoice_payments.joins(:payment).
+          where( :payment => {:is_confirmed => true}).
+          order("created_at DESC").last 
+          
+    last_payment = last_confirmed_invoice_payment.payment 
+    
+    if last_confirmed_invoice_payment.amount_paid > amount_to_be_distributed
+      # deduct the invoice payment. add excess to downpayment asssociated with this payment 
+      diff = last_confirmed_invoice_payment.amount_paid - amount_to_be_distributed
+      last_confirmed_invoice_payment.amount_paid = diff
+      last_confirmed_invoice_payment.save 
+      last_payment.add_or_create_downpayment_from_price_adjustment( diff ) 
+    elsif last_confirmed_invoice_payment.amount_paid < amount_to_be_distributed
+      # delete this invoice_payment. add the whole amount to be distributed to downpayment
+      last_confirmed_invoice_payment.destroy 
+      last_payment.add_or_create_downpayment_from_price_adjustment( amount_to_be_distributed ) 
+    elsif last_confirmed_invoice_payment.amount_paid ==  amount_to_be_distributed
+      # delete this invoice payment.
+      # add to downpayment s
+      last_confirmed_invoice_payment.destroy 
+      last_payment.add_or_create_downpayment_from_price_adjustment( amount_to_be_distributed )
+    end
+    
+  
+    
+    
   end
  
 =begin

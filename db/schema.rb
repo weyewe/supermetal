@@ -596,6 +596,9 @@ ActiveRecord::Schema.define(:version => 20130203145546) do
   create_table "template_sales_items", :force => true do |t|
     t.string   "code"
     t.boolean  "is_internal_production", :default => true
+    t.integer  "main_sales_item_id"
+    t.string   "name"
+    t.text     "description"
     t.datetime "created_at",                               :null => false
     t.datetime "updated_at",                               :null => false
   end

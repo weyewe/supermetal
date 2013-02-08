@@ -57,7 +57,64 @@ describe SalesItem do
     
     @sales_order.confirm(@admin)
     @sales_order.is_confirmed.should be_true  
+    
+    sales_item_1.should be_valid 
   end 
+  
+  it 'should create the sales item in the context' do
+    @has_production_quantity = 50 
+    @has_production_sales_item = SalesItem.create_sales_item( @admin, @sales_order,  {
+      :material_id => @copper.id, 
+      :is_pre_production => true , 
+      :is_production     => true, 
+      :is_post_production => true, 
+      :is_delivered => true, 
+      :delivery_address => "Perumahan Citra Garden 1 Blok AC2/3G",
+      :quantity_for_production => @has_production_quantity, 
+      :quantity_for_post_production => @has_production_quantity,
+      :description => "Bla bla bla bla bla", 
+      :delivery_address => "Yeaaah babyy", 
+      :requested_deadline => Date.new(2013, 3,5 ),
+      :weight_per_piece   => '15',
+      :name => "Sales Item",
+      :is_pending_pricing    => false, 
+      :is_pricing_by_weight  => false , 
+      :pre_production_price  => "50000", 
+      :production_price      => "20000",
+      :post_production_price => "150000"
+    })
+    
+    @has_production_sales_item.should be_valid 
+  end
+  
+  it 'should produce the only machining item' do
+    @only_machining_sales_quantity  = 15 
+    @only_machining_sales_item = SalesItem.create_sales_item( @admin, @sales_order,  {
+      :material_id => @copper.id, 
+      :is_pre_production => false , 
+      :is_production     => false, 
+      :is_post_production => true, 
+      :is_delivered => true, 
+      :delivery_address => "Perumahan Citra Garden 1 Blok AC2/3G",
+      :quantity_for_production => 0, 
+      :quantity_for_post_production => @only_machining_sales_quantity,
+      :description => "Bla bla bla bla bla", 
+      :delivery_address => "Yeaaah babyy", 
+      :requested_deadline => Date.new(2013, 3,5 ),
+      :weight_per_piece   => '15',
+      :name => "has Prod",
+      :is_pending_pricing    => false, 
+      :is_pricing_by_weight  => false , 
+      :pre_production_price  => "50000", 
+      :production_price      => "20000",
+      :post_production_price => "150000"
+    })
+    @only_machining_sales_item.errors.messages.each do |msg|
+      puts "MSG: #{msg}"
+    end
+    
+    @only_machining_sales_item.should be_valid 
+  end
   
   context "upon sales order confirmation" do
     before(:each) do 
@@ -83,10 +140,11 @@ describe SalesItem do
         :post_production_price => "150000"
       })
       
+       
       @only_machining_sales_quantity  = 15 
       @only_machining_sales_item = SalesItem.create_sales_item( @admin, @sales_order,  {
         :material_id => @copper.id, 
-        :is_pre_production => true , 
+        :is_pre_production => false , 
         :is_production     => false, 
         :is_post_production => true, 
         :is_delivered => true, 
@@ -105,7 +163,6 @@ describe SalesItem do
         :post_production_price => "150000"
       })
       
-      # @initial_has_production_pending_production = @has_production_sales_item.pending_production
       @sales_order.confirm(@admin)
      
       @has_production_sales_item.reload
@@ -114,7 +171,8 @@ describe SalesItem do
     
     
     it 'should have id' do
-      @has_production_sales_item.id.should_not be_nil 
+      # @has_production_sales_item.
+      @has_production_sales_item.should be_valid  
     end
     
     it 'should be linked to the customer' do
@@ -181,7 +239,4 @@ describe SalesItem do
       only_machining_template.is_internal_production.should be_false 
     end
   end # on confirming sales order 
-  
-  
-  
 end

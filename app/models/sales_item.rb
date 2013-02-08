@@ -23,7 +23,7 @@ class SalesItem < ActiveRecord::Base
   validates_presence_of :name 
   validates_presence_of :creator_id
   # validates_presence_of :price_per_piece
-  validates_presence_of :weight_per_piece
+  # validates_presence_of :weight_per_piece
   # validates_presence_of :quantity 
   validates_presence_of :case 
   validates_presence_of :quantity_for_production, :quantity_for_post_production
@@ -32,7 +32,7 @@ class SalesItem < ActiveRecord::Base
   validate :delivery_address_must_present_if_delivered_is_true 
   # validate :quantity_must_be_at_least_one
   validate  :weight_per_piece_must_not_be_less_than_zero
-  
+  validate :quantity_must_be_present_if_selected
   validate :quantity_for_production_and_post_production_non_zero
   
    
@@ -57,8 +57,20 @@ class SalesItem < ActiveRecord::Base
   
   
   def weight_per_piece_must_not_be_less_than_zero
-    if  weight_per_piece <= BigDecimal('0')
+    if  weight_per_piece.present? and weight_per_piece <= BigDecimal('0')
       errors.add(:weight_per_piece , "Berat satuan tidak boleh kurang dari 0 kg" )  
+    end
+  end
+  
+  def quantity_must_be_present_if_selected
+    if is_production? and quantity_for_production.present? and quantity_for_production <=  0 
+      msg = "Kuantitas  tidak boleh 0 "
+      errors.add(:quantity_for_production , msg )
+    end
+    
+    if is_post_production? and quantity_for_post_production.present? and quantity_for_post_production <=  0 
+      msg = "Kuantitas  tidak boleh 0 "
+      errors.add(:quantity_for_post_production , msg )
     end
   end
   
@@ -169,7 +181,7 @@ class SalesItem < ActiveRecord::Base
   
   def update_sales_item( params ) 
     return nil if self.is_confirmed? 
-    
+       
     self.material_id           = params[:material_id]       
     self.is_pre_production     = params[:is_pre_production] 
     self.is_production       = params[:is_production]     
@@ -183,6 +195,9 @@ class SalesItem < ActiveRecord::Base
     self.quantity_for_post_production              = params[:quantity_for_post_production] 
     self.description           = params[:description]   
     self.name                  = params[:name]
+    
+    self.is_delivered          = params[:is_delivered]      
+    self.delivery_address      = params[:delivery_address]
     
     self.is_pending_pricing = params[:is_pending_pricing]
     
@@ -198,7 +213,173 @@ class SalesItem < ActiveRecord::Base
     end
     
     
+    if self.main_template_sales_item? and self.name_changed? or self.description_changed? 
+      self.update_template_sales_item 
+    end
+    
     self.requested_deadline    = params[:requested_deadline] 
+    self.save 
+    
+    return self 
+  end
+  
+  
+  
+  
+  
+=begin
+  ADMIN UPDATE CONFIRMED SALES ITEM 
+=end
+
+  def validate_post_confirm_update
+    if is_production == true and quantity_for_production <= 0
+      errors.add(:quantity_for_production , "Kuantitas cor tidak boleh 0 jika cor dipilih" ) 
+    end
+  
+    if is_post_production == true and quantity_for_post_production <= 0 
+      errors.add(:quantity_for_post_production , "Kuantitas bubut tidak boleh 0 jika bubut dipilih" )  
+    end
+  end
+
+  def main_template_sales_item?
+    self.template_sales_item.main_sales_item_id == self.id 
+  end
+  
+  def update_template_sales_item
+    template_sales_item = self.template_sales_item
+    template_sales_item.update_from_sales_item( self) 
+  end
+  
+  def update_invoice
+    # noprice -> price 
+    
+    self.related_invoices.each do |invoice|
+      invoice.propagate_price_change 
+    end
+    
+    # price -> price 
+  end
+  
+  def update_work_order
+    if self.quantity_for_production_changed? 
+      sales_production_order = ProductionOrder.where(
+        :source_document_entry => self.class.to_s,
+        :source_document_entry_id => self.id , 
+        :case                     => PRODUCTION_ORDER[:sales_order]
+      ).first 
+      
+      sales_production_order.quantity = self.quantity_for_production 
+      sales_production_order.save 
+    end
+    
+    if self.quantity_for_post_production_changed? 
+      sales_post_production_order = PostProductionOrder.where(
+        :source_document_entry => self.class.to_s,
+        :source_document_entry_id => self.id , 
+        :case                     => POST_PRODUCTION_ORDER[:sales_order]
+      ).first 
+      
+      sales_post_production_order.quantity = self.quantity_for_post_production 
+      sales_post_production_order.save 
+    end
+  end
+  
+  
+  def related_invoices 
+    delivery_id_list = self.delivery_entries.map{|x|  x.delivery_id }
+    Invoice.where(:delivery_id => delivery_id_list )
+  end
+  
+  def has_any_payment?
+    invoice_id_list = self.related_invoices.map{|x| x.id }
+    
+    total_payments_made = InvoicePayment.where(:invoice_id => invoice_id_list)
+    
+    total_payments_made != 0 
+  end
+  
+  def post_confirm_update(employee,  params ) 
+    # if initial value is only post production, can't add production
+    if self.is_production == false and self.is_post_production == true
+      if params[:is_production] == true 
+        errors.add(:is_production , "Pesanan hanya bubut. Tidak boleh ditambah cor" ) 
+      end
+    end
+    
+    
+    if self.is_production == true  
+        # then, on update, change it to only_post_production 
+      if ( params[:is_production] == false ) and 
+          ( params[:is_post_production] == true  ) 
+        errors.add(:is_production , "Pesanan termasuk cor. Tidak boleh diubah jadi hanya bubut" ) 
+      end
+    end
+    
+    if self.is_pending_pricing == false and 
+        ( params[:is_pending_pricing] == true  ) and 
+        self.has_any_payment? 
+        # if there is shite paid 
+        # => can't change 
+        
+      errors.add(:is_pending_pricing , "Tidak boleh menghilangkan harga karena sudah ada pembayaran" ) 
+    end
+    
+    if self.errors.size != 0
+      return self
+    end
+    
+    
+    
+    self.quantity_for_production      = params[:quantity_for_production]
+    self.quantity_for_post_production = params[:quantity_for_post_production]
+    
+    self.is_pending_pricing    = params[:is_pending_pricing]
+    self.is_pricing_by_weight  = params[:is_pricing_by_weight]
+    
+    self.is_pre_production     = params[:is_pre_production]
+    self.is_production         = params[:is_production]
+    self.is_post_production    = params[:is_post_production]
+    self.pre_production_price  = BigDecimal( params[:pre_production_price])
+    self.production_price      = BigDecimal( params[:production_price])   
+    self.post_production_price = BigDecimal( params[:post_production_price]) 
+    
+    self.requested_deadline    = params[:requested_deadline] 
+    
+    self.name                  = params[:name]
+    self.description           = params[:description]
+    self.delivery_address = params[:delivery_address]
+    
+    
+
+    if self.main_template_sales_item? and self.name_changed? or self.description_changed? 
+      self.update_template_sales_item 
+    end
+    
+    self.valid? 
+    self.validate_post_confirm_update
+    
+    if self.errors.size  == 0 
+      
+      # update price in invoice 
+      if  self.pre_production_price_changed?    or 
+              self.production_price              or
+              self.post_production_price         or
+              self.is_pricing_by_weight
+              
+          # if self.has_any_payment? 
+          #   errors.add(:is_pending_pricing , "Tidak boleh menghilangkan harga karena sudah ada pembayaran" )
+          # else
+        self.update_invoice 
+      end
+     
+      
+      # update work_order 
+      if  self.quantity_for_production_changed?     or 
+          self.quantity_for_post_production_changed? 
+        self.update_work_order 
+      end
+    end
+    
     self.save 
     
     return self 
