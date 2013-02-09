@@ -123,6 +123,30 @@ class SalesItem < ActiveRecord::Base
     self.destroy 
   end
   
+  def cancel(employee)
+    return nil if employee.nil?
+    return nil if not sales.is_confirmed?
+    
+    self.is_deleted = true 
+    self.save 
+    
+    ProductionOrder.where(:source_document_entry_id => self.id , 
+    :source_document_entry => self.class.to_s, 
+    :case =>  PRODUCTION_ORDER[:sales_order] ).each do |x| 
+      x.quantity = 0 
+      x.save 
+    end
+    
+    PostProductionOrder.where(:source_document_entry_id => self.id , 
+    :source_document_entry => self.class.to_s, 
+    :case =>  PRODUCTION_ORDER[:sales_order] ).each do |x| 
+      x.quantity = 0 
+      x.save 
+    end
+    
+    
+  end
+  
   def SalesItem.create_sales_item( employee, sales_order, params ) 
     return nil if employee.nil?
     return nil if sales_order.nil? 
