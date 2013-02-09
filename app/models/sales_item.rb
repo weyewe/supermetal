@@ -287,27 +287,30 @@ class SalesItem < ActiveRecord::Base
   end
   
   def update_work_order
-    if self.quantity_for_production_changed? 
+    # if self.quantity_for_production_changed? 
       sales_production_order = ProductionOrder.where(
         :source_document_entry => self.class.to_s,
         :source_document_entry_id => self.id , 
         :case                     => PRODUCTION_ORDER[:sales_order]
       ).first 
       
+      puts "in the update work order, production order. quantity_for_proudction: #{self.quantity_for_production}"
       sales_production_order.quantity = self.quantity_for_production 
       sales_production_order.save 
-    end
+    # end
     
-    if self.quantity_for_post_production_changed? 
+    # if self.quantity_for_post_production_changed? 
       sales_post_production_order = PostProductionOrder.where(
         :source_document_entry => self.class.to_s,
         :source_document_entry_id => self.id , 
         :case                     => POST_PRODUCTION_ORDER[:sales_order]
       ).first 
       
+      puts "in the update work order, post production order. quantity_for_postproudction: #{self.quantity_for_post_production}"
+      
       sales_post_production_order.quantity = self.quantity_for_post_production 
       sales_post_production_order.save 
-    end
+    # end
   end
   
   
@@ -383,6 +386,15 @@ class SalesItem < ActiveRecord::Base
     
     self.valid? 
     self.validate_post_confirm_update
+    
+    is_pricing_changed = self.pre_production_price_changed?    or 
+            self.production_price              or
+            self.post_production_price         or
+            self.is_pricing_by_weight
+            
+    is_quantity_changed =         self.quantity_for_production_changed?     or 
+                self.quantity_for_post_production_changed?
+    
     self.save 
     
     if self.errors.size  == 0 
@@ -390,10 +402,7 @@ class SalesItem < ActiveRecord::Base
       
       
       # update price in invoice 
-      if  self.pre_production_price_changed?    or 
-              self.production_price              or
-              self.post_production_price         or
-              self.is_pricing_by_weight
+      if  is_pricing_changed
               
           # if self.has_any_payment? 
           #   errors.add(:is_pending_pricing , "Tidak boleh menghilangkan harga karena sudah ada pembayaran" )
@@ -403,8 +412,8 @@ class SalesItem < ActiveRecord::Base
      
       
       # update work_order 
-      if  self.quantity_for_production_changed?     or 
-          self.quantity_for_post_production_changed? 
+      if  is_quantity_changed
+          puts "Gonna update work order"
         self.update_work_order 
       end
     end
