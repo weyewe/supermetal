@@ -118,34 +118,64 @@ class SalesItem < ActiveRecord::Base
   
   def delete(employee)
     return nil if employee.nil?
-    return nil if self.is_confirmed? 
+    if self.is_confirmed? or self.is_finalized? 
+      ActiveRecord::Base.transaction do
+        self.post_confirm_delete( employee) 
+      end
+      return self
+    end
     
     self.destroy 
   end
   
-  def cancel(employee)
-    return nil if employee.nil?
-    return nil if not sales.is_confirmed?
+  def post_confirm_delete( employee) 
+    # delete the related production order 
+    # what if it has created work? 
     
-    self.is_deleted = true 
-    self.save 
-    
-    ProductionOrder.where(:source_document_entry_id => self.id , 
-    :source_document_entry => self.class.to_s, 
-    :case =>  PRODUCTION_ORDER[:sales_order] ).each do |x| 
-      x.quantity = 0 
-      x.save 
-    end
-    
-    PostProductionOrder.where(:source_document_entry_id => self.id , 
-    :source_document_entry => self.class.to_s, 
-    :case =>  PRODUCTION_ORDER[:sales_order] ).each do |x| 
-      x.quantity = 0 
-      x.save 
+    if self.delivery_entries.count != 0 
+      self.errors.add(:delete_fail , "Sudah ada pengiriman." )  
+      return self
     end
     
     
+    ProductionOrder.where(
+      :source_document_entry_id => self.id , 
+      :source_document_entry => self.class.to_s, 
+      :case =>  PRODUCTION_ORDER[:sales_order] 
+    ).each {|x| x.destroy }
+    
+    PostProductionOrder.where(
+      :source_document_entry_id => self.id , 
+      :source_document_entry => self.class.to_s, 
+      :case =>  PRODUCTION_ORDER[:sales_order] 
+    ).each {|x| x.destroy }
+    
+    self.destroy 
   end
+  
+  # def cancel(employee)
+  #   return nil if employee.nil?
+  #   return nil if not sales.is_confirmed?
+  #   
+  #   self.is_deleted = true 
+  #   self.save 
+  #   
+  #   ProductionOrder.where(:source_document_entry_id => self.id , 
+  #   :source_document_entry => self.class.to_s, 
+  #   :case =>  PRODUCTION_ORDER[:sales_order] ).each do |x| 
+  #     x.quantity = 0 
+  #     x.save 
+  #   end
+  #   
+  #   PostProductionOrder.where(:source_document_entry_id => self.id , 
+  #   :source_document_entry => self.class.to_s, 
+  #   :case =>  PRODUCTION_ORDER[:sales_order] ).each do |x| 
+  #     x.quantity = 0 
+  #     x.save 
+  #   end
+  #   
+  #   
+  # end
   
   def SalesItem.create_sales_item( employee, sales_order, params ) 
     return nil if employee.nil?

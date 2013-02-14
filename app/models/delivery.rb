@@ -76,22 +76,10 @@ class Delivery < ActiveRecord::Base
     # destroy all invoice payments + update invoice
     self.delivery_entries.each do |de|
       de.delete( employee ) 
-    end
-    
-    # we need to delete the associated sales return and delivery_lost entry 
-    # the details is executed in the delivery_entry 
-    # over here, we want to delete the parent. 
-
-    
-    
-     
+    end 
     
     self.is_deleted = true 
     self.save 
-     
-    # if not invoice.nil?
-    #   invoice.propagate_price_change # done in the delivery_entry level 
-    # end 
   end
   
   def generate_code

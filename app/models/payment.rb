@@ -354,9 +354,9 @@ class Payment < ActiveRecord::Base
     # update customer outstanding payment
     # update customer remaining_downpayment 
     
-    customer  = self.customer
-    customer.update_outstanding_payment
-    customer.update_remaining_downpayment
+    # customer  = self.customer
+    # customer.update_outstanding_payment
+    # customer.update_remaining_downpayment
   end
   
   
