@@ -259,11 +259,11 @@ class SalesItem < ActiveRecord::Base
 =end
 
   def validate_post_confirm_update
-    if is_production == true and quantity_for_production <= 0
+    if self.is_production == true and self.quantity_for_production <= 0
       errors.add(:quantity_for_production , "Kuantitas cor tidak boleh 0 jika cor dipilih" ) 
     end
   
-    if is_post_production == true and quantity_for_post_production <= 0 
+    if self.is_post_production == true and self.quantity_for_post_production <= 0 
       errors.add(:quantity_for_post_production , "Kuantitas bubut tidak boleh 0 jika bubut dipilih" )  
     end
   end
@@ -390,35 +390,45 @@ class SalesItem < ActiveRecord::Base
     self.valid? 
     self.validate_post_confirm_update
     
-    is_pricing_changed = self.pre_production_price_changed?    or 
-            self.production_price              or
-            self.post_production_price         or
-            self.is_pricing_by_weight
+    is_pricing_changed = self.pre_production_price_changed?    || 
+                            self.production_price              ||
+                            self.post_production_price         ||
+                            self.is_pricing_by_weight
             
-    is_quantity_changed =         self.quantity_for_production_changed?     or 
-                self.quantity_for_post_production_changed?
+    is_quantity_changed = self.quantity_for_production_changed? || self.quantity_for_post_production_changed?
+                
+    if self.quantity_for_post_production_changed?
+      puts "5555 the quantity for post production is changed\n"*5
+    end
+    
+    puts "quantity_for_production_changed value: #{self.quantity_for_production_changed?}"
+    puts "quantity_for_post_production_changed value : #{self.quantity_for_post_production_changed?}"
+    if is_quantity_changed
+      puts "is_quantity_changed value : #{is_quantity_changed}"
+    else
+      puts "NOT CHANGED: is_quantity_changed value : #{is_quantity_changed}"
+    end
     
     self.save 
     
     if self.errors.size  == 0 
-      
-      
-      
       # update price in invoice 
       if  is_pricing_changed
-              
-          # if self.has_any_payment? 
-          #   errors.add(:is_pending_pricing , "Tidak boleh menghilangkan harga karena sudah ada pembayaran" )
-          # else
         self.update_invoice 
       end
      
       
       # update work_order 
       if  is_quantity_changed
-          puts "Gonna update work order"
+          puts "Gonna update work order\n"*10
         self.update_work_order 
       end
+    else
+      puts "There are some error"
+      self.errors.messages.each do |x|
+        puts "MSG: #{x}"
+      end
+      
     end
     
     
