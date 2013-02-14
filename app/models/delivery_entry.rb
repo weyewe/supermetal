@@ -56,8 +56,6 @@ class DeliveryEntry < ActiveRecord::Base
     elsif self.persisted? and delivery_entry_count != 1 
       errors.add(:sales_item_id , "Sales item #{self.sales_item.code} sudah terdaftar di surat jalan" ) 
     end
-    
-    
   end
   
   def customer_ownership_to_sales_item
@@ -69,6 +67,8 @@ class DeliveryEntry < ActiveRecord::Base
   
   
   def valid_delivery_entry_combination
+    return nil if self.is_confirmed? 
+    
     template_sales_item = sales_item.template_sales_item
     # CASE: only production 
     if sales_item.is_production and not sales_item.is_post_production
@@ -228,6 +228,10 @@ class DeliveryEntry < ActiveRecord::Base
   
   def update_delivery_entry( employee, delivery,  params ) 
     return nil if employee.nil?
+    if self.is_confirmed?
+      self.post_confirm_update(employee,  params ) 
+      return self 
+    end
     
     sales_item = SalesItem.find_by_id params[:sales_item_id]
     self.creator_id           = employee.id 
@@ -244,6 +248,40 @@ class DeliveryEntry < ActiveRecord::Base
     end
     
     return self 
+  end
+  
+  def post_confirm_update(employee,  params ) 
+    
+    sales_item = SalesItem.find_by_id params[:sales_item_id]
+    self.creator_id           = employee.id  
+    self.sales_item_id        = params[:sales_item_id] 
+    self.template_sales_item_id = sales_item.template_sales_item_id 
+    self.quantity_sent        = params[:quantity_sent]       
+    self.quantity_sent_weight = BigDecimal( params[:quantity_sent_weight ])
+    self.entry_case           = params[:entry_case] 
+    self.item_condition           = params[:item_condition]
+    
+    update_invoice = true 
+    if sales_item_id_changed? or quantity_changed? or quantity_sent_weight_changed? or 
+      entry_case_changed? or item_condition_changed? 
+      update_invoice = true
+    else
+      update_invoice = false 
+    end
+    
+    self.save 
+    
+    if update_invoice
+      # if there is no invoice, we need to create one 
+      # if there is invoice. But, going to be no invoice. Don't delete the pre-existing invoice
+      # just mark it as paid, with amount = 0 
+      delivery = self.delivery
+      # if it is transition from no invoice => with invoice 
+      delivery.create_or_update_invoice(employee)
+      
+      # if payment has been made, we need to rebalance the payment 
+      sales_item.update_invoice  
+    end
   end
   
   def delete( employee )
@@ -300,12 +338,10 @@ class DeliveryEntry < ActiveRecord::Base
     
   def update_post_delivery( employee, params ) 
     return nil if employee.nil? 
-    return nil if not self.is_confirmed?
-    
-    
-    # puts "confirmed: #{params[:quantity_confirmed]}"
-    # puts "quantity_returned: #{params[:quantity_returned]}"
-    # puts "quantity_lost: #{params[:quantity_lost]}"
+    if self.is_finalized?
+      self.post_finalize_update( employee, params)
+      return self 
+    end 
     
     self.quantity_confirmed        = params[:quantity_confirmed]
     self.quantity_confirmed_weight = BigDecimal( params[:quantity_confirmed_weight] ) 
@@ -318,9 +354,6 @@ class DeliveryEntry < ActiveRecord::Base
 
     self.quantity_lost             = params[:quantity_lost]
 
-    
-    
-    
     self.validate_post_production_update
     # puts "after validate_post_production_update, errors: #{self.errors.size.to_s}"
     self.errors.messages.each do |message|
@@ -331,6 +364,86 @@ class DeliveryEntry < ActiveRecord::Base
     # puts "Not supposed to be printed out if there is error"
     self.save  
     return self  
+  end
+  
+  def post_finalize_update( employee, params)
+    self.quantity_confirmed        = params[:quantity_confirmed]
+    self.quantity_confirmed_weight = BigDecimal( params[:quantity_confirmed_weight] ) 
+
+    self.quantity_returned         = params[:quantity_returned]
+    self.quantity_returned_weight  = BigDecimal( params[:quantity_returned_weight] )
+
+    self.quantity_lost             = params[:quantity_lost]
+    validate_post_production_total_sum
+    return self if self.errors.size != 0 
+    
+    is_delivery_return_changed = false
+    is_delivery_lost_changed = false 
+    if quantity_returned_changed? 
+      is_delivery_return_changed = true 
+    end
+    
+    if quantity_lost_changed?
+      is_delivery_lost_changed = true 
+    end
+    
+    if self.save   
+      delivery = self.delivery 
+       
+      if is_delivery_return_changed
+        sales_return = delivery.sales_return 
+        if sales_return.nil?
+          SalesReturn.create_by_employee( employee  , delivery  ) 
+          # needs to be confirmed 
+        else
+          sales_return.unconfirm  ## => delete work order 
+          
+          sales_return_entry = SalesReturnEntry.where(
+            :delivery_entry_id  => self.id  ,
+            :sales_item_id      => self.sales_item_id ,
+            :sales_return_id    => sales_return.id
+          ).first 
+          
+          # unconfirm the sales return  
+          # 
+          
+          
+          if sales_return_entry.nil?
+            SalesReturnEntry.create_by_employee( employee ,sales_return ,  self )
+          else
+            # the quantity is computed from delivery entry 
+          end
+        end
+      end
+      
+      if is_delivery_lost_changed
+        delivery_lost = delivery.delivery_lost 
+        if delivery_lost.nil?  and self.quantity_lost != 0 
+          # from no delivery_lost to something
+          DeliveryLost.create_by_employee( employee, delivery )
+        else
+          delivery_lost_entry = DeliveryLostEntry.where(
+            :delivery_entry_id => self.id , 
+            :delivery_lost_id  => delivery_lost.id
+          )
+          
+          if  delivery_lost_entry.nil?
+            # from no delivery_lost_entry => something 
+            delivery_lost_entry = DeliveryLostEntry.create_by_employee( employee , delivery_lost,  self )
+            delivery_lost_entry.confirm 
+          else
+            
+            delivery_lost_entry.post_confirm_update 
+          end
+          
+        end
+        # from something => something 
+        # from something => 0 
+        # delete quantity lost, delete the associated production or post production order 
+      end
+    end 
+ 
+    return self 
   end
   
   
@@ -437,16 +550,16 @@ class DeliveryEntry < ActiveRecord::Base
     
     
     # puts "&&&&&&&&&&&&&&&&&&BEFORE UPDATING ON FINALIZE\n"*10
-    sales_item = self.sales_item 
+    # sales_item = self.sales_item 
     
     # depend on the delivery case 
     # if it is the normal  ( entry_case is according to what it is ordered)
-    if self.normal_delivery_entry? 
-      sales_item.update_on_delivery_item_finalize 
-    elsif self.entry_case == DELIVERY_ENTRY_CASE[:guarantee_return] 
-      puts "This is the DELIVERY_ENTRY_CASE[:guarantee_return]\n"*10
-      sales_item.update_on_guarantee_return_delivery_item_finalize
-    end
+    # if self.normal_delivery_entry? 
+    #   sales_item.update_on_delivery_item_finalize 
+    # elsif self.entry_case == DELIVERY_ENTRY_CASE[:guarantee_return] 
+    #   puts "This is the DELIVERY_ENTRY_CASE[:guarantee_return]\n"*10
+    #   sales_item.update_on_guarantee_return_delivery_item_finalize
+    # end
     
     
     # if it is the case of guarantee_sales_return 

@@ -40,6 +40,8 @@ class ProductionOrder < ActiveRecord::Base
   end
   
   
+  
+  
   def ProductionOrder.generate_post_production_bad_source_failure_production_order( post_production_result )
     return nil if post_production_result.bad_source_quantity  == 0 
     ProductionOrder.create( 
@@ -76,7 +78,7 @@ class ProductionOrder < ActiveRecord::Base
       :sales_item_subcription_id => nil, 
       :template_sales_item_id    => production_repair_result.template_sales_item_id  ,
       
-      :case                     => PRODUCTION_ORDER[:post_production_failure_technical_failure]     ,
+      :case                     => PRODUCTION_ORDER[:production_repair_technical_failure]     ,
       :quantity                 => production_repair_result.broken_quantity     ,
       :source_document_entry    => production_repair_result.class.to_s          ,
       :source_document_entry_id => production_repair_result.id                  ,

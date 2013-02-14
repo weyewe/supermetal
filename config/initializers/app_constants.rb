@@ -137,6 +137,7 @@ PRODUCTION_ORDER = {
   :sales_return            => 5, 
   :delivery_lost           => 6,
   :sales_return_post_production_failure => 10  ,
+  :production_repair_technical_failure => 11, 
   
   :guarantee_return => 15
 
@@ -153,6 +154,7 @@ POST_PRODUCTION_ORDER = {
   :sales_order                      => 2,
   :production_repair                => 3, 
   :sales_return_repair              => 4,
+  :delivery_lost => 5 , 
   
   :guarantee_return => 15
 }

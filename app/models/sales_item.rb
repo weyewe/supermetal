@@ -203,8 +203,11 @@ class SalesItem < ActiveRecord::Base
     return new_object 
   end
   
-  def update_sales_item( params ) 
-    return nil if self.is_confirmed? 
+  def update_sales_item( employee, params ) 
+    if self.is_confirmed? 
+      self.post_confirm_update(employee,  params ) 
+      return self 
+    end
        
     self.material_id           = params[:material_id]       
     self.is_pre_production     = params[:is_pre_production] 

@@ -132,7 +132,10 @@ class PostProductionResult < ActiveRecord::Base
   
   def update_result( employee, params ) 
     return nil if employee.nil?   
-    return nil if self.is_confirmed == true 
+    if self.is_confirmed? 
+      self.post_confirm_update(employee,  params ) 
+      return self
+    end
     
     
     
@@ -157,6 +160,70 @@ class PostProductionResult < ActiveRecord::Base
     
     return self 
   end
+  
+  
+  def post_confirm_update(employee,  params ) 
+    self.creator_id = employee.id 
+    self.ok_quantity         = params[:ok_quantity]
+    self.bad_source_quantity = params[:bad_source_quantity]
+    self.broken_quantity     = params[:broken_quantity] 
+    self.ok_weight           = BigDecimal( params[:ok_weight]         )
+    self.bad_source_weight   = BigDecimal( params[:bad_source_weight] )
+    self.broken_weight       = BigDecimal( params[:broken_weight]     )
+    self.started_at          = params[:started_at] 
+    self.finished_at         = params[:finished_at]
+    
+    if self.save 
+      ActiveRecord::Base.transaction do
+        update_processed_quantity
+        if self.template_sales_item.is_internal_production? 
+          update_bad_source_production_order
+          update_technical_failure_production_order
+        end
+        
+      end
+    end
+    
+    return self 
+  end
+  
+  def update_bad_source_production_order
+    bad_source_production_order = ProductionOrder.where(
+      :template_sales_item_id => self.template_sales_item_id, 
+      :source_document_entry =>  self.class.to_s,
+      :source_document_entry_id => self.id ,
+      :case                     => PRODUCTION_ORDER[:post_production_failure_bad_source]    
+    ).first
+    
+    if self.bad_source_quantity == 0 and  not bad_source_production_order.nil? 
+      bad_source_production_order.destroy 
+    elsif self.bad_source_quantity != 0 and  not bad_source_production_order.nil? 
+      bad_source_production_order.quantity = self.bad_source_quantity
+      bad_source_production_order.save 
+    elsif self.bad_source_quantity != 0 and bad_source_production_order.nil? 
+      ProductionOrder.generate_post_production_bad_source_failure_production_order( self )
+    end
+  end
+  
+  def update_technical_failure_production_order
+    technical_failure_production_order = ProductionOrder.where(
+      :template_sales_item_id => self.template_sales_item_id, 
+      :source_document_entry =>  self.class.to_s,
+      :source_document_entry_id => self.id ,
+      :case                     => PRODUCTION_ORDER[:post_production_failure_technical_failure]   
+    ).first
+    
+    if self.broken_quantity == 0 and  not technical_failure_production_order.nil? 
+      technical_failure_production_order.destroy 
+    elsif self.broken_quantity != 0 and  not technical_failure_production_order.nil? 
+      technical_failure_production_order.quantity = self.broken_quantity
+      technical_failure_production_order.save 
+    elsif self.broken_quantity != 0 and technical_failure_production_order.nil? 
+      ProductionOrder.generate_post_production_technical_failure_production_order( self )
+    end
+  end
+  
+  
   
   def delete(employee)
     return nil if employee.nil?

@@ -34,7 +34,7 @@ class CreateDeliveryEntries < ActiveRecord::Migration
       t.integer     :quantity_lost  , :default => 0   # => sales_lost 
        
       
-      
+      t.boolean :is_deleted, :default => false 
 
       t.boolean :is_confirmed , :default => false 
       t.boolean :is_finalized, :default => false  # finalized

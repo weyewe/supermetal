@@ -6,6 +6,8 @@ Supermetal::Application.routes.draw do
 
   root :to => 'home#index'
   
+  
+  
   resources :customers do
     resources :downpayment_histories 
   end

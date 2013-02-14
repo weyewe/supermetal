@@ -28,8 +28,56 @@ class DeliveryLostEntry < ActiveRecord::Base
     self.is_confirmed = true 
     self.save 
     
-    # what if it is only post production? 
-    ProductionOrder.generate_delivery_lost_production_order( self  )
+    self.generate_work_order
+    
+  end
   
+  def generate_work_order
+    delivery_entry = self.delivery_entry 
+    if delivery_entry.entry_case == DELIVERY_ENTRY_CASE[:normal]
+      if delivery_entry.item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:production]
+        ProductionOrder.generate_delivery_lost_production_order( self  )
+      elsif delivery_entry.item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
+        ProductionOrder.generate_delivery_lost_production_order( self  )
+        PostProductionOrder.generate_delivery_lost_production_order( self  )
+      end
+    elsif delivery_entry.entry_case == DELIVERY_ENTRY_CASE[:premature]
+      if delivery_entry.item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:production]
+        ProductionOrder.generate_delivery_lost_production_order( self  )
+      end
+    elsif delivery_entry.entry_case == DELIVERY_ENTRY_CASE[:guarantee_return]
+      if delivery_entry.item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:production]
+        ProductionOrder.generate_delivery_lost_production_order( self  )
+      elsif delivery_entry.item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
+        ProductionOrder.generate_delivery_lost_production_order( self  )
+        PostProductionOrder.generate_delivery_lost_production_order( self  )
+      end
+    else
+      # it must be only post production:
+      # 1. bad source, 2. technical failure, 3. cancel post production only 
+      # in either case, we don't need to create production order 
+    end
+  end
+  
+  def post_confirm_update 
+    delivery_entry = self.delivery_entry 
+    delivery_lost_entry = self 
+    ProductionOrder.where( 
+      :case                     => PRODUCTION_ORDER[:delivery_lost]     ,
+      :source_document_entry    => delivery_lost_entry.class.to_s          ,
+      :source_document_entry_id => delivery_lost_entry.id   
+    ).each do |x|
+      x.destroy 
+    end 
+    
+    PostProductionOrder.create(
+      :case                     =>  POST_PRODUCTION_ORDER[:delivery_lost]  ,
+      :source_document_entry    => delivery_lost_entry.class.to_s          ,
+      :source_document_entry_id => delivery_lost_entry.id       
+    ).each do |x|
+      x.destroy 
+    end
+    
+    self.generate_work_order
   end
 end

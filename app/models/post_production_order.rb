@@ -62,6 +62,22 @@ class PostProductionOrder < ActiveRecord::Base
     )
   end
   
+  def PostProductionOrder.generate_delivery_lost_production_order( delivery_lost_entry  )
+    return nil if delivery_lost_entry.nil? 
+    quantity = delivery_lost_entry.quantity_lost
+    return nil if quantity == 0  
+    template_sales_item = delivery_lost_entry.delivery_entry.sales_item.template_sales_item 
+    PostProductionOrder.create(
+      :template_sales_item_id => template_sales_item.id , 
+      :case                     =>  POST_PRODUCTION_ORDER[:delivery_lost]  ,
+      :quantity                 => delivery_lost_entry.quantity_lost, 
+      :source_document_entry    => delivery_lost_entry.class.to_s          ,
+      :source_document_entry_id => delivery_lost_entry.id                  ,
+      :source_document          => delivery_lost_entry.delivery_lost.class.to_s          ,
+      :source_document_id       => delivery_lost_entry.delivery_lost_id 
+    )
+  end
+  
   # item receival : for post production order 
   def PostProductionOrder.generate_item_receival_post_production_order( item_receival_entry )
     PostProductionOrder.create(

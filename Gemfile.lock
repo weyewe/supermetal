@@ -1,4 +1,27 @@
 GIT
+  remote: git://github.com/netzke/netzke-basepack.git
+  revision: c7a4f1196643060241af4b44ec5cea37da90df59
+  specs:
+    netzke-basepack (0.8.2)
+      netzke-core (~> 0.8.2)
+
+GIT
+  remote: git://github.com/netzke/netzke-communitypack.git
+  revision: 07e20ecb024a4d01ae4fd28eb48ac4b4f99873a1
+  specs:
+    netzke-communitypack (0.8.0)
+      netzke-basepack (~> 0.8.0)
+      rails (>= 3.0.0)
+
+GIT
+  remote: git://github.com/netzke/netzke-core.git
+  revision: 7c43b70ea9473b5d0f92b63a3acc3d9cfac89e26
+  specs:
+    netzke-core (0.8.2)
+      execjs
+      uglifier
+
+GIT
   remote: https://github.com/elight/acts_as_commentable_with_threading.git
   revision: b021d184ea794b0f2efa02b72796f77db0b65410
   specs:
@@ -99,6 +122,8 @@ GEM
     factory_girl_rails (4.1.0)
       factory_girl (~> 4.1.0)
       railties (>= 3.0.0)
+    faker (1.1.2)
+      i18n (~> 0.5)
     friendly_id (4.0.9)
     girl_friday (0.11.2)
       connection_pool (~> 1.0)
@@ -259,12 +284,16 @@ DEPENDENCIES
   devise
   exceptional
   factory_girl_rails (~> 4.0)
+  faker
   friendly_id
   heroku
   hirefireapp
   honeybadger
   jquery-rails
   kaminari
+  netzke-basepack!
+  netzke-communitypack!
+  netzke-core!
   pg
   prawn!
   rails (= 3.2.11)

@@ -114,7 +114,11 @@ class ProductionRepairResult < ActiveRecord::Base
   
   def update_result( employee, params ) 
     return nil if employee.nil?    
-    return nil if self.is_confirmed == true  # and self is not admin 
+    
+    if self.is_confirmed?
+      self.post_confirm_update(employee,  params ) 
+      return self 
+    end
     
     self.creator_id = employee.id 
     self.ok_quantity         = params[:ok_quantity]
@@ -132,6 +136,48 @@ class ProductionRepairResult < ActiveRecord::Base
     
     return self 
   end
+  
+  
+  def post_confirm_update(employee,  params ) 
+    self.creator_id = employee.id 
+    self.ok_quantity         = params[:ok_quantity]
+    self.broken_quantity     = params[:broken_quantity] 
+    self.ok_weight           = BigDecimal( params[:ok_weight]         )
+    self.broken_weight       = BigDecimal( params[:broken_weight]     )
+    self.started_at          = params[:started_at] 
+    self.finished_at         = params[:finished_at]
+    
+    if self.save 
+      ActiveRecord::Base.transaction do
+        update_processed_quantity
+        update_production_repair_failure_production_order 
+      end
+    end
+    
+    return self 
+  end
+  
+  def update_production_repair_failure_production_order
+    
+    repair_failure_production_order = ProductionOrder.where(
+      :template_sales_item_id => self.template_sales_item_id, 
+      :source_document_entry =>  self.class.to_s,
+      :source_document_entry_id => self.id ,
+      :case                     => PRODUCTION_ORDER[:production_repair_technical_failure]    
+    ).first
+    
+    if self.broken_quantity == 0 and  not repair_failure_production_order.nil? 
+      failure_production_order.destroy 
+    elsif self.broken_quantity != 0 and  not repair_failure_production_order.nil? 
+      failure_production_order.quantity = self.broken_quantity
+      failure_production_order.save 
+    elsif self.broken_quantity != 0 and repair_failure_production_order.nil? 
+      ProductionOrder.generate_production_repair_failure_production_order( self )
+    end
+  end
+  
+   
+  
   
   def delete(employee)
     return nil if employee.nil?

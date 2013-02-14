@@ -80,6 +80,7 @@ ActiveRecord::Schema.define(:version => 20130203145546) do
     t.integer  "quantity_returned",                                       :default => 0
     t.decimal  "quantity_returned_weight",  :precision => 7, :scale => 2, :default => 0.0
     t.integer  "quantity_lost",                                           :default => 0
+    t.boolean  "is_deleted",                                              :default => false
     t.boolean  "is_confirmed",                                            :default => false
     t.boolean  "is_finalized",                                            :default => false
     t.datetime "created_at",                                                                 :null => false

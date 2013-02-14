@@ -78,4 +78,18 @@ class SalesReturn < ActiveRecord::Base
       end
     end 
   end
+  
+  def unconfirm
+    return nil if self.is_confirmed == false 
+    ActiveRecord::Base.transaction do
+      self.confirmer_id = nil 
+      self.confirmed_at = nil 
+      self.is_confirmed = false  
+      self.save 
+      
+      self.sales_return_entries.each do |sales_return_entry|
+        sales_return_entry.unconfirm 
+      end
+    end
+  end
 end

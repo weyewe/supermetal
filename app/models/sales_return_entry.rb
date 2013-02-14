@@ -128,16 +128,30 @@ class SalesReturnEntry < ActiveRecord::Base
     PostProductionOrder.generate_sales_return_repair_post_production_order( self ) 
     
     self.reload
+     
+  end
+  
+  def unconfirm
+    self.is_confirmed = false 
+    self.save 
+    
+    ProductionOrder.where(
+      :case                     => PRODUCTION_ORDER[:sales_return]     ,
+      :source_document_entry    => self.class.to_s          ,
+      :source_document_entry_id => self.id              
+    ).each {|x| x.destroy }
+    
+    ProductionRepairOrder.where(
+      :case                     => PRODUCTION_REPAIR_ORDER[:sales_return]     ,
+      :source_document_entry    => sales_return_entry.class.to_s          ,
+      :source_document_entry_id => sales_return_entry.id                 
+    ).each {|x| x.destroy }
     
     
-    
-    # sales_item = self.delivery_entry.sales_item 
-    # sales_item.reload 
-    # sales_item.update_on_sales_return_confirm
-     #   
-     # sales_item.update_pending_production 
-     # sales_item.reload 
-     # sales_item.update_pending_post_production
-    
+    PostProductionOrder.where( 
+      :case                     =>  POST_PRODUCTION_ORDER[:sales_return_repair]  ,
+      :source_document_entry    => sales_return_entry.class.to_s          ,
+      :source_document_entry_id => sales_return_entry.id              
+    ).each {|x| x.destroy }
   end
 end

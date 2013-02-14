@@ -130,24 +130,86 @@ class ProductionResult < ActiveRecord::Base
   
   def update_result( employee, params ) 
     return nil if employee.nil?    
-    return nil if self.is_confirmed == true  # and self is not admin 
+     # and self is not admin 
+    if self.is_confirmed?
+      self.post_confirm_update(employee,  params ) 
+      return self 
+    end
     
     self.creator_id = employee.id 
     self.ok_quantity         = params[:ok_quantity]
     self.repairable_quantity = params[:repairable_quantity]
     self.broken_quantity     = params[:broken_quantity] 
-    self.ok_weight           = BiDecimal( params[:ok_weight]         )
-    self.repairable_weight   = BiDecimal( params[:repairable_weight] )
-    self.broken_weight       = BiDecimal( params[:broken_weight]     )
+    self.ok_weight           = BigDecimal( params[:ok_weight]         )
+    self.repairable_weight   = BigDecimal( params[:repairable_weight] )
+    self.broken_weight       = BigDecimal( params[:broken_weight]     )
     self.started_at          = params[:started_at] 
     self.finished_at         = params[:finished_at]
 
     if self.save  
-      new_object.update_processed_quantity 
       # sales_item.update_pre_production_statistics 
     end
     
     return self 
+  end
+  
+  def post_confirm_update(employee,  params ) 
+    self.creator_id = employee.id 
+    self.ok_quantity         = params[:ok_quantity]
+    self.repairable_quantity = params[:repairable_quantity]
+    self.broken_quantity     = params[:broken_quantity] 
+    self.ok_weight           = BigDecimal( params[:ok_weight]         )
+    self.repairable_weight   = BigDecimal( params[:repairable_weight] )
+    self.broken_weight       = BigDecimal( params[:broken_weight]     )
+    self.started_at          = params[:started_at] 
+    self.finished_at         = params[:finished_at]
+    
+    if self.save 
+      ActiveRecord::Base.transaction do
+        update_processed_quantity
+        update_failure_production_order
+        update_repairable_production_order 
+      end
+    end
+    
+    return self 
+  end
+  
+  def update_failure_production_order
+    failure_production_order = ProductionOrder.where(
+      :template_sales_item_id => self.template_sales_item_id, 
+      :source_document_entry =>  self.class.to_s,
+      :source_document_entry_id => self.id ,
+      :case                     => PRODUCTION_ORDER[:production_failure]    
+    ).first
+    
+    if self.broken_quantity == 0 and  not failure_production_order.nil? 
+      failure_production_order.destroy 
+    elsif self.broken_quantity != 0 and  not failure_production_order.nil? 
+      failure_production_order.quantity = self.broken_quantity
+      failure_production_order.save 
+    elsif self.broken_quantity != 0 and failure_production_order.nil? 
+      ProductionOrder.generate_production_failure_production_order( self )
+    end
+  end
+  
+  def update_repairable_production_order
+    
+    repair_production_order = ProductionRepairOrder.where(
+      :template_sales_item_id => self.template_sales_item_id, 
+      :source_document_entry =>  self.class.to_s,
+      :source_document_entry_id => self.id ,
+      :case                     => PRODUCTION_REPAIR_ORDER[:production_repair]   
+    ).first
+    
+    if self.repairable_quantity == 0 and  not repair_production_order.nil? 
+      repair_production_order.destroy 
+    elsif self.repairable_quantity != 0 and  not repair_production_order.nil? 
+      repair_production_order.quantity = self.repairable_quantity
+      repair_production_order.save 
+    elsif self.repairable_quantity != 0 and repair_production_order.nil? 
+      ProductionRepairOrder.create_repairable_production_repair_order( self   )
+    end
   end
   
   def delete(employee)

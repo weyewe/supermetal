@@ -16,6 +16,7 @@ class Invoice < ActiveRecord::Base
     return nil if delivery.nil? 
     return nil if delivery.is_confirmed == false 
     
+    # not creating invoice. Free Goods: guarantee return delivery 
     return nil if delivery.only_delivering_non_invoicable_goods? 
 
     new_object = Invoice.new 

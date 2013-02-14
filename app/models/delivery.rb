@@ -115,6 +115,20 @@ class Delivery < ActiveRecord::Base
     end 
   end
   
+# special for post-confirm update 
+  def create_or_update_invoice(employee) 
+    if self.invoice.nil?
+      Invoice.create_by_employee( employee  , self  )  
+    else
+      # it is about the total amount 
+      # + is_paid status if  all entries == non_invoicable_goods
+      # will be handled by the sales_item.update_invoice 
+    end
+    
+    customer  = self.customer
+    customer.update_outstanding_payment
+  end
+  
   def only_delivering_non_invoicable_goods? 
     entry_case_list = self.delivery_entries.map{ |x| x.entry_case }
     entry_case_list.uniq! 

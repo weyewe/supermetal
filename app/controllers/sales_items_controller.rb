@@ -34,7 +34,7 @@ class SalesItemsController < ApplicationController
   def update_sales_item
     @object = SalesItem.find_by_id params[:sales_item_id] 
     @parent = @object.sales_order
-    @object.update_sales_item(  params[:sales_item])
+    @object.update_sales_item(current_user,   params[:sales_item])
     @has_no_errors  = @object.errors.size  == 0
   end
   
