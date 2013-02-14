@@ -65,7 +65,10 @@ class InvoicePayment < ActiveRecord::Base
   
   def update_invoice_payment( employee , payment ,  params ) 
     return nil if employee.nil?
-    return nil if self.payment.is_confirmed? 
+    if self.payment.is_confirmed?
+      self.post_confirm_update(employee,payment,params) 
+      return self 
+    end
     
     self.creator_id  = employee.id 
     self.payment_id  = payment.id  
@@ -77,11 +80,28 @@ class InvoicePayment < ActiveRecord::Base
     return self 
   end
   
+  def post_confirm_update(employee,payment,params) 
+    self.invoice_id = params[:invoice_id]
+    self.amount_paid = BigDecimal( params[:amount_paid]   )
+    
+    if self.save 
+      self.invoice.update_paid_status(employee)
+    end
+  end
+  
   def delete( employee )
     return nil if employee.nil? 
-    return nil if self.payment.is_confirmed? 
+    if self.payment.is_confirmed? 
+      self.post_confirm_delete( employee) 
+    end
     
     self.destroy 
+  end
+  
+  def post_confirm_delete( employee ) 
+    invoice = self.invoice 
+    self.destroy
+    invoice.propagate_price_change
   end
   
   def confirm( employee ) 

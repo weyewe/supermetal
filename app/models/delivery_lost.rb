@@ -83,4 +83,14 @@ class DeliveryLost < ActiveRecord::Base
       end
     end 
   end
+  
+  def delete(employee)
+    return nil if self.is_deleted == true 
+    self.delivery_lost_entries.each do |dle|
+      dle.delete(employee)
+    end
+    
+    self.is_deleted = true 
+    self.save 
+  end
 end

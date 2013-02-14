@@ -32,6 +32,11 @@ class DeliveryLostEntry < ActiveRecord::Base
     
   end
   
+  def delete(employee)
+    self.delete_related_work_order
+    self.destroy 
+  end
+  
   def generate_work_order
     delivery_entry = self.delivery_entry 
     if delivery_entry.entry_case == DELIVERY_ENTRY_CASE[:normal]
@@ -62,6 +67,14 @@ class DeliveryLostEntry < ActiveRecord::Base
   def post_confirm_update 
     delivery_entry = self.delivery_entry 
     delivery_lost_entry = self 
+    
+    
+    self.delete_related_work_order
+    
+    self.generate_work_order
+  end
+  
+  def delete_related_work_order
     ProductionOrder.where( 
       :case                     => PRODUCTION_ORDER[:delivery_lost]     ,
       :source_document_entry    => delivery_lost_entry.class.to_s          ,
@@ -77,7 +90,5 @@ class DeliveryLostEntry < ActiveRecord::Base
     ).each do |x|
       x.destroy 
     end
-    
-    self.generate_work_order
   end
 end

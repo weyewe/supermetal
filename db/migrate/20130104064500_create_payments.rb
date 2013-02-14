@@ -21,7 +21,7 @@ class CreatePayments < ActiveRecord::Migration
       
       t.text :note   # it can be check number, etc
       
-      
+      t.boolean :is_deleted, :default => false 
 
       t.timestamps
     end

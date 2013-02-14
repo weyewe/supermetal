@@ -13,6 +13,7 @@ class CreateDeliveryLosts < ActiveRecord::Migration
       t.integer :confirmer_id 
       t.integer :confirmed_at
       
+      t.boolean :is_deleted, :default => false 
       t.timestamps
     end
   end

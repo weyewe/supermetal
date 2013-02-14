@@ -28,15 +28,7 @@ class Delivery < ActiveRecord::Base
     return new_object 
   end
   
-  def delete(employee)
-    return nil if employee.nil?
-    return nil if self.is_confirmed?
-    
-    self.delivery_entries.each do |delivery_entry|
-      delivery_entry.destroy 
-    end
-    self.destroy 
-  end
+  
   
   def update_by_employee( employee, params ) 
     return nil if employee.nil? 
@@ -51,6 +43,55 @@ class Delivery < ActiveRecord::Base
     end
     
     return self 
+  end
+  
+  def delete(employee)
+    return nil if employee.nil?
+    if self.is_confirmed? or self.is_finalized? 
+      ActiveRecord::Base.transaction do
+        self.post_confirm_delete( employee) 
+      end
+      return self
+    end
+    
+    self.delivery_entries.each do |delivery_entry|
+      delivery_entry.destroy 
+    end
+    self.destroy 
+  end
+  
+  def post_confirm_delete( employee) 
+    # validation 
+    # if there payment of invoice associated with the delivery is paid: can't delete 
+    #   you must delete that payment 
+    invoice = self.invoice 
+    if not invoice.nil?  and invoice.invoice_payments.count != 0 
+      total_count = invoice.invoice_payments.count
+      self.errors.add(:delete_fail , "Sudah ada #{total_count} pembayaran. Hapus dulu pembayaran tersebut" )  
+      return self 
+    end
+  
+    
+    
+    # destroy all invoice payments + update invoice
+    self.delivery_entries.each do |de|
+      de.delete( employee ) 
+    end
+    
+    # we need to delete the associated sales return and delivery_lost entry 
+    # the details is executed in the delivery_entry 
+    # over here, we want to delete the parent. 
+
+    
+    
+     
+    
+    self.is_deleted = true 
+    self.save 
+     
+    # if not invoice.nil?
+    #   invoice.propagate_price_change # done in the delivery_entry level 
+    # end 
   end
   
   def generate_code

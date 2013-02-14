@@ -32,6 +32,10 @@ class ItemReceivalEntry < ActiveRecord::Base
   
   def update_item_receival_entry( employee, item_receival,  params ) 
     return nil if employee.nil?
+    if self.is_confirmed? 
+      self.post_confirm_update( employee, item_receival, params ) 
+      return self 
+    end
     
    
     self.creator_id        = employee.id 
@@ -43,6 +47,14 @@ class ItemReceivalEntry < ActiveRecord::Base
     
     return self 
   end
+  
+  def post_confirm_update( employee, item_receival, params ) 
+    self.sales_item_id    = params[:sales_item_id] 
+    self.quantity         = params[:quantity]
+    self.save 
+    
+  end
+  
   
   def delete( employee )
     return nil if employee.nil?

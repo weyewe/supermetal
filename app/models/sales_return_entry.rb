@@ -38,6 +38,11 @@ class SalesReturnEntry < ActiveRecord::Base
     return self 
   end
   
+  def delete( employee ) 
+    self.delete_related_work_order 
+    self.destroy 
+  end
+  
   def quantity_returned 
     self.delivery_entry.quantity_returned
   end
@@ -59,15 +64,10 @@ class SalesReturnEntry < ActiveRecord::Base
       self.errors.add(:quantity_for_production , "Jumlah tidak boleh kurang dari 0" )  
     end
     
-    
-    
-    # post production
-    
+     
     if not quantity_for_post_production.present?  or quantity_for_post_production < 0 
       self.errors.add(:quantity_for_post_production , "Jumlah tidak boleh kurang dari 0" )  
     end
-    
-    
   end
   
   def validate_the_weight_to_be_valid
@@ -135,6 +135,11 @@ class SalesReturnEntry < ActiveRecord::Base
     self.is_confirmed = false 
     self.save 
     
+    self.delete_related_work_order
+    
+  end
+  
+  def delete_related_work_order
     ProductionOrder.where(
       :case                     => PRODUCTION_ORDER[:sales_return]     ,
       :source_document_entry    => self.class.to_s          ,
@@ -143,15 +148,15 @@ class SalesReturnEntry < ActiveRecord::Base
     
     ProductionRepairOrder.where(
       :case                     => PRODUCTION_REPAIR_ORDER[:sales_return]     ,
-      :source_document_entry    => sales_return_entry.class.to_s          ,
-      :source_document_entry_id => sales_return_entry.id                 
+      :source_document_entry    => self.class.to_s          ,
+      :source_document_entry_id => self.id                 
     ).each {|x| x.destroy }
     
     
     PostProductionOrder.where( 
       :case                     =>  POST_PRODUCTION_ORDER[:sales_return_repair]  ,
-      :source_document_entry    => sales_return_entry.class.to_s          ,
-      :source_document_entry_id => sales_return_entry.id              
+      :source_document_entry    => self.class.to_s          ,
+      :source_document_entry_id => self.id              
     ).each {|x| x.destroy }
   end
 end

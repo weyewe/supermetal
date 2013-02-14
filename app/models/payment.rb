@@ -106,6 +106,8 @@ class Payment < ActiveRecord::Base
   end
   
   def validate_downpayment_usage_is_less_than_remaining_downpayment
+    return nil if is_confirmed == true 
+    
     customer = self.customer 
     if has_downpayment_usage?
       if downpayment_usage_amount > customer.remaining_downpayment
@@ -177,6 +179,10 @@ class Payment < ActiveRecord::Base
   end
   
   def update_by_employee( employee, params )  
+    if self.is_confirmed
+      self.post_confirm_update(employee, params)
+      return self 
+    end
     
     self.creator_id      = employee.id 
     self.customer_id     = params[:customer_id]
@@ -192,6 +198,28 @@ class Payment < ActiveRecord::Base
     self.save 
     
     return self 
+  end
+  
+  def post_confirm_update(employee, params)
+    
+    self.amount_paid     = BigDecimal( params[:amount_paid] ) 
+    self.payment_method  = params[:payment_method]
+    self.cash_account_id = params[:cash_account_id]
+    self.note            = params[:note]
+    
+    self.downpayment_addition_amount = params[:downpayment_addition_amount]
+    self.downpayment_usage_amount = params[:downpayment_usage_amount]
+    
+    self.save 
+   
+    DownpaymentHistory.create_or_update_downpayment_addition_history( self ) 
+    DownpaymentHistory.create_or_update_downpayment_deduction_history( self )  
+    
+    
+    customer  = self.customer
+    customer.update_outstanding_payment
+    customer.update_remaining_downpayment
+    
   end
   
   def invoice_payment_amount
@@ -289,15 +317,46 @@ class Payment < ActiveRecord::Base
   end
    
   
-  def delete( current_user ) 
-    return nil if current_user.nil?
-    return nil if self.is_confirmed? 
+  def delete( employee ) 
+    return nil if employee.nil?
+    if self.is_confirmed? 
+      ActiveRecord::Base.transaction do
+        self.post_confirm_delete( employee) 
+      end
+      self.reload 
+      return self 
+    end
     
     self.invoice_payments.each do |ip|
-      ip.delete( current_user ) 
+      ip.delete( employee ) 
     end
     
     self.destroy 
+  end
+  
+  def post_confirm_delete( employee) 
+    # destroy all invoice payments + update invoice
+    self.invoice_payments.each do |ip|
+      ip.delete( employee ) 
+    end
+    
+    
+    # destroy all downpayments associated with this payment 
+    self.downpayment_histories.each do |dp_history|
+      dp_history.destroy 
+    end
+    
+    self.is_deleted = true 
+    self.save 
+    # set self as is_deleted => true 
+    
+    
+    # update customer outstanding payment
+    # update customer remaining_downpayment 
+    
+    customer  = self.customer
+    customer.update_outstanding_payment
+    customer.update_remaining_downpayment
   end
   
   

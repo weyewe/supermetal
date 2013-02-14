@@ -108,6 +108,7 @@ ActiveRecord::Schema.define(:version => 20130203145546) do
     t.boolean  "is_confirmed", :default => false
     t.integer  "confirmer_id"
     t.integer  "confirmed_at"
+    t.boolean  "is_deleted",   :default => false
     t.datetime "created_at",                      :null => false
     t.datetime "updated_at",                      :null => false
   end
@@ -235,6 +236,7 @@ ActiveRecord::Schema.define(:version => 20130203145546) do
     t.integer  "confirmer_id"
     t.datetime "confirmed_at"
     t.text     "note"
+    t.boolean  "is_deleted",                                                 :default => false
     t.datetime "created_at",                                                                    :null => false
     t.datetime "updated_at",                                                                    :null => false
     t.decimal  "downpayment_addition_amount", :precision => 12, :scale => 2, :default => 0.0

@@ -214,8 +214,37 @@ class ProductionResult < ActiveRecord::Base
   
   def delete(employee)
     return nil if employee.nil?
-    return nil if self.is_confirmed == true 
+    if self.is_confirmed == true 
+      ActiveRecord::Base.transaction do
+        self.post_confirm_delete( employee) 
+      end
+      return self
+    end
     self.destroy if self.is_confirmed == false 
+  end
+  
+  def post_confirm_delete( employee) 
+   
+    
+    ProductionOrder.where(
+      :case                     => PRODUCTION_ORDER[:production_failure]     , 
+      :source_document_entry    => self.class.to_s          ,
+      :source_document_entry_id => self.id                  ,
+      :source_document          => self.class.to_s          ,
+      :source_document_id       => self.id
+    ).each {|x| x.destroy }
+    
+   
+    ProductionRepairOrder.where(
+      :case                     => PRODUCTION_REPAIR_ORDER[:production_repair] , 
+      # no document entry. it is just doing repair per normal 
+      :source_document_entry    => self.class.to_s  , 
+      :source_document_entry_id => self.id  , 
+      :source_document          => self.class.to_s  , 
+      :source_document_id       => self.id
+    ).each {|x| x.destroy }
+    
+    self.destroy 
   end
   
   

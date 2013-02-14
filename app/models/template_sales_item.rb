@@ -68,22 +68,26 @@ class TemplateSalesItem < ActiveRecord::Base
     total_quantity_going_out = self.delivery_entries.where( 
               :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:production],  
               :is_confirmed => true,
-              :is_finalized => false  ).sum("quantity_sent")             
+              :is_finalized => false,
+              :is_deleted => false   ).sum("quantity_sent")             
                   
     confirmed_total_quantity_going_out = self.delivery_entries.where(
               :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:production], 
               :is_confirmed => true,
-              :is_finalized => true ).sum("quantity_confirmed")
+              :is_finalized => true,
+              :is_deleted => false  ).sum("quantity_confirmed")
     
     confirmed_total_quantity_returned =           self.delivery_entries.where(
                         :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:production], 
                         :is_confirmed => true,
-                        :is_finalized => true ).sum("quantity_returned")
+                        :is_finalized => true,
+                        :is_deleted => false  ).sum("quantity_returned")
                         
     confirmed_total_quantity_lost =                     self.delivery_entries.where(
                                   :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:production], 
                                   :is_confirmed => true,
-                                  :is_finalized => true ).sum("quantity_lost")
+                                  :is_finalized => true,
+                                  :is_deleted => false  ).sum("quantity_lost")
               
     total_quantity_finished - total_quantity_going_out - confirmed_total_quantity_going_out - 
                 confirmed_total_quantity_returned - confirmed_total_quantity_lost
@@ -95,22 +99,26 @@ class TemplateSalesItem < ActiveRecord::Base
     total_quantity_going_out = self.delivery_entries.where(
               :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production], 
               :is_confirmed => true,
-              :is_finalized => false  ).sum("quantity_sent")     
+              :is_finalized => false,
+              :is_deleted => false  ).sum("quantity_sent")     
               
     confirmed_total_quantity_going_out = self.delivery_entries.where(
               :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production], 
               :is_confirmed => true,
-              :is_finalized => true  ).sum("quantity_confirmed")       
+              :is_finalized => true,
+              :is_deleted => false  ).sum("quantity_confirmed")       
               
      confirmed_total_quantity_returned =           self.delivery_entries.where(
                         :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production], 
                         :is_confirmed => true,
-                        :is_finalized => true ).sum("quantity_returned")
+                        :is_finalized => true,
+                        :is_deleted => false ).sum("quantity_returned")
 
     confirmed_total_quantity_lost =                     self.delivery_entries.where(
                                   :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production], 
                                   :is_confirmed => true,
-                                  :is_finalized => true ).sum("quantity_lost")     
+                                  :is_finalized => true,
+                                  :is_deleted => false ).sum("quantity_lost")     
     
     total_quantity_finished - total_quantity_going_out - confirmed_total_quantity_going_out                               - 
                       confirmed_total_quantity_returned - confirmed_total_quantity_lost
@@ -163,7 +171,8 @@ class TemplateSalesItem < ActiveRecord::Base
           :is_confirmed => true,
           :is_finalized => false ,
           :entry_case => DELIVERY_ENTRY_CASE[:bad_source_fail_post_production],
-          :item_condition =>  DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
+          :item_condition =>  DELIVERY_ENTRY_ITEM_CONDITION[:post_production],
+          :is_deleted => false
         ).sum('quantity_sent')
     
     confirmed_delivery = DeliveryEntry.joins(:sales_item).where(
@@ -173,7 +182,8 @@ class TemplateSalesItem < ActiveRecord::Base
         :is_confirmed => true,
         :is_finalized => true ,
         :entry_case => DELIVERY_ENTRY_CASE[:bad_source_fail_post_production],
-        :item_condition =>  DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
+        :item_condition =>  DELIVERY_ENTRY_ITEM_CONDITION[:post_production],
+        :is_deleted => false
       ).sum('quantity_confirmed')
       
     
@@ -185,7 +195,8 @@ class TemplateSalesItem < ActiveRecord::Base
         :is_confirmed => true,
         :is_finalized => false ,
         :entry_case => DELIVERY_ENTRY_CASE[:bad_source_fail_post_production],
-        :item_condition =>  DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
+        :item_condition =>  DELIVERY_ENTRY_ITEM_CONDITION[:post_production],
+        :is_deleted => false
       ).sum('quantity_lost')
       
     confirmed_quantity_lost = DeliveryEntry.joins(:sales_item).where(
@@ -195,7 +206,8 @@ class TemplateSalesItem < ActiveRecord::Base
         :is_confirmed => true,
         :is_finalized => true ,
         :entry_case => DELIVERY_ENTRY_CASE[:bad_source_fail_post_production],
-        :item_condition =>  DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
+        :item_condition =>  DELIVERY_ENTRY_ITEM_CONDITION[:post_production],
+        :is_deleted => false
       ).sum('quantity_lost')
       
     total_bad_source_delivered =  delivery +   confirmed_delivery + quantity_lost + confirmed_quantity_lost
@@ -216,7 +228,8 @@ class TemplateSalesItem < ActiveRecord::Base
       :is_confirmed => true,
       :is_finalized => false ,
       :entry_case => DELIVERY_ENTRY_CASE[:technical_failure_post_production],
-      :item_condition =>  DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
+      :item_condition =>  DELIVERY_ENTRY_ITEM_CONDITION[:post_production],
+      :is_deleted => false
     ).sum('quantity_sent')
     
     quantity_confirmed = DeliveryEntry.joins(:sales_item).where(
@@ -226,7 +239,8 @@ class TemplateSalesItem < ActiveRecord::Base
         :is_confirmed => true,
         :is_finalized => true  ,
         :entry_case => DELIVERY_ENTRY_CASE[:technical_failure_post_production],
-        :item_condition =>  DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
+        :item_condition =>  DELIVERY_ENTRY_ITEM_CONDITION[:post_production],
+        :is_deleted => false
       ).sum('quantity_confirmed')
     
     quantity_lost = DeliveryEntry.joins(:sales_item).where(
@@ -236,7 +250,8 @@ class TemplateSalesItem < ActiveRecord::Base
         :is_confirmed => true,
         :is_finalized => true  ,
         :entry_case => DELIVERY_ENTRY_CASE[:technical_failure_post_production],
-        :item_condition =>  DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
+        :item_condition =>  DELIVERY_ENTRY_ITEM_CONDITION[:post_production],
+        :is_deleted => false
       ).sum('quantity_lost')
           
     total_broken_quantity_delivered =  quantity_sent + quantity_confirmed + quantity_lost 
@@ -272,7 +287,8 @@ class TemplateSalesItem < ActiveRecord::Base
         :is_confirmed => true,
         :is_finalized => true  ,
         :entry_case => DELIVERY_ENTRY_CASE[:normal],
-        :item_condition =>  DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
+        :item_condition =>  DELIVERY_ENTRY_ITEM_CONDITION[:post_production],
+        :is_deleted => false
       ).sum('quantity_sent')
       
     
@@ -283,45 +299,13 @@ class TemplateSalesItem < ActiveRecord::Base
         :is_confirmed => true,
         :is_finalized => true  ,
         :entry_case => DELIVERY_ENTRY_CASE[:normal],
-        :item_condition =>  DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
+        :item_condition =>  DELIVERY_ENTRY_ITEM_CONDITION[:post_production],
+        :is_deleted => false
       ).sum('quantity_confirmed')
     
     total_quantity_finished - confirmed_delivery - confirmed_delivery
   end
-  
-  # def only_post_production_ready_delivery
-  #   return 0 if self.is_internal_production
-  #   total_finished = self.post_production_results.
-  #                                 where(:is_confirmed => true ).
-  #                                 sum("ok_quantity")
-  #   template_sales_item_id = self.id 
-  #   quantity_sent =  DeliveryEntry.joins(:sales_item).where(
-  #     :sales_item => {
-  #       :template_sales_item_id => template_sales_item_id
-  #     },
-  #     :is_confirmed => true,
-  #     :is_finalized => false 
-  #   ).sum('quantity_sent')
-  #  
-  #   confirmed_quantity_sent =  DeliveryEntry.joins(:sales_item).where(
-  #     :sales_item => {
-  #       :template_sales_item_id => template_sales_item_id
-  #     },
-  #     :is_confirmed => true,
-  #     :is_finalized => true 
-  #   ).sum('quantity_confirmed')
-  #   
-  #   quantity_lost = confirmed_quantity_sent =  DeliveryEntry.joins(:sales_item).where(
-  #     :sales_item => {
-  #       :template_sales_item_id => template_sales_item_id
-  #     },
-  #     :is_confirmed => true,
-  #     :is_finalized => true 
-  #   ).sum('quantity_lost')
-  #   
-  #   total_finished - quantity_sent - confirmed_quantity_sent - quantity_lost
-  #   
-  # end
+   
   
   def item_receival_ready_for_post_production
     puts "gonna return shite as 0"
@@ -380,7 +364,8 @@ class TemplateSalesItem < ActiveRecord::Base
       },
       :is_confirmed => true ,
       :is_finalized => false , 
-      :entry_case => DELIVERY_ENTRY_CASE[:guarantee_return]
+      :entry_case => DELIVERY_ENTRY_CASE[:guarantee_return],
+      :is_deleted => false
     ).sum("quantity_sent")
     
     finalized = DeliveryEntry.joins(:sales_item).where(
@@ -389,7 +374,8 @@ class TemplateSalesItem < ActiveRecord::Base
       },
       :is_confirmed => true ,
       :is_finalized => true , 
-      :entry_case => DELIVERY_ENTRY_CASE[:guarantee_return]
+      :entry_case => DELIVERY_ENTRY_CASE[:guarantee_return],
+      :is_deleted => false
     ).sum("quantity_confirmed")
     
     return unfinalized + finalized 
@@ -413,12 +399,10 @@ class TemplateSalesItem < ActiveRecord::Base
           :template_sales_item_id => template_sales_item_id
         },
         :is_confirmed => true,
-        :is_finalized => false 
+        :is_finalized => false ,
+        :is_deleted => false
       ).sum('quantity_sent')
       
     return items_on_delivery
   end
-  
-   
-
 end

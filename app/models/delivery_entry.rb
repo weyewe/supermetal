@@ -285,10 +285,61 @@ class DeliveryEntry < ActiveRecord::Base
   end
   
   def delete( employee )
-    return nil if employee.nil?
-    return nil if self.is_confirmed? 
+    return nil if employee.nil? 
+    if self.is_confirmed? or self.is_finalized? 
+      ActiveRecord::Base.transaction do
+        self.post_confirm_delete( employee) 
+      end
+      return self
+    end
     
     self.destroy 
+  end
+  
+  def post_confirm_delete( employee) 
+    invoice = self.delivery.invoice  
+    
+    delivery = self.delivery 
+    sales_return = delivery.sales_return 
+    delivery_lost = delivery.delivery_lost 
+    
+    if not sales_return.nil?
+      # delete the sales return entry related with the delivery entry 
+      related_sales_return_entry = sales_return.sales_return_entries.where(:delivery_entry_id => self.id ).first 
+      
+      if not related_sales_return_entry.nil?
+        related_sales_return_entry.delete( employee ) 
+      end
+      
+      sales_return.reload 
+      if sales_return.sales_return_entries.count == 0 
+        sales_return.delete( employee ) 
+      end 
+    end
+    
+    if not delivery_lost.nil?
+      
+      # delete the delivery_lost_entry related with the delivery_entry
+      related_delivery_lost_entry = delivery_lost.delivery_lost_entries.where(:delivery_entry_id => self.id ).first 
+      
+      if not related_delivery_lost_entry.nil?
+        related_delivery_lost_entry.delete( employee ) 
+      end
+      
+      
+      # if the total delivery_lost_entries == 0 
+      # delete the delivery_lost as well
+      delivery_lost.reload 
+      if delivery_lost.delivery_lost_entries.count == 0 
+        delivery_lost.delete( employee ) 
+      end
+      
+    end
+    
+    self.destroy 
+    if not invoice.nil?  
+      invoice.propagate_price_change
+    end 
   end
   
   def validate_post_production_quantity 
@@ -442,6 +493,8 @@ class DeliveryEntry < ActiveRecord::Base
         # delete quantity lost, delete the associated production or post production order 
       end
     end 
+    sales_item = self.sales_item 
+    sales_item.update_invoice  
  
     return self 
   end

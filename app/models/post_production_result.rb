@@ -227,9 +227,37 @@ class PostProductionResult < ActiveRecord::Base
   
   def delete(employee)
     return nil if employee.nil?
-    return nil if self.is_confirmed == true 
+    if self.is_confirmed?
+      self.post_confirm_update(employee,  params ) 
+      return self 
+    end 
     
     self.destroy if self.is_confirmed == false 
+  end
+  
+  def post_confirm_delete( employee) 
+  
+    
+    ProductionOrder.generate_post_production_bad_source_failure_production_order( self )
+    
+    ProductionOrder.where(
+      :case                     => PRODUCTION_ORDER[:post_production_failure_bad_source]     , 
+      :source_document_entry    => self.class.to_s          ,
+      :source_document_entry_id => self.id                  ,
+      :source_document          => self.class.to_s          ,
+      :source_document_id       => self.id
+    ).each {|x| x.destroy }
+    
+    
+    ProductionOrder.where(
+      :case                     => PRODUCTION_ORDER[:post_production_failure_technical_failure]     ,
+      :source_document_entry    => self.class.to_s          ,
+      :source_document_entry_id => self.id                  ,
+      :source_document          => self.class.to_s          ,
+      :source_document_id       => self.id
+    ).each {|x| x.destroy }
+    
+    self.destroy
   end
   
   

@@ -41,6 +41,7 @@ class ItemReceival < ActiveRecord::Base
   def update_by_employee( employee, params ) 
     return nil if employee.nil? 
     
+    
     self.creator_id                 = employee.id
     self.customer_id                = params[:customer_id] 
     self.receival_date              = params[:receival_date]
@@ -52,6 +53,7 @@ class ItemReceival < ActiveRecord::Base
     return self 
   end
   
+ 
   def generate_code
     
     start_datetime = Date.today.at_beginning_of_month.to_datetime

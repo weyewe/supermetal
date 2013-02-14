@@ -62,6 +62,16 @@ class SalesReturn < ActiveRecord::Base
     end
   end
   
+  def delete(employee)
+    return nil if self.is_deleted == true 
+    self.sales_return_entries.each do |sre|
+      sre.delete(employee)
+    end
+    
+    self.is_deleted = true 
+    self.save 
+  end
+  
   def confirm(employee) 
     return nil if employee.nil? 
     return nil if self.is_confirmed == true  
