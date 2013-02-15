@@ -17,6 +17,12 @@
          customer.all_selectable_sales_items %>
   <% end %>
 
+	<%= f.input :item_condition, :label => "Kondisi Barang", 
+		:input_html => {:class => "input-xlarge  "} do %>
+     <%= f.select :item_condition, 
+         GuaranteeReturnEntry.all_selectable_item_conditions  %>
+  <% end %>
+
  
 	
 	<hr />
@@ -24,9 +30,17 @@
 		<%= f.input :weight_for_production , :label =>"Berat Lebur Ulang", 
 				:hint => "Dalam kilogram, sensitif sampai 2 decimal. Contoh: <b>2.15</b>kg", :as => :string   %>
 	 
+	
+				<hr />
+					<%= f.input :quantity_for_production_repair, :label =>"Kuantitas Perbaiki Cor" , :as => :string  %>
+					<%= f.input :weight_for_production_repair , :label =>"Berat Perbaiki Cor", 
+							:hint => "Dalam kilogram, sensitif sampai 2 decimal. Contoh: <b>2.15</b>kg", :as => :string   %>	
+
+	
+	
  
 	<hr />
-		<%= f.input :quantity_for_post_production, :label =>"Kuantitas Perbaiki" , :as => :string  %>
+		<%= f.input :quantity_for_post_production, :label =>"Kuantitas Perbaiki Bubut" , :as => :string  %>
 		<%= f.input :weight_for_post_production , :label =>"Berat Perbaiki", 
 				:hint => "Dalam kilogram, sensitif sampai 2 decimal. Contoh: <b>2.15</b>kg", :as => :string   %>	
 	

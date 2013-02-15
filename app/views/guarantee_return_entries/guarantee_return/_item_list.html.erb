@@ -15,7 +15,8 @@
 		<% objects.each do |object| %>
 			<%= render :partial =>  'guarantee_return_entries/entry', :locals => {
 				:object => object ,
-				:parent => parent 
+				:parent => parent,
+				:details => details 
 			} %> 
 		<% end %>
 	</tbody>

@@ -36,7 +36,11 @@ data_entry_role = {
         :edit => true, 
         :update_sales_item => true ,
         :delete_sales_item => true ,
-        :confirm_sales_item => true 
+        :confirm_sales_item => true,
+        :new_derivative => true, 
+        :create_derivative => true ,
+        :edit_derivative => true,
+        :update_derivative => true  
       },
   :pre_production_histories => {
     :new => true,
@@ -321,4 +325,23 @@ delivery_entry.reload
 delivery.reload 
 delivery.finalize(admin)
 
+delivery.reload
+pending_payment =  delivery.invoice.confirmed_pending_payment
+total_sum = ( pending_payment*0.5 ).to_s
+payment = Payment.create_by_employee(admin, {
+  :payment_method => PAYMENT_METHOD[:bank_transfer],
+  :customer_id    => customer_1.id , 
+  :note           => "Dibayarkan dengan nomor transaksi AC/2323flkajfeaij",
+  :amount_paid => total_sum,
+  :cash_account_id => bank_mandiri.id,
+  :downpayment_addition_amount => "0",
+  :downpayment_usage_amount => "0" 
+})
+
+invoice_payment = InvoicePayment.create_invoice_payment( admin, payment,  {
+  :invoice_id  => delivery.invoice.id , 
+  :amount_paid => total_sum
+} )
+
+payment.confirm( admin)
 

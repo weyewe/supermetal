@@ -11,7 +11,7 @@
 			</tr>
 		</thead>
 		<tbody> 
-			
+			<% object = parent %> 
 			<tr id="parent_entry-<%= object.id %>">
 				<td>
 					<%= object.code %>
@@ -38,13 +38,13 @@
 
 
 					<td>
-						<%= link_to delete_guarantee_return_url(:details => details), :class =>"delete_entry", :style => "cursor:pointer; text-decoration:none;" do %>
+						<%= link_to delete_guarantee_return_url(:details => 1), :class =>"delete_entry", :style => "cursor:pointer; text-decoration:none;" do %>
 							<i class='icon-remove'></i>Delete
 						<% end %> 
 					</td>
 
 					<td>
-						<%= link_to edit_guarantee_return_url(object,:details => details), 
+						<%= link_to edit_guarantee_return_url(object,:details => 1), 
 							:class =>"edit_entry modal-toggler", :style => "cursor:pointer; text-decoration:none;" do %>
 							<i class='icon-edit'></i>Edit
 						<% end %>

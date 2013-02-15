@@ -202,6 +202,10 @@ class GuaranteeReturnEntry < ActiveRecord::Base
   
   def update_guarantee_return_entry( employee, guarantee_return,  params ) 
     return nil if employee.nil?
+    if self.is_confirmed?
+      self.post_confirm_update(employee, guarantee_return, params)
+      return self 
+    end
     
    
     self.creator_id                     = employee.id 
@@ -220,10 +224,36 @@ class GuaranteeReturnEntry < ActiveRecord::Base
     return self 
   end
   
+  def post_confirm_update(employee, guarantee_return, params)
+    self.quantity_for_post_production   = params[:quantity_for_post_production]      
+    self.quantity_for_production        = params[:quantity_for_production]
+    self.quantity_for_production_repair = params[:quantity_for_production_repair]
+    self.weight_for_post_production     = BigDecimal( params[:weight_for_post_production] )     
+    self.weight_for_production          = BigDecimal( params[:weight_for_production] )
+    self.weight_for_production_repair   = BigDecimal( params[:weight_for_production_repair] )
+    self.item_condition                 = params[:item_condition]
+    self.save 
+    
+    if self.errors.size == 0 
+      return self 
+    end
+    
+    self.destroy_work_order
+    self.generate_work_order
+  end
+  
   def delete( employee )
     return nil if employee.nil?
-    return nil if self.is_confirmed? 
+    if self.is_confirmed? 
+      self.post_confirm_delete(employee)
+      return self
+    end
     
+    self.destroy 
+  end
+  
+  def post_confirm_delete(employee)
+    self.destroy_work_order
     self.destroy 
   end
   
@@ -240,16 +270,35 @@ class GuaranteeReturnEntry < ActiveRecord::Base
       raise ActiveRecord::Rollback, "Call tech support!" 
     end
     
+    self.generate_work_order
+   
+  end
+  
+  def generate_work_order
     ProductionOrder.generate_guarantee_return_production_order( self  )
     ProductionRepairOrder.generate_guarantee_return_production_repair_order( self  )
     PostProductionOrder.generate_guarantee_return_post_production_order( self )
+  end
+  
+  def destroy_work_order
+    ProductionOrder.where(
+      :case                     => PRODUCTION_ORDER[:guarantee_return]     ,
+      :source_document_entry    => self.class.to_s          ,
+      :source_document_entry_id => self.id                 
+    ).each {|x| x.destroy }
     
-    # PostProductionOrder generaet guarantee return order  
-    # Production order generate guarantee return order 
-    # sales_item = self.sales_item 
-    # sales_item.update_on_guarantee_return_confirm 
+    ProductionRepairOrder.where(
+      :case                     => PRODUCTION_REPAIR_ORDER[:guarantee_return]     ,
+      :source_document_entry    => self.class.to_s          ,
+      :source_document_entry_id => self.id         
+    ).each {|x| x.destroy }
     
+    PostProductionOrder.where(
+      :case                     =>  POST_PRODUCTION_ORDER[:guarantee_return]  ,
     
+      :source_document_entry    => self.class.to_s          ,
+      :source_document_entry_id => self.id            
+    ).each {|x| x.destroy }
   end
   
   def generate_code
@@ -282,5 +331,20 @@ class GuaranteeReturnEntry < ActiveRecord::Base
               
     self.code =  string 
     self.save 
+  end
+  
+  
+  def self.all_selectable_item_conditions
+    result = []
+    
+    
+    
+    result << [ "Hasil Cor" , 
+                    GUARANTEE_RETURN_ENTRY_ITEM_CONDITION[:production] ] 
+                    
+    result << [ "Hasil Bubut" , 
+                    GUARANTEE_RETURN_ENTRY_ITEM_CONDITION[:post_production] ] 
+     
+    return result
   end
 end

@@ -74,7 +74,7 @@ class PaymentsController < ApplicationController
 
   def generate_details 
     @parent = Payment.find_by_id params[:payment][:search_record_id]
-    @children = @payment.invoice_payments.order("created_at DESC") 
+    @children = @parent.invoice_payments.order("created_at DESC") 
   end
     
     

@@ -25,7 +25,10 @@ class GuaranteeReturn < ActiveRecord::Base
   
   def delete(employee)
     return nil if employee.nil?
-    return nil if self.is_confirmed?
+    if self.is_confirmed?
+      self.post_confirm_delete( employee ) 
+      return self
+    end
     
     self.guarantee_return_entries.each do |entry|
       entry.destroy 
@@ -35,6 +38,10 @@ class GuaranteeReturn < ActiveRecord::Base
   
   def update_by_employee( employee, params ) 
     return nil if employee.nil? 
+    if self.is_confirmed?
+      self.post_confirm_update(employee,params)
+      return self
+    end
     
     self.creator_id      = employee.id
     self.customer_id   = params[:customer_id] 
@@ -46,6 +53,21 @@ class GuaranteeReturn < ActiveRecord::Base
     end
     
     return self 
+  end
+  
+  def post_confirm_update(employee,params)
+    self.creator_id = employee.id 
+    self.receival_date =  params[:receival_date]
+    self.save 
+  end
+  
+  def post_confirm_delete(employee)
+    self.guarantee_return_entries.each do |gre|
+      gre.delete( employee ) 
+    end 
+    
+    self.is_deleted = true 
+    self.save
   end
   
   def generate_code
