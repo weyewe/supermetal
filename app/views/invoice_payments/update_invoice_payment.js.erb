@@ -17,25 +17,49 @@ $(document).ready(function(){
 		<% if   @has_no_errors  %> 
 			// clean the add product form
 			$form.remove(); 
-
-			<% new_entry  = escape_javascript( render :partial =>  'invoice_payments/entry', :locals => {
-				:object => @object ,
-				:parent => @parent 
-			} )%>
-
-			$("#entry-<%= @object.id %>").replaceWith('<%= new_entry %>') 
-
 			$.msgbox("Berhasil update Invoice Payment: <%= @object.invoice.code %>", 
 						{type: "info"});
 
-			
 			$modal.modal('hide'); 
+			
+			<% if not params[:details].nil? and params[:details].to_i == 1  %>
+				// re render the shite 
+				<% details = escape_javascript( render :partial => "payments/details", 
+					:locals => {
+				    :parent => @object.payment ,
+						:children 		=> @object.payment.invoice_payments.order("created_at DESC")
+			  })%>
+
+				var $details = $("#details")
+				var $details_wrapper = $("#details_wrapper");
+				var $details_dummy = $("#details_dummy");
+
+				// 2. the viewer + add shite
+				if($details.length == 0 ){
+					$details_wrapper.append('<%= details %>');
+				}else{
+					$details.replaceWith('<%= details %>')
+				}
+
+				$details_wrapper.show();
+				$details_dummy.hide();
+				
+			<% else %>
+		 
+				<% new_entry  = escape_javascript( render :partial =>  'invoice_payments/entry', :locals => {
+					:object => @object ,
+					:parent => @parent 
+				} )%>
+
+				$("#entry-<%= @object.id %>").replaceWith('<%= new_entry %>')
+				
+			<% end %>
 
 
 		<% elsif  not @has_no_errors %> 
 			<% new_form = escape_javascript(   render :partial => "invoice_payments/new_object_form", :locals => {
 		    :new_object => @object , 
-				:url => update_invoice_payment_url(@object)  ,
+				:url => update_invoice_payment_url(@object, :details => params[:details])  ,
 				:parent => @parent ,
 				:customer => @customer
 		  })%>

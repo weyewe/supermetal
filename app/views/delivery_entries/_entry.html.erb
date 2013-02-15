@@ -1,3 +1,7 @@
+<% if details.nil? %>
+	<% details = 0 %>
+<% end %>
+
 <tr id="entry-<%= object.id %>">
 	<td>
 		<%= object.code %>

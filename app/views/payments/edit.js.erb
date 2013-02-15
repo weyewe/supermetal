@@ -2,7 +2,7 @@ $(document).ready(function(){
 	  
 		<% new_form = escape_javascript(  render :partial => "payments/new_object_form", :locals => {
 	    :new_object => @object , 
-			:url => update_payment_url(@object)  
+			:url => update_payment_url(@object, :details => params[:details])  
 	  })%>
  
 	$("#editEntry .modal-body").append('<%= new_form %>');

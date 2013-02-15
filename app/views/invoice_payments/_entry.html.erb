@@ -13,21 +13,23 @@
 		<%= print_money( object.invoice.confirmed_pending_payment)  %>
 	</td>
 	 
+	 
+	<% if details.nil? %>
+		<% details = 0 %>
+	<% end %>
 	
-	<% if not parent.is_confirmed? %>
 		<td>
-			<%= link_to delete_invoice_payment_url, :class =>"delete_entry", 
+			<%= link_to delete_invoice_payment_url(:details => details), :class =>"delete_entry", 
 				:style => "cursor:pointer; text-decoration:none;" do %>
 				<i class='icon-remove'></i>Delete
 			<% end %> 
 		</td>
 
 		<td>
-			<%= link_to edit_payment_invoice_payment_url(parent, object), 
+			<%= link_to edit_payment_invoice_payment_url(parent, object,:details => details), 
 				:class =>"edit_entry modal-toggler", :style => "cursor:pointer; text-decoration:none;" do %>
 				<i class='icon-edit'></i>Edit
 			<% end %>
 		</td>
-	<% end %>
 	
 </tr>

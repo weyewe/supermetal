@@ -64,6 +64,8 @@ Supermetal::Application.routes.draw do
   match 'search_sales_item' => "sales_items#search_sales_item", :as => :search_sales_item 
   match 'search_sales_order' => 'sales_orders#search_sales_order' , :as => :search_sales_order
   match 'search_delivery' => 'deliveries#search_delivery' , :as => :search_delivery
+  
+  match 'search_payment' => 'payments#search_payment' , :as => :search_payment
  
 ##################################################
 ##################################################
@@ -142,7 +144,7 @@ Supermetal::Application.routes.draw do
   match 'confirm_sales_order/:sales_order_id' => "sales_orders#confirm_sales_order", :as => :confirm_sales_order, :method => :post 
 
   match 'print_sales_order/:sales_order_id' => 'sales_orders#print_sales_order' , :as => :print_sales_order
-
+  match 'sales_order_details' => 'sales_orders#details' , :as => :sales_order_details
   match 'sales_orders/generate_details' => 'sales_orders#generate_details', :as => :generate_sales_order_details
 
 ##################################################
@@ -198,6 +200,7 @@ Supermetal::Application.routes.draw do
   match 'confirm_delivery/:delivery_id' => "deliveries#confirm_delivery", :as => :confirm_delivery, :method => :post
   match 'finalize_delivery/:delivery_id' => "deliveries#finalize_delivery", :as => :finalize_delivery, :method => :post
   
+  match 'delivery_details' => 'deliveries#details' , :as => :delivery_details
   match 'deliveries/generate_details' => 'deliveries#generate_details', :as => :generate_delivery_details
   
   match 'print_delivery/:delivery_id' => 'deliveries#print_delivery' , :as => :print_delivery
@@ -297,6 +300,8 @@ Supermetal::Application.routes.draw do
   match 'confirm_payment/:payment_id' => "payments#confirm_payment", :as => :confirm_payment, :method => :post
   match 'finalize_payment/:payment_id' => "payments#finalize_payment", :as => :finalize_payment, :method => :post
 
+  match 'payment_details' => 'payments#details' , :as => :payment_details
+  match 'payments/generate_details' => 'payments#generate_details', :as => :generate_payment
 
   match 'print_payment/:payment_id' => 'payments#print_payment' , :as => :print_payment
   

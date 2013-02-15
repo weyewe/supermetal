@@ -59,7 +59,7 @@ class DeliveriesController < ApplicationController
 =begin
   DETAILS
 =end
-  def show
+  def details
     puts "We are in the details of sales order\n"*50
   end
 

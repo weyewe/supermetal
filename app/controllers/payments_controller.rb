@@ -42,6 +42,42 @@ class PaymentsController < ApplicationController
     # add some defensive programming.. current user has role admin, and current_user is indeed belongs to the company 
     @payment.confirm( current_user  )  
   end
+  
+  
+=begin
+  DETAILS
+=end
+  def details
+  end
+
+  def search_payment
+    search_params = params[:q]
+
+    @objects = [] 
+    query = '%' + search_params + '%'
+    # on PostGre SQL, it is ignoring lower case or upper case 
+    @objects = Payment.where{ (code =~ query)  &
+                      (is_deleted.eq false) & 
+                      (is_confirmed.eq true) 
+                      }.map do |x| 
+                        {
+                          :code => x.code, 
+                          :id => x.id 
+                        }
+                      end
+
+    respond_to do |format|
+      format.html # show.html.erb 
+      format.json { render :json => @objects }
+    end
+  end
+
+  def generate_details 
+    @parent = Payment.find_by_id params[:payment][:search_record_id]
+    @children = @payment.invoice_payments.order("created_at DESC") 
+  end
+    
+    
 
 =begin
   PRINT SALES ORDER

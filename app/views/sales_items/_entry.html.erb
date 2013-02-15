@@ -87,6 +87,9 @@
 		</ul>
 	</td>
 	
+	<% if details.nil? %>
+		<% details = 0 %>
+	<% end %>
 	
 		<td>
 			<%= link_to delete_sales_item_url(:details => details), :class =>"delete_entry", 
