@@ -381,7 +381,7 @@ Supermetal::Application.routes.draw do
   match 'finalize_payment/:payment_id' => "payments#finalize_payment", :as => :finalize_payment, :method => :post
 
   match 'payment_details' => 'payments#details' , :as => :payment_details
-  match 'payments/generate_details' => 'payments#generate_details', :as => :generate_payment
+  match 'payments/generate_details' => 'payments#generate_details', :as => :generate_payment_details
 
   match 'print_payment/:payment_id' => 'payments#print_payment' , :as => :print_payment
   

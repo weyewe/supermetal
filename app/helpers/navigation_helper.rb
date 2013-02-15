@@ -199,17 +199,6 @@ module NavigationHelper
       # block production progress
       [
         {
-          :name => "Pre Production",
-          :url  => 'new_pre_production_history_url',
-          :icon => "icon-folder-close",
-          :activities => [
-            {
-              :controller => "pre_production_histories",
-              :action     => "new"
-            } 
-          ]
-        },
-        {
           :name => "Pre Production Result",
           :url  => 'new_pre_production_result_url',
           :icon => "icon-folder-close",
@@ -227,17 +216,6 @@ module NavigationHelper
           :activities => [
             {
               :controller => "production_results",
-              :action     => "new"
-            } 
-          ]
-        },
-        {
-          :name => "Production",
-          :url  => 'new_production_history_url',
-          :icon => "icon-shopping-cart",
-          :activities => [
-            {
-              :controller => "production_histories",
               :action     => "new"
             } 
           ]
@@ -263,18 +241,7 @@ module NavigationHelper
               :action     => "new"
             } 
           ]
-        },
-        {
-          :name => "Post Production",
-          :url  => 'new_post_production_history_url',
-          :icon => "icon-wrench",
-          :activities => [
-            {
-              :controller => "post_production_histories",
-              :action     => "new"
-            } 
-          ]
-        } 
+        }
       ],
       
       # block sales return 
@@ -372,12 +339,81 @@ module NavigationHelper
     ] 
   }
   
+  ADMIN_NAV = {
+    :header => "Admin",
+    :header_icon => "icon-shopping-cart",
+    :has_dropdown => true, 
+    :only_icon => false , 
+    :blocks => [
+      # block 1 
+      [
+        {
+          :name => "Sales Order",
+          :url  => 'sales_order_details_url',
+          :icon => "icon-folder-close",
+          :activities => [
+            {
+              :controller => "sales_orders",
+              :action     => "details"
+            } 
+          ]
+        },
+        {
+          :name => "Delivery",
+          :url  => 'delivery_details_url',
+          :icon => "icon-folder-close",
+          :activities => [
+            {
+              :controller => "deliveries",
+              :action     => "details"
+            } 
+          ]
+        },
+        {
+          :name => "Payment",
+          :url  => 'payment_details_url',
+          :icon => "icon-folder-close",
+          :activities => [
+            {
+              :controller => "payments",
+              :action     => "details"
+            } 
+          ]
+        },
+        {
+          :name => "Guarantee Return",
+          :url  => 'guarantee_return_details_url',
+          :icon => "icon-folder-close",
+          :activities => [
+            {
+              :controller => "guarantee_returns",
+              :action     => "details"
+            } 
+          ]
+        },
+        {
+          :name => "Item Receival",
+          :url  => 'item_receival_details_url',
+          :icon => "icon-folder-close",
+          :activities => [
+            {
+              :controller => "item_receivals",
+              :action     => "details"
+            } 
+          ]
+        }
+      ] 
+      
+    ] 
+  }
+  
   def render_navigation( current_user , params ) 
     navigation_string = ""
     
     navigation_blocks = [] 
     [ 
       MANAGEMENT_NAV,
+      ADMIN_NAV,
       INVENTORY_NAV,
       REPORT_NAV, 
       PAYMENT_NAV,

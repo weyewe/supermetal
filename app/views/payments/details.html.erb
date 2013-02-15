@@ -9,7 +9,7 @@
 		<div class='row'>
 			<div id="myTabContent" class="tab-content" style='overflow:visible;'>
 				<div class="tab-pane fade active in" id="tab1"> 
-					<%= simple_form_for :sales_order, { url: generate_payment_details_url , 
+					<%= simple_form_for :payment, { url: generate_payment_details_url , 
 								:html => {:id=>"details_trigger_form" } } do |f| %>
 					  <%= f.input :search_record_id , :label => "Code"  , :input_html => {
 							:id => 'search_record_id'
