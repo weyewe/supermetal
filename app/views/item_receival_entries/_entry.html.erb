@@ -14,7 +14,6 @@
   
 	
 	
-	<% if not parent.is_confirmed? %>
 		<td>
 			<%= link_to delete_item_receival_entry_url(:details => details) , :class =>"delete_entry", 
 				:style => "cursor:pointer; text-decoration:none;" do %>
@@ -28,9 +27,5 @@
 				<i class='icon-edit'></i>Edit
 			<% end %>
 		</td>
-	<% else %>
-		<td colspan='2'>
-			NA
-		</td>
-	<% end %>
+	 
 </tr>

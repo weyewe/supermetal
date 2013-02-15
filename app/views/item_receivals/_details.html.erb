@@ -11,7 +11,7 @@
 			</tr>
 		</thead>
 		<tbody> 
-			
+			<% object = parent %>
 			<tr id="parent_entry-<%= object.id %>">
 				<td>
 					<%=  object.code %>
@@ -60,7 +60,7 @@
 	<hr />
 	
 	
-	<%= render :partial => 'sales_items/sales_order/item_list', :locals => {
+	<%= render :partial => 'item_receival_entries/item_receival/item_list', :locals => {
 		:objects => children, 
 		:parent => parent,
 		:details => 1 
