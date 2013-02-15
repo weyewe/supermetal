@@ -205,6 +205,8 @@ Supermetal::Application.routes.draw do
   match 'generate_production_result' => 'production_results#generate_result', :as => :generate_production_result, :method => :post
 
 
+
+
 ##################################################
 ##################################################
 ######### POST_PRODUCTION_HISTORY
@@ -215,6 +217,18 @@ Supermetal::Application.routes.draw do
   match 'confirm_post_production_history/:post_production_history_id' => "post_production_histories#confirm_post_production_history", :as => :confirm_post_production_history, :method => :post 
 
   match 'generate_post_production_history' => 'post_production_histories#generate_post_production_history', :as => :generate_post_production_history, :method => :post
+  
+##################################################
+##################################################
+######### POST_PRODUCTION_RESULT
+##################################################
+##################################################
+  match 'update_post_production_result/:post_production_result_id' => 'post_production_results#update_post_production_result', :as => :update_post_production_result , :method => :post 
+  match 'delete_post_production_result' => 'post_production_results#delete_post_production_result', :as => :delete_post_production_result, :method => :post
+  match 'confirm_post_production_result/:post_production_result_id' => "post_production_results#confirm_post_production_result", :as => :confirm_post_production_result, :method => :post 
+
+  match 'generate_post_production_result' => 'post_production_results#generate_result', :as => :generate_post_production_result, :method => :post
+
   
 ##################################################
 ##################################################

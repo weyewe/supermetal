@@ -232,6 +232,17 @@ module NavigationHelper
           ]
         },
         {
+          :name => "Post Production Result",
+          :url  => 'new_post_production_result_url',
+          :icon => "icon-folder-close",
+          :activities => [
+            {
+              :controller => "post_production_results",
+              :action     => "new"
+            } 
+          ]
+        },
+        {
           :name => "Post Production",
           :url  => 'new_post_production_history_url',
           :icon => "icon-wrench",

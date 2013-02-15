@@ -228,7 +228,7 @@ class PostProductionResult < ActiveRecord::Base
   def delete(employee)
     return nil if employee.nil?
     if self.is_confirmed?
-      self.post_confirm_update(employee,  params ) 
+      self.post_confirm_delete(employee ) 
       return self 
     end 
     
