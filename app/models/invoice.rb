@@ -162,9 +162,22 @@ class Invoice < ActiveRecord::Base
       
     elsif initial_amount_payable < new_amount_payable
       # set is_paid status to be false 
-      self.is_paid  = false 
+      if amount_paid > new_amount_payable 
+        #  we must distribute the excess to downpayment history
+        # how can we distribute it? 
+        # find the 
+        diff = amount_paid -  new_amount_payable
+        self.is_paid = true 
+        
+        self.distribute_excess_payment( diff )  
+      elsif amount_paid < new_amount_payable
+        self.is_paid = false 
+      elsif amount_paid ==  new_amount_payable
+        self.is_paid = true 
+      end
+      
     elsif initial_amount_payable  ==  new_amount_payable
-      # do nothing .. no change in price then. 
+      # do nothing. doesn't change anything
     end
     
     self.save 
