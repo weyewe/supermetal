@@ -83,14 +83,14 @@ class Customer < ActiveRecord::Base
     customer = self 
     SalesItem.joins(:sales_order).where(
       :sales_order => {:customer_id => customer.id }
-    ).where{(ready.not_eq 0)}
+    )
   end
   
   def all_selectable_sales_items
     selectables  =  self.all_ready_sales_items 
     result = []
     selectables.each do |selectable| 
-      result << [ "#{selectable.code} | Ready: #{selectable.ready}" , 
+      result << [ "#{selectable.code}" , 
                       selectable.id ]  
     end
     return result

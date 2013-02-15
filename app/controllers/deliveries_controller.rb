@@ -57,6 +57,40 @@ class DeliveriesController < ApplicationController
   end
   
 =begin
+  DETAILS
+=end
+  def show
+    puts "We are in the details of sales order\n"*50
+  end
+
+  def search_delivery
+    search_params = params[:q]
+
+    @objects = [] 
+    query = '%' + search_params + '%'
+    # on PostGre SQL, it is ignoring lower case or upper case 
+    @objects = Delivery.where{ (code =~ query)  &
+                      (is_deleted.eq false) & 
+                      (is_confirmed.eq true) & 
+                      (is_finalized.eq true) }.map do |x| 
+                        {
+                          :code => x.code, 
+                          :id => x.id 
+                        }
+                      end
+
+    respond_to do |format|
+      format.html # show.html.erb 
+      format.json { render :json => @objects }
+    end
+  end
+
+  def generate_details 
+    @parent = Delivery.find_by_id params[:delivery][:search_record_id]
+    @children = @parent.delivery_entries.order("created_at DESC") 
+  end
+  
+=begin
   PRINT SALES ORDER
 =end
   def print_delivery

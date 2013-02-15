@@ -25,6 +25,8 @@ class CreateDeliveries < ActiveRecord::Migration
       t.boolean     :is_finalized, :default => false   
       t.integer     :finalizer_id 
       t.datetime    :finalized_at 
+      
+      t.boolean :is_deleted , :default => false 
 
       
 

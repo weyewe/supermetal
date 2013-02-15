@@ -3,22 +3,20 @@
 		<tr>
 			<th>Code</th>
 			<th>Nama</th> 
-			<th>Jumlah Kirim</th>
-			<% if not parent.is_confirmed? %>
-				<th colspan='2'>Action</th>
-			<% elsif parent.is_confirmed? and not parent.is_finalized? %>
-				<th>Jumlah Konfirmasi</th>
-				<th>Action</th>
-			<% elsif parent.is_confirmed? and parent.is_finalized? %>
-				<th>Jumlah Konfirmasi</th>
-			<% end %>
+			<th>Jumlah Kirim</th> 
+			<th>Jumlah Konfirmasi</th>
+			<th>Action</th> 
 		</tr>
 	</thead>
 	<tbody> 
+		<% if details.nil? %>
+			<% details = 0 %>
+		<% end %>
 		<% objects.each do |object| %>
 			<%= render :partial =>  'delivery_entries/entry', :locals => {
 				:object => object ,
-				:parent => parent 
+				:parent => parent ,
+				:details => details
 			} %> 
 		<% end %>
 	</tbody>

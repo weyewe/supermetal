@@ -60,8 +60,10 @@ Supermetal::Application.routes.draw do
   SEARCH DATA
 =end
   match 'search_customer' => "customers#search_customer", :as => :search_customer 
-  match 'search_sales_order' => 'sales_orders#search_sales_order' , :as => :search_sales_order
+  
   match 'search_sales_item' => "sales_items#search_sales_item", :as => :search_sales_item 
+  match 'search_sales_order' => 'sales_orders#search_sales_order' , :as => :search_sales_order
+  match 'search_delivery' => 'deliveries#search_delivery' , :as => :search_delivery
  
 ##################################################
 ##################################################
@@ -196,6 +198,7 @@ Supermetal::Application.routes.draw do
   match 'confirm_delivery/:delivery_id' => "deliveries#confirm_delivery", :as => :confirm_delivery, :method => :post
   match 'finalize_delivery/:delivery_id' => "deliveries#finalize_delivery", :as => :finalize_delivery, :method => :post
   
+  match 'deliveries/generate_details' => 'deliveries#generate_details', :as => :generate_delivery_details
   
   match 'print_delivery/:delivery_id' => 'deliveries#print_delivery' , :as => :print_delivery
 ##################################################
