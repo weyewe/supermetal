@@ -210,6 +210,17 @@ module NavigationHelper
           ]
         },
         {
+          :name => "Pre Production Result",
+          :url  => 'new_pre_production_result_url',
+          :icon => "icon-folder-close",
+          :activities => [
+            {
+              :controller => "pre_production_results",
+              :action     => "new"
+            } 
+          ]
+        },
+        {
           :name => "Production Result",
           :url  => 'new_production_result_url',
           :icon => "icon-folder-close",

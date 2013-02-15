@@ -1,0 +1,50 @@
+ 
+<tr id="entry-<%= object.id %>">
+	<td>
+		<%=  print_date( object.created_at ) %>
+	</td>
+	<td>
+		<%=  object.ok_quantity  %> <br />
+	</td>
+	
+ 
+	<td>
+		<%=  object.broken_quantity  %> <br />
+	</td>
+	 
+ 	<td>
+		<%= print_date( object.started_at )%>
+	</td>
+	
+	<td>
+		<%= print_date( object.finished_at )%>
+	</td>
+	
+	
+		<td>
+			<%= link_to delete_pre_production_result_url, :class =>"delete_entry", :style => "cursor:pointer; text-decoration:none;" do %>
+				<i class='icon-remove'></i>Delete
+			<% end %> 
+		</td>
+
+		<td>
+			<%= link_to edit_template_sales_item_pre_production_result_url(parent, object), 
+				:class =>"edit_entry modal-toggler", :style => "cursor:pointer; text-decoration:none;" do %>
+				<i class='icon-edit'></i>Edit
+			<% end %>
+		</td>
+		
+		<td>
+			<%= link_to confirm_pre_production_result_url(object), 
+				:class =>"confirm_entry modal-toggler", :style => "cursor:pointer; text-decoration:none;" do %>
+				<i class='icon-ok'></i>Confirm
+			<% end %>
+			
+			<hr />
+			<% if object.is_confirmed %>
+				CONFIRMED
+			<% end %>
+		</td>
+ 
+	
+</tr>

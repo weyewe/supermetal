@@ -18,6 +18,12 @@ class TemplateSalesItem < ActiveRecord::Base
   
   validates_presence_of :code 
   
+  
+  def has_unconfirmed_pre_production_result?
+    self.pre_production_results.where(:is_confirmed => false ).count != 0 
+  end
+  
+  
   def has_unconfirmed_production_result?
     self.production_results.where(:is_confirmed => false ).count != 0 
   end

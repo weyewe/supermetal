@@ -1,7 +1,11 @@
-match 'update_production_repair_result/:production_repair_result_id' => 'production_repair_results#update_production_repair_result', :as => :update_production_repair_result , :method => :post 
-match 'delete_production_repair_result' => 'production_repair_results#delete_production_repair_result', :as => :delete_production_repair_result, :method => :post
-match 'confirm_production_repair_result/:production_repair_result_id' => "production_repair_results#confirm_production_repair_result", :as => :confirm_production_repair_result, :method => :post 
+##################################################
+##################################################
+######### PRODUCTION_REPAIR_RESULT
+##################################################
+##################################################
+  match 'update_pre_production_result/:pre_production_result_id' => 'pre_production_results#update_pre_production_result', :as => :update_pre_production_result , :method => :post 
+  match 'delete_pre_production_result' => 'pre_production_results#delete_pre_production_result', :as => :delete_pre_production_result, :method => :post
+  match 'confirm_pre_production_result/:pre_production_result_id' => "pre_production_results#confirm_pre_production_result", :as => :confirm_pre_production_result, :method => :post 
 
-match 'generate_production_repair_result' => 'production_repair_results#generate_result', :as => :generate_production_repair_result, :method => :post
-
+  match 'generate_pre_production_result' => 'pre_production_results#generate_result', :as => :generate_pre_production_result, :method => :post
 
