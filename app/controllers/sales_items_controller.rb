@@ -46,7 +46,7 @@ class SalesItemsController < ApplicationController
   # 
   def new_derivative
     @parent = SalesOrder.find_by_id params[:sales_order_id]
-    @object = SalesItem.new 
+    @new_object = SalesItem.new 
   end
   
   def create_derivative

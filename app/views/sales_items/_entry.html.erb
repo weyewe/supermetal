@@ -100,10 +100,18 @@
 		</td>
 
 		<td>
-			<%= link_to edit_sales_order_sales_item_url(parent, object, :details => details), 
-				:class =>"edit_entry modal-toggler", :style => "cursor:pointer; text-decoration:none;" do %>
-				<i class='icon-edit'></i>Edit
-			<% end %>
+			
+			<% if object.case  == SALES_ITEM_CREATION_CASE[:new]%>
+				<%= link_to edit_sales_order_sales_item_url(parent, object, :details => details), 
+					:class =>"edit_entry modal-toggler", :style => "cursor:pointer; text-decoration:none;" do %>
+					<i class='icon-edit'></i>Edit
+				<% end %>
+			<% else %>
+				<%= link_to edit_sales_order_derivative_sales_item_url(parent, object, :details => details), 
+					:class =>"edit_entry modal-toggler", :style => "cursor:pointer; text-decoration:none;" do %>
+					<i class='icon-edit'></i>Edit
+				<% end %>
+			<% end %> 
 		</td>
 	
 </tr>

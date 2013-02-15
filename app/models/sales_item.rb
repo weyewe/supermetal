@@ -434,17 +434,20 @@ class SalesItem < ActiveRecord::Base
     self.pre_production_price  = BigDecimal( params[:pre_production_price])
     self.production_price      = BigDecimal( params[:production_price])   
     self.post_production_price = BigDecimal( params[:post_production_price]) 
-    self.weight_per_piece = BigDecimal( params[:weight_per_piece])
+    
     
     self.requested_deadline    = params[:requested_deadline] 
     
-    self.name                  = params[:name]
-    self.description           = params[:description]
-    self.delivery_address = params[:delivery_address]
+    if self.case == SALES_ITEM_CREATION_CASE[:new]
+      self.weight_per_piece = BigDecimal( params[:weight_per_piece])
+      self.name                  = params[:name]
+      self.description           = params[:description]
+      self.delivery_address = params[:delivery_address]
+    end
     
     
 
-    if self.main_template_sales_item? and ( self.name_changed? or self.description_changed? ) 
+    if self.case == SALES_ITEM_CREATION_CASE[:new]
       self.update_template_sales_item 
     end
     
@@ -540,7 +543,7 @@ class SalesItem < ActiveRecord::Base
     
     
     
-    if SalesItemSubcription.where(:template_item_id => template.id, 
+    if SalesItemSubcription.where(:template_sales_item_id => template.id, 
           :customer_id => sales_order.customer_id ).count == 0 
       new_object.case                   = SALES_ITEM_CREATION_CASE[:repeat] 
     else
@@ -580,7 +583,7 @@ class SalesItem < ActiveRecord::Base
   end
   
   
-  def update_repeat_sales_item( employee, params ) 
+  def update_derivative_sales_item( employee, params ) 
     if self.is_confirmed? 
       self.post_confirm_update( employee, params ) 
       return self
@@ -594,12 +597,11 @@ class SalesItem < ActiveRecord::Base
     template = TemplateSalesItem.find_by_id params[:template_sales_item_id]
     
     if self.template_sales_item_id != template.id
-      # change the template and the data related to it 
-      sample_sales_item  = template.confirmed_sales_items.first 
-      self.material_id           = sample_sales_item.material_id 
-      self.weight_per_piece      = sample_sales_item.weight_per_piece 
-      self.description           = sample_sales_item.description
-      self.name                  = sample_sales_item.name
+      # change the template and the data related to it  
+      self.material_id           = template.material_id 
+      self.weight_per_piece      = template.weight_per_piece 
+      self.description           = template.description
+      self.name                  = template.name
       self.template_sales_item_id = template.id 
     end
     
@@ -631,11 +633,7 @@ class SalesItem < ActiveRecord::Base
     
     return self
   end
-  
-  def post_confirm_update_repeat_sales_item(params)
-    # can't change sales item anymore. 
-    
-  end
+   
   
 =begin
 ##############################

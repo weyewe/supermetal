@@ -11,6 +11,9 @@
  
    
 	 <!-- select the template -->
+	
+	<%= f.input :template_sales_item_id  , :input_html => {:class => "input-xlarge "}, 
+  			:label => "Dasar Sales Item" %>
 
 		<%= f.input :is_pending_pricing, :label =>"Pending Pricing?", 
 					:hint => "Tunda Pembuatan Harga?" %>
@@ -60,3 +63,21 @@
 <% end %>
 
 
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+	
+	 $("#sales_item_template_sales_item_id").tokenInput('<%=	search_template_sales_item_url %>', {
+		prePopulate:   	[
+				<% if not new_object.template_sales_item_id.nil? %> 
+				{id: <%= new_object.template_sales_item_id %>, 
+						code: '<%= new_object.template_sales_item.code %>'}
+				<% end %>
+			],
+		zindex: 9999,
+		propertyToSearch: "code",
+		tokenLimit: 1
+	});
+});
+</script>
