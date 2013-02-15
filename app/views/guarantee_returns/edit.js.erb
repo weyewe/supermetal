@@ -2,7 +2,7 @@ $(document).ready(function(){
 	  
 		<% new_form = escape_javascript(  render :partial => "guarantee_returns/new_object_form", :locals => {
 	    :new_object => @object , 
-			:url => update_guarantee_return_url(@object)  
+			:url => update_guarantee_return_url(@object,:details => details)  
 	  })%>
  
 	$("#editEntry .modal-body").append('<%= new_form %>');

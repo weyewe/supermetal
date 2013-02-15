@@ -14,6 +14,8 @@ class CreateGuaranteeReturns < ActiveRecord::Migration
       t.integer :confirmer_id 
       t.datetime  :confirmed_at
       
+      t.boolean :is_deleted, :default => false 
+      
       t.timestamps
     end
   end

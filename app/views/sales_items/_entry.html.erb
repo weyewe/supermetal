@@ -1,4 +1,7 @@
- 
+ 	<% if details.nil? %>
+		<% details = 0 %>
+	<% end %>
+	
 <tr id="entry-<%= object.id %>">
 	<td>
 		<%= object.code %>
@@ -87,9 +90,7 @@
 		</ul>
 	</td>
 	
-	<% if details.nil? %>
-		<% details = 0 %>
-	<% end %>
+	
 	
 		<td>
 			<%= link_to delete_sales_item_url(:details => details), :class =>"delete_entry", 

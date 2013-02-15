@@ -50,7 +50,39 @@ class GuaranteeReturnsController < ApplicationController
     @guarantee_return.confirm( current_user  )  
     @guarantee_return.reload
   end
-  
+ 
+
+=begin
+  DETAILS
+=end
+  def details
+  end
+
+  def search_guarantee_return
+    search_params = params[:q]
+
+    @objects = [] 
+    query = '%' + search_params + '%'
+    # on PostGre SQL, it is ignoring lower case or upper case 
+    @objects = GuaranteeReturn.where{ (code =~ query)  &
+                      (is_deleted.eq false) & 
+                      (is_confirmed.eq true) }.map do |x| 
+                        {
+                          :code => x.code, 
+                          :id => x.id 
+                        }
+                      end
+
+    respond_to do |format|
+      format.html # show.html.erb 
+      format.json { render :json => @objects }
+    end
+  end
+
+  def generate_details 
+    @parent = GuaranteeReturn.find_by_id params[:guarantee_return][:search_record_id]
+    @children = @parent.guarantee_return_entries.order("created_at DESC") 
+  end
   # def finalize_guarantee_return
   #   @guarantee_return = GuaranteeReturn.find_by_id params[:guarantee_return_id]
   #   # add some defensive programming.. current user has role admin, and current_user is indeed belongs to the company

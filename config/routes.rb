@@ -66,6 +66,7 @@ Supermetal::Application.routes.draw do
   match 'search_delivery' => 'deliveries#search_delivery' , :as => :search_delivery
   
   match 'search_payment' => 'payments#search_payment' , :as => :search_payment
+  match 'search_guarantee_return' => 'guarantee_returns#search_guarantee_return' , :as => :search_guarantee_return
  
 ##################################################
 ##################################################
@@ -245,6 +246,11 @@ Supermetal::Application.routes.draw do
   match 'update_guarantee_return/:guarantee_return_id' => 'guarantee_returns#update_guarantee_return', :as => :update_guarantee_return , :method => :post 
   match 'delete_guarantee_return' => 'guarantee_returns#delete_guarantee_return', :as => :delete_guarantee_return , :method => :post
   match 'confirm_guarantee_return/:guarantee_return_id' => "guarantee_returns#confirm_guarantee_return", :as => :confirm_guarantee_return, :method => :post
+  
+  match 'guarantee_return_details' => 'guarantee_returns#details' , :as => :guarantee_return_details
+  match 'guarantee_returns/generate_details' => 'guarantee_returns#generate_details', :as => :generate_guarantee_return_details
+  
+  
   # match 'finalize_delivery/:delivery_id' => "deliveries#finalize_delivery", :as => :finalize_delivery, :method => :post
   # 
   # 
