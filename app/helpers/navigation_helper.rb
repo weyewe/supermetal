@@ -232,6 +232,17 @@ module NavigationHelper
           ]
         },
         {
+          :name => "Production Repair Result",
+          :url  => 'new_production_repair_result_url',
+          :icon => "icon-folder-close",
+          :activities => [
+            {
+              :controller => "production_repair_results",
+              :action     => "new"
+            } 
+          ]
+        },
+        {
           :name => "Post Production Result",
           :url  => 'new_post_production_result_url',
           :icon => "icon-folder-close",

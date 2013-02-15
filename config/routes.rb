@@ -205,6 +205,18 @@ Supermetal::Application.routes.draw do
   match 'generate_production_result' => 'production_results#generate_result', :as => :generate_production_result, :method => :post
 
 
+##################################################
+##################################################
+######### PRODUCTION_REPAIR_RESULT
+##################################################
+##################################################
+  match 'update_production_repair_result/:production_repair_result_id' => 'production_repair_results#update_production_repair_result', :as => :update_production_repair_result , :method => :post 
+  match 'delete_production_repair_result' => 'production_repair_results#delete_production_repair_result', :as => :delete_production_repair_result, :method => :post
+  match 'confirm_production_repair_result/:production_repair_result_id' => "production_repair_results#confirm_production_repair_result", :as => :confirm_production_repair_result, :method => :post 
+
+  match 'generate_production_repair_result' => 'production_repair_results#generate_result', :as => :generate_production_repair_result, :method => :post
+
+
 
 
 ##################################################

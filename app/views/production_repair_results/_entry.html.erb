@@ -5,14 +5,7 @@
 	</td>
 	<td>
 		<%=  object.ok_quantity  %> <br />
-		<b><%= object.ok_weight.to_s%> kg </b>
-	</td>
-	
-	<td>
-		<%=  object.repairable_quantity  %> <br />
-		<b><%= object.repairable_weight.to_s%> kg</b>
-		<hr />
-		Tap: <b><%= object.repairable_tap_weight.to_s %> kg</b>
+		<b><%= object.ok_weight.to_s%> kg </b> 
 	</td>
  
 	
@@ -31,20 +24,20 @@
 	
 	
 		<td>
-			<%= link_to delete_production_result_url, :class =>"delete_entry", :style => "cursor:pointer; text-decoration:none;" do %>
+			<%= link_to delete_production_repair_result_url, :class =>"delete_entry", :style => "cursor:pointer; text-decoration:none;" do %>
 				<i class='icon-remove'></i>Delete
 			<% end %> 
 		</td>
 
 		<td>
-			<%= link_to edit_template_sales_item_production_result_url(parent, object), 
+			<%= link_to edit_template_sales_item_production_repair_result_url(parent, object), 
 				:class =>"edit_entry modal-toggler", :style => "cursor:pointer; text-decoration:none;" do %>
 				<i class='icon-edit'></i>Edit
 			<% end %>
 		</td>
 		
 		<td>
-			<%= link_to confirm_production_result_url(object), 
+			<%= link_to confirm_production_repair_result_url(object), 
 				:class =>"confirm_entry modal-toggler", :style => "cursor:pointer; text-decoration:none;" do %>
 				<i class='icon-ok'></i>Confirm
 			<% end %>

@@ -1,7 +1,7 @@
 <div id="history">
-	<%= link_to new_template_sales_item_production_result_url( template_sales_item), 
+	<%= link_to new_template_sales_item_production_repair_result_url( template_sales_item), 
 			:class => "new_entry btn btn-primary" do %>
-		<i class="icon-plus"></i>Production Progress Baru
+		<i class="icon-plus"></i>Production Repair Progress Baru
 	<% end %>
 	<hr />
 
@@ -10,7 +10,6 @@
 			<tr>
 				<th>Tanggal Record</th>
 				<th>Sukses</th>  
-				<th>Perbaiki</th>
 				<th>Gagal</th>   <!--  preproduction, production, post production + delivery? -->
 	 			<th>Tanggal Mulai</th>
 				<th>Tanggal Selesai</th>
@@ -19,7 +18,7 @@
 		</thead>
 		<tbody> 
 			<% results.each do |object| %>
-				<%= render :partial =>  'production_results/entry', :locals => {
+				<%= render :partial =>  'production_repair_results/entry', :locals => {
 					:object => object ,
 					:parent => template_sales_item 
 				} %> 

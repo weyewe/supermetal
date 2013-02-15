@@ -137,9 +137,9 @@ class SubcriptionProductionHistory < ActiveRecord::Base
     self.ok_quantity         = params[:ok_quantity]
     self.repairable_quantity = params[:repairable_quantity]
     self.broken_quantity     = params[:broken_quantity] 
-    self.ok_weight           = BiDecimal( params[:ok_weight]         )
-    self.repairable_weight   = BiDecimal( params[:repairable_weight] )
-    self.broken_weight       = BiDecimal( params[:broken_weight]     )
+    self.ok_weight           = BigDecimal( params[:ok_weight]         )
+    self.repairable_weight   = BigDecimal( params[:repairable_weight] )
+    self.broken_weight       = BigDecimal( params[:broken_weight]     )
     self.start_date          = params[:start_date] 
     self.finish_date         = params[:finish_date]
 

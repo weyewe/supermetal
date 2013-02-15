@@ -123,8 +123,8 @@ class ProductionRepairResult < ActiveRecord::Base
     self.creator_id = employee.id 
     self.ok_quantity         = params[:ok_quantity]
     self.broken_quantity     = params[:broken_quantity] 
-    self.ok_weight           = BiDecimal( params[:ok_weight]         )
-    self.broken_weight       = BiDecimal( params[:broken_weight]     )
+    self.ok_weight           = BigDecimal( params[:ok_weight]         )
+    self.broken_weight       = BigDecimal( params[:broken_weight]     )
     self.started_at          = params[:started_at] 
     self.finished_at         = params[:finished_at]
 
