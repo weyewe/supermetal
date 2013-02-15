@@ -67,7 +67,7 @@ Supermetal::Application.routes.draw do
   
   match 'search_payment' => 'payments#search_payment' , :as => :search_payment
   match 'search_guarantee_return' => 'guarantee_returns#search_guarantee_return' , :as => :search_guarantee_return
- 
+  match 'search_item_receival' => 'item_receivals#search_item_receival' , :as => :search_item_receival
 ##################################################
 ##################################################
 ######### REPORT_ROUTES 
@@ -276,6 +276,9 @@ Supermetal::Application.routes.draw do
   match 'delete_item_receival' => 'item_receivals#delete_item_receival', :as => :delete_item_receival , :method => :post
   match 'confirm_item_receival/:item_receival_id' => "item_receivals#confirm_item_receival", :as => :confirm_item_receival, :method => :post
   
+  
+  match 'item_receival_details' => 'item_receivals#details' , :as => :item_receival_details
+  match 'item_receivals/generate_details' => 'item_receivals#generate_details', :as => :generate_item_receival_details
 ##################################################
 ##################################################
 ######### Item Receival Entry

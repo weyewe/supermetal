@@ -24,7 +24,6 @@
 	</td>
 	
 	
-	<% if not object.is_confirmed? %>
 		<td>
 			<%= link_to delete_item_receival_url, :class =>"delete_entry", :style => "cursor:pointer; text-decoration:none;" do %>
 				<i class='icon-remove'></i>Delete
@@ -36,11 +35,6 @@
 				:class =>"edit_entry modal-toggler", :style => "cursor:pointer; text-decoration:none;" do %>
 				<i class='icon-edit'></i>Edit
 			<% end %>
-		</td>
-	<% else  %>
-		<td colspan='2'>
-			CONFIRMED
-		</td>
-	<% end %>
+		</td> 
 	
 </tr>

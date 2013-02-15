@@ -1,3 +1,8 @@
+<% if details.nil? %>
+	<% details = 0 %>
+<% end %>
+
+
 <tr id="entry-<%= object.id %>">
 	<td>
 		<%= object.sales_item.code %>
@@ -11,14 +16,14 @@
 	
 	<% if not parent.is_confirmed? %>
 		<td>
-			<%= link_to delete_item_receival_entry_url , :class =>"delete_entry", 
+			<%= link_to delete_item_receival_entry_url(:details => details) , :class =>"delete_entry", 
 				:style => "cursor:pointer; text-decoration:none;" do %>
 				<i class='icon-remove'></i>Delete
 			<% end %> 
 		</td>
 
 		<td>
-			<%= link_to edit_item_receival_item_receival_entry_url(parent, object), 
+			<%= link_to edit_item_receival_item_receival_entry_url(parent, object,:details => details), 
 				:class =>"edit_entry modal-toggler", :style => "cursor:pointer; text-decoration:none;" do %>
 				<i class='icon-edit'></i>Edit
 			<% end %>
