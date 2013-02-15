@@ -27,6 +27,19 @@ Supermetal::Application.routes.draw do
     resources :item_receival_entries 
   end
   
+  resources :template_sales_items do 
+    resources :pre_production_results
+    resources :production_results
+    resources :production_repair_results
+    resources :post_production_results 
+  end
+  
+  resources :pre_production_results
+  resources :production_results
+  resources :production_repair_results
+  resources :post_production_results
+  
+#   GONNA TERMINATE the pre_production histories
   resources :sales_items do 
     resources :pre_production_histories
     resources :production_histories
@@ -61,6 +74,7 @@ Supermetal::Application.routes.draw do
 =end
   match 'search_customer' => "customers#search_customer", :as => :search_customer 
   
+  match 'search_template_sales_item' => "template_sales_items#search_template_sales_item", :as => :search_template_sales_item 
   match 'search_sales_item' => "sales_items#search_sales_item", :as => :search_sales_item 
   match 'search_sales_order' => 'sales_orders#search_sales_order' , :as => :search_sales_order
   match 'search_delivery' => 'deliveries#search_delivery' , :as => :search_delivery
@@ -178,6 +192,17 @@ Supermetal::Application.routes.draw do
   match 'confirm_production_history/:production_history_id' => "production_histories#confirm_production_history", :as => :confirm_production_history, :method => :post 
 
   match 'generate_production_history' => 'production_histories#generate_production_history', :as => :generate_production_history, :method => :post
+
+##################################################
+##################################################
+######### PRODUCTION_RESULT
+##################################################
+##################################################
+  match 'update_production_result/:production_result_id' => 'production_results#update_production_result', :as => :update_production_result , :method => :post 
+  match 'delete_production_result' => 'production_results#delete_production_result', :as => :delete_production_result, :method => :post
+  match 'confirm_production_result/:production_result_id' => "production_results#confirm_production_result", :as => :confirm_production_result, :method => :post 
+
+  match 'generate_production_result' => 'production_results#generate_result', :as => :generate_production_result, :method => :post
 
 
 ##################################################

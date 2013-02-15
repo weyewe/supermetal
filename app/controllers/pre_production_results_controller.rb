@@ -1,0 +1,2 @@
+class PreProductionResultsController < ApplicationController
+end

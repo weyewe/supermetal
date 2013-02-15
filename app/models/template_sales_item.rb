@@ -405,4 +405,8 @@ class TemplateSalesItem < ActiveRecord::Base
       
     return items_on_delivery
   end
+  
+  def customers_name
+    self.customers.map{|x| x.name}.join(", ")
+  end
 end

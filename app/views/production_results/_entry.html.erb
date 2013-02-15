@@ -1,0 +1,60 @@
+ 
+<tr id="entry-<%= object.id %>">
+	<td>
+		<%=  print_date( object.created_at ) %>
+	</td>
+	<td>
+		<%=  object.ok_quantity  %> <br />
+		<b><%= object.ok_weight.to_s%> kg </b>
+		<hr />
+		Tap: <b><%= object.ok_tap_weight.to_s %> kg</b>
+	</td>
+	
+	<td>
+		<%=  object.repairable_quantity  %> <br />
+		<b><%= object.repairable_weight.to_s%> kg</b>
+		<hr />
+		Tap: <b><%= object.repairable_tap_weight.to_s %> kg</b>
+	</td>
+	
+	<td>
+		<%=  object.broken_quantity  %> <br />
+		<b><%= object.broken_weight.to_s%> kg</b>
+	</td>
+	 
+ 	<td>
+		<%= print_date( object.started_at )%>
+	</td>
+	
+	<td>
+		<%= print_date( object.finished_at )%>
+	</td>
+	
+	
+		<td>
+			<%= link_to delete_production_result_url, :class =>"delete_entry", :style => "cursor:pointer; text-decoration:none;" do %>
+				<i class='icon-remove'></i>Delete
+			<% end %> 
+		</td>
+
+		<td>
+			<%= link_to edit_template_sales_item_production_result_url(parent, object), 
+				:class =>"edit_entry modal-toggler", :style => "cursor:pointer; text-decoration:none;" do %>
+				<i class='icon-edit'></i>Edit
+			<% end %>
+		</td>
+		
+		<td>
+			<%= link_to confirm_production_result_url(object), 
+				:class =>"confirm_entry modal-toggler", :style => "cursor:pointer; text-decoration:none;" do %>
+				<i class='icon-ok'></i>Confirm
+			<% end %>
+			
+			<hr />
+			<% if object.is_confirmed %>
+				CONFIRMED
+			<% end %>
+		</td>
+ 
+	
+</tr>

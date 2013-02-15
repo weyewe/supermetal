@@ -210,6 +210,17 @@ module NavigationHelper
           ]
         },
         {
+          :name => "Production Result",
+          :url  => 'new_production_result_url',
+          :icon => "icon-folder-close",
+          :activities => [
+            {
+              :controller => "production_results",
+              :action     => "new"
+            } 
+          ]
+        },
+        {
           :name => "Production",
           :url  => 'new_production_history_url',
           :icon => "icon-shopping-cart",

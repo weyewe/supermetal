@@ -1,0 +1,2 @@
+class ProductionRepairResultsController < ApplicationController
+end
