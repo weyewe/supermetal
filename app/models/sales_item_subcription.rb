@@ -13,18 +13,37 @@ class SalesItemSubcription < ActiveRecord::Base
   
   def self.create_or_find_subcription(sales_item)
     
-    if sales_item.case == SALES_ITEM_CREATION_CASE[:new]
+    
+    sales_item_subcription = self.where(
+      :customer_id => sales_item.customer_id, 
+      :template_sales_item_id => sales_item.template_sales_item_id 
+    ).first
+    
+    if sales_item_subcription.nil?
       new_object                        = self.new
       new_object.customer_id            = sales_item.customer_id 
       new_object.template_sales_item_id = sales_item.template_sales_item_id
       new_object.save 
-      return new_object 
+      return new_object
     else
-      return self.where(
-        :customer_id => sales_item.customer_id, 
-        :template_sales_item_id => sales_item.template_sales_item_id 
-      ).first 
+      return sales_item_subcription
     end
+    
+    
+    # 
+    # 
+    # if sales_item.case == SALES_ITEM_CREATION_CASE[:new]
+    #   new_object                        = self.new
+    #   new_object.customer_id            = sales_item.customer_id 
+    #   new_object.template_sales_item_id = sales_item.template_sales_item_id
+    #   new_object.save 
+    #   return new_object 
+    # else
+    #   return self.where(
+    #     :customer_id => sales_item.customer_id, 
+    #     :template_sales_item_id => sales_item.template_sales_item_id 
+    #   ).first 
+    # end
   end
   
   

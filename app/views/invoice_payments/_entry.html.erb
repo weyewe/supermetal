@@ -14,7 +14,7 @@
 	</td>
 	 
 	 
-	<% if details.nil? %>
+	<% if not defined?(details)  %>
 		<% details = 0 %>
 	<% end %>
 	

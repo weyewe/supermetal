@@ -42,6 +42,8 @@ class TemplateSalesItem < ActiveRecord::Base
     new_object.main_sales_item_id = sales_item.id 
     new_object.name = sales_item.name
     new_object.description = sales_item.description
+    new_object.weight_per_piece = sales_item.weight_per_piece
+    new_object.material_id = sales_item.material_id 
   
     
     if not sales_item.is_production? and sales_item.is_post_production? 
@@ -58,6 +60,8 @@ class TemplateSalesItem < ActiveRecord::Base
   def update_from_sales_item(sales_item) 
     self.name = sales_item.name
     self.description = sales_item.description 
+    self.weight_per_piece =  sales_item.weight_per_piece
+    self.material_id = sales_item.material_id
     self.save 
   end
   

@@ -20,11 +20,7 @@ class SalesItemsController < ApplicationController
     else
       @new_object= @object
     end
-    
   end
-  
-  
-   
   
   def edit
     # @customer = Customer.find_by_id params[:id] 
@@ -38,10 +34,52 @@ class SalesItemsController < ApplicationController
     @has_no_errors  = @object.errors.size  == 0
   end
   
+=begin
+  DERIVATIVE_SALES_ITEM: template or .. fuck this shit. 
+=end
+  
+  # 
+  # ems#new_derivative', :as => :new_sales_order_derivative_sales_item
+  # match 'sales_order/:sales_order_id/derivative_sales_item' => 'sales_items#create_derivative', :as => :create_sales_order_derivative_sales_item, :method => :post 
+  # match 'sales_order/:sales_order_id/edit_derivative_sales_item/:id' => 'sales_items#edit_derivative', :as => :edit_sales_order_derivative_sales_item
+  # match 'sales_order/:sales_order_id/update_derivative_sales_item/:id' => 'sales_items#update_derivative'
+  # 
+  def new_derivative
+    @parent = SalesOrder.find_by_id params[:sales_order_id]
+    @object = SalesItem.new 
+  end
+  
+  def create_derivative
+    @parent = SalesOrder.find_by_id params[:sales_order_id]
+    @object = SalesItem.create_derivative_sales_item( current_user, @parent,  params[:sales_item] )
+    if @object.errors.size == 0 
+      @new_object=  SalesItem.new
+    else
+      @new_object= @object
+    end
+  end
+  
+  def edit_derivative
+    @parent = SalesOrder.find_by_id params[:sales_order_id]
+    @object = SalesItem.find_by_id params[:id]
+  end
+  
+  def update_derivative
+    @parent = SalesOrder.find_by_id params[:sales_order_id]
+    @object = SalesItem.find_by_id params[:id] 
+    @parent = @object.sales_order
+    @object.update_derivative_sales_item(current_user, params[:sales_item])
+    @has_no_errors  = @object.errors.size  == 0
+  end
+  
+  
   def delete_sales_item
     @object = SalesItem.find_by_id params[:object_to_destroy_id]
     @object.delete(current_user)
   end
+  
+  
+  
   
   
   def search_sales_item

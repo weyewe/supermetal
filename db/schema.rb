@@ -601,12 +601,14 @@ ActiveRecord::Schema.define(:version => 20130203145546) do
 
   create_table "template_sales_items", :force => true do |t|
     t.string   "code"
-    t.boolean  "is_internal_production", :default => true
+    t.boolean  "is_internal_production",                               :default => true
     t.integer  "main_sales_item_id"
+    t.integer  "material_id"
     t.string   "name"
+    t.decimal  "weight_per_piece",       :precision => 7, :scale => 2, :default => 0.0
     t.text     "description"
-    t.datetime "created_at",                               :null => false
-    t.datetime "updated_at",                               :null => false
+    t.datetime "created_at",                                                             :null => false
+    t.datetime "updated_at",                                                             :null => false
   end
 
   create_table "users", :force => true do |t|

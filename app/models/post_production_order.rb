@@ -79,6 +79,7 @@ class PostProductionOrder < ActiveRecord::Base
   end
   
   # item receival : for post production order 
+  # deprecated. not used anymore
   def PostProductionOrder.generate_item_receival_post_production_order( item_receival_entry )
     PostProductionOrder.create(
       :sales_item_id            => item_receival_entry.sales_item_id      ,

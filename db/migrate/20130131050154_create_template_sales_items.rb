@@ -4,7 +4,11 @@ class CreateTemplateSalesItems < ActiveRecord::Migration
       t.string :code 
       t.boolean :is_internal_production, :default => true 
       t.integer :main_sales_item_id
+      
+      
+      t.integer :material_id 
       t.string :name
+      t.decimal :weight_per_piece, :precision => 7, :scale => 2 , :default => 0 
       t.text :description 
       t.timestamps
     end

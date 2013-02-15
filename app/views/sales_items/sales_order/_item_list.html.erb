@@ -10,7 +10,7 @@
 	</thead>
 	<tbody> 
 		<!-- because we have the show action -->
-		<% if details.nil? %>
+		<% if not defined?(details) %>
 			<% details = 0 %>
 		<% end %>
 		

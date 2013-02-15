@@ -171,6 +171,12 @@ Supermetal::Application.routes.draw do
   match 'delete_sales_item' => 'sales_items#delete_sales_item', :as => :delete_sales_item , :method => :post
 
 
+# derivative sales item 
+  match 'sales_order/:sales_order_id/derivative_sales_item' => 'sales_items#new_derivative', :as => :new_sales_order_derivative_sales_item
+  match 'sales_order/:sales_order_id/derivative_sales_item' => 'sales_items#create_derivative', :as => :create_sales_order_derivative_sales_item, :method => :post 
+  match 'sales_order/:sales_order_id/edit_derivative_sales_item/:id' => 'sales_items#edit_derivative', :as => :edit_sales_order_derivative_sales_item
+  match 'sales_order/:sales_order_id/update_derivative_sales_item/:id' => 'sales_items#update_derivative', :as => :update_derivative_sales_item, :method => :post 
+
 ##################################################
 ##################################################
 ######### PRE_PRODUCTION_HISTORY

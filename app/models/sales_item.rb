@@ -159,8 +159,27 @@ class SalesItem < ActiveRecord::Base
     PostProductionOrder.where(
       :source_document_entry_id => self.id , 
       :source_document_entry => self.class.to_s, 
-      :case =>  PRODUCTION_ORDER[:sales_order] 
+      :case =>  POST_PRODUCTION_ORDER[:sales_order] 
     ).each {|x| x.destroy }
+    
+    PostProductionOrder.where(
+      :source_document_entry_id => self.id , 
+      :source_document_entry => self.class.to_s, 
+      :case =>  POST_PRODUCTION_ORDER[:sales_order_only_post_production] 
+    ).each {|x| x.destroy }
+    
+    # destroy subcription 
+    
+    sales_item_subcription = self.sales_item_subcription 
+    
+    # it it is the main, just delete the subcription
+    # how should we handle the subcription on sales_item.destroy? 
+    
+    if sales_item_subcription.sales_items.count == 1
+      sales_item_subcription.destroy  
+    end
+    
+    
     
     self.destroy 
   end
@@ -282,9 +301,8 @@ class SalesItem < ActiveRecord::Base
     end
     
     
-    if self.main_template_sales_item? and self.name_changed? or self.description_changed? 
-      self.update_template_sales_item 
-    end
+    
+    self.update_template_sales_item 
     
     self.requested_deadline    = params[:requested_deadline] 
     self.save 
@@ -426,7 +444,7 @@ class SalesItem < ActiveRecord::Base
     
     
 
-    if self.main_template_sales_item? and self.name_changed? or self.description_changed? 
+    if self.main_template_sales_item? and ( self.name_changed? or self.description_changed? ) 
       self.update_template_sales_item 
     end
     
@@ -440,17 +458,17 @@ class SalesItem < ActiveRecord::Base
             
     is_quantity_changed = self.quantity_for_production_changed? || self.quantity_for_post_production_changed?
                 
-    if self.quantity_for_post_production_changed?
-      puts "5555 the quantity for post production is changed\n"*5
-    end
-    
-    puts "quantity_for_production_changed value: #{self.quantity_for_production_changed?}"
-    puts "quantity_for_post_production_changed value : #{self.quantity_for_post_production_changed?}"
-    if is_quantity_changed
-      puts "is_quantity_changed value : #{is_quantity_changed}"
-    else
-      puts "NOT CHANGED: is_quantity_changed value : #{is_quantity_changed}"
-    end
+    # if self.quantity_for_post_production_changed?
+    #   puts "5555 the quantity for post production is changed\n"*5
+    # end
+    # 
+    # puts "quantity_for_production_changed value: #{self.quantity_for_production_changed?}"
+    # puts "quantity_for_post_production_changed value : #{self.quantity_for_post_production_changed?}"
+    # if is_quantity_changed
+    #   puts "is_quantity_changed value : #{is_quantity_changed}"
+    # else
+    #   puts "NOT CHANGED: is_quantity_changed value : #{is_quantity_changed}"
+    # end
     
     self.save 
     
@@ -460,10 +478,8 @@ class SalesItem < ActiveRecord::Base
         self.update_invoice 
       end
      
-      
       # update work_order 
       if  is_quantity_changed
-          puts "Gonna update work order\n"*10
         self.update_work_order 
       end
     else
@@ -488,10 +504,14 @@ class SalesItem < ActiveRecord::Base
 ##############################
 ##############################
 =end
-  def SalesItem.create_repeat_sales_item( employee, sales_order,  params )
+  def SalesItem.create_derivative_sales_item( employee, sales_order,  params )
     return nil if employee.nil?
     return nil if sales_order.nil? 
-    return nil if params[:template_sales_item_id].nil? 
+    
+    if params[:template_sales_item_id].nil? 
+      errors.add(:template_sales_item_id , "Harus memilih item yang akan di buat ulang" ) 
+      return self 
+    end
     
     new_object = SalesItem.new
     new_object.creator_id = employee.id 
@@ -517,7 +537,18 @@ class SalesItem < ActiveRecord::Base
     new_object.is_post_production     = params[:is_post_production]
     new_object.is_delivered           = params[:is_delivered]      
     new_object.delivery_address       = params[:delivery_address]  
-    new_object.case                   = SALES_ITEM_CREATION_CASE[:repeat] 
+    
+    
+    
+    if SalesItemSubcription.where(:template_item_id => template.id, 
+          :customer_id => sales_order.customer_id ).count == 0 
+      new_object.case                   = SALES_ITEM_CREATION_CASE[:repeat] 
+    else
+      new_object.case                   = SALES_ITEM_CREATION_CASE[:generic] 
+    end
+    
+    
+    
     new_object.is_pending_pricing     = params[:is_pending_pricing]
 
     if not new_object.is_pending_pricing
@@ -549,8 +580,17 @@ class SalesItem < ActiveRecord::Base
   end
   
   
-  def update_repeat_sales_item( params ) 
-    return nil if self.is_confirmed? 
+  def update_repeat_sales_item( employee, params ) 
+    if self.is_confirmed? 
+      self.post_confirm_update( employee, params ) 
+      return self
+    end
+    
+    if params[:template_sales_item_id].nil? 
+      errors.add(:template_sales_item_id , "Harus memilih item sebelumnya" ) 
+      return self 
+    end
+    
     template = TemplateSalesItem.find_by_id params[:template_sales_item_id]
     
     if self.template_sales_item_id != template.id
@@ -590,6 +630,11 @@ class SalesItem < ActiveRecord::Base
     self.save 
     
     return self
+  end
+  
+  def post_confirm_update_repeat_sales_item(params)
+    # can't change sales item anymore. 
+    
   end
   
 =begin
@@ -660,7 +705,7 @@ class SalesItem < ActiveRecord::Base
     
     si_subcription = nil 
     
-      si_subcription = SalesItemSubcription.create_or_find_subcription(self)  
+    si_subcription = SalesItemSubcription.create_or_find_subcription(self)  
    
     
     self.sales_item_subcription_id = si_subcription.id 
