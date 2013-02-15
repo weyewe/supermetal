@@ -30,14 +30,15 @@ class ItemReceival < ActiveRecord::Base
   
   def delete(employee)
     return nil if employee.nil?
-    return nil if self.is_confirmed?
+   
     
     self.item_receival_entries.each do |item_receival_entry|
-      item_receival_entry.destroy 
+      item_receival_entry.delete( employee )  
     end
     self.destroy 
   end
   
+   
   def update_by_employee( employee, params ) 
     return nil if employee.nil? 
     

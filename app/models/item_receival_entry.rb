@@ -57,9 +57,7 @@ class ItemReceivalEntry < ActiveRecord::Base
   
   
   def delete( employee )
-    return nil if employee.nil?
-    return nil if self.is_confirmed? 
-    
+    return nil if employee.nil?    
     self.destroy 
   end
   
