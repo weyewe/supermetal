@@ -9,10 +9,16 @@
 		</tr>
 	</thead>
 	<tbody> 
+		<!-- because we have the show action -->
+		<% if details.nil? %>
+			<% details = 0 %>
+		<% end %>
+		
 		<% objects.each do |object| %>
 			<%= render :partial =>  'sales_items/entry', :locals => {
 				:object => object ,
-				:parent => parent 
+				:parent => parent ,
+				:details => details 
 			} %> 
 		<% end %>
 	</tbody>

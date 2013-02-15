@@ -34,6 +34,7 @@ class SalesItem < ActiveRecord::Base
   validate  :weight_per_piece_must_not_be_less_than_zero
   validate :quantity_must_be_present_if_selected
   validate :quantity_for_production_and_post_production_non_zero
+  validate :price_not_less_than_zero
   
    
   
@@ -106,19 +107,30 @@ class SalesItem < ActiveRecord::Base
     end
   end
   
-  # def total_quantity_must_match_quantity
-  #   if quantity_for_production +  quantity_for_post_production != quantity
-  #     msg = "Jumlah kuantitas"
-  #     errors.add(:quantity_for_production , "Berat satuan tidak boleh kurang dari 0 kg" ) 
-  #     errors.add(:quantity_for_post_production , "Berat satuan tidak boleh kurang dari 0 kg" )
-  #   end
-  # end
+  
+  def price_not_less_than_zero
+ 
+    
+    zero = BigDecimal('0')
+    if pre_production_price.present? and pre_production_price < zero
+      errors.add(:pre_production_price ,  'Tidak boleh negative' ) 
+    end
+    
+    if production_price.present? and production_price < zero
+      errors.add(:production_price ,  'Tidak boleh negative' ) 
+    end
+    
+    if post_production_price.present? and post_production_price < zero
+      errors.add(:post_production_price ,  'Tidak boleh negative' ) 
+    end
+  end
+  
   
   
   
   def delete(employee)
     return nil if employee.nil?
-    if self.is_confirmed? or self.is_finalized? 
+    if self.is_confirmed?  
       ActiveRecord::Base.transaction do
         self.post_confirm_delete( employee) 
       end
@@ -404,6 +416,7 @@ class SalesItem < ActiveRecord::Base
     self.pre_production_price  = BigDecimal( params[:pre_production_price])
     self.production_price      = BigDecimal( params[:production_price])   
     self.post_production_price = BigDecimal( params[:post_production_price]) 
+    self.weight_per_piece = BigDecimal( params[:weight_per_piece])
     
     self.requested_deadline    = params[:requested_deadline] 
     

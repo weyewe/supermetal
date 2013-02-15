@@ -47,6 +47,40 @@ class SalesOrdersController < ApplicationController
     @sales_order.confirm( current_user  )  
   end
   
+  
+=begin
+  DETAILS
+=end
+  def show
+    puts "We are in the details of sales order\n"*50
+  end
+  
+  def search_sales_order
+    search_params = params[:q]
+    
+    @objects = [] 
+    query = '%' + search_params + '%'
+    # on PostGre SQL, it is ignoring lower case or upper case 
+    @objects = SalesOrder.where{ (code =~ query)  &
+                      (is_deleted.eq false) & 
+                      (is_confirmed.eq true) }.map do |x| 
+                        {
+                          :code => x.code, 
+                          :id => x.id 
+                        }
+                      end
+    
+    respond_to do |format|
+      format.html # show.html.erb 
+      format.json { render :json => @objects }
+    end
+  end
+  
+  def generate_details 
+    @parent = SalesOrder.find_by_id params[:sales_order][:search_record_id]
+    @children = @parent.sales_items.order("created_at DESC") 
+  end
+  
 =begin
   PRINT SALES ORDER
 =end

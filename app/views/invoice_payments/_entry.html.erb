@@ -16,7 +16,7 @@
 	
 	<% if not parent.is_confirmed? %>
 		<td>
-			<%= link_to root_url, :class =>"delete_entry", 
+			<%= link_to delete_invoice_payment_url, :class =>"delete_entry", 
 				:style => "cursor:pointer; text-decoration:none;" do %>
 				<i class='icon-remove'></i>Delete
 			<% end %> 

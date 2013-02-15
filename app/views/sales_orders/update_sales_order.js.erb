@@ -17,24 +17,52 @@ $(document).ready(function(){
 		<% if   @has_no_errors  %> 
 			// clean the add product form
 			$form.remove(); 
-
-			<% new_entry  = escape_javascript( render :partial =>  'sales_orders/entry', :locals => {
-				:object => @object 
-			} )%>
-
-			$("#entry-<%= @object.id %>").replaceWith('<%= new_entry %>') 
-
 			$.msgbox("Berhasil update SalesOrder: <%= @object.code %>", 
 						{type: "info"});
 
 			
-			$modal.modal('hide'); 
+			$modal.modal('hide');
+			
+			<% if not params[:details].nil? and params[:details].to_i == 1  %>
+				// re render the shite 
+				<% details = escape_javascript( render :partial => "sales_orders/details", 
+					:locals => {
+				    :parent => @object ,
+						:children 		=> @object.sales_items.order("created_at DESC")
+			  })%>
+
+				var $details = $("#details")
+				var $details_wrapper = $("#details_wrapper");
+				var $details_dummy = $("#details_dummy");
+
+				// 2. the viewer + add shite
+				if($details.length == 0 ){
+					$details_wrapper.append('<%= details %>');
+				}else{
+					$details.replaceWith('<%= details %>')
+				}
+
+				$details_wrapper.show();
+				$details_dummy.hide();
+				
+			<% else %>
+				<% new_entry  = escape_javascript( render :partial =>  'sales_orders/entry', :locals => {
+					:object => @object 
+				} )%>
+
+				$("#entry-<%= @object.id %>").replaceWith('<%= new_entry %>')
+			<% end %>
+			
+
+			
+
+			
 
 
 		<% elsif  not @has_no_errors %> 
 			<% new_form = escape_javascript(   render :partial => "sales_orders/new_object_form", :locals => {
 		    :new_object => @object , 
-				:url => update_sales_order_url(@object)  
+				:url => update_sales_order_url(@object, :details => params[:details])  
 		  })%>
 			//replace the form, show the edit
 			$form.replaceWith("<%= new_form %>"); 

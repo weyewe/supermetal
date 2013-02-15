@@ -18,11 +18,7 @@ class SalesOrder < ActiveRecord::Base
       end
       return self
     end
-    
-    self.sales_items.each do |sales_item|
-      sales_item.delete( employee ) 
-    end 
-    
+   
     self.destroy
   end
   
@@ -65,6 +61,9 @@ class SalesOrder < ActiveRecord::Base
   end
   
   def update_by_employee( employee, params ) 
+    if self.is_confirmed?
+      return self
+    end
     self.customer_id = params[:customer_id]
     self.save
     return self 

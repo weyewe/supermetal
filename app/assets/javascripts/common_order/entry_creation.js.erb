@@ -9,7 +9,8 @@ $(document).ready(function(){
 		var entry_id = $row.attr("id").split('-')[1];  
 		var $form = $("#delete_entry_form_wrapper form"); 
 		var $identifier = $(".identifier", $row);
-
+		
+		var destination = $this.attr("href");
 		$.msgbox("Yakin untuk menghapus:" + $identifier.text() +  " ?", {
 		  type: "confirm",
 		  buttons : [
@@ -23,7 +24,7 @@ $(document).ready(function(){
 				$row.spin("large", "black"); 
 
 		    $.ajax({
-		      url: $form.attr("action"),
+		      url: destination,
 		      type: "POST",
 		      data: $form.serialize(),
 		      dataType: 'script',

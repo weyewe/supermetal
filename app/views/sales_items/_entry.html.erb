@@ -89,14 +89,14 @@
 	
 	
 		<td>
-			<%= link_to root_url, :class =>"delete_entry", 
+			<%= link_to delete_sales_item_url(:details => details), :class =>"delete_entry", 
 				:style => "cursor:pointer; text-decoration:none;" do %>
 				<i class='icon-remove'></i>Delete
 			<% end %> 
 		</td>
 
 		<td>
-			<%= link_to edit_sales_order_sales_item_url(parent, object), 
+			<%= link_to edit_sales_order_sales_item_url(parent, object, :details => details), 
 				:class =>"edit_entry modal-toggler", :style => "cursor:pointer; text-decoration:none;" do %>
 				<i class='icon-edit'></i>Edit
 			<% end %>

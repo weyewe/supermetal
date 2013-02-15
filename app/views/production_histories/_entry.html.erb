@@ -33,7 +33,7 @@
 	
 	<% if not object.is_confirmed? %>
 		<td>
-			<%= link_to root_url, :class =>"delete_entry", :style => "cursor:pointer; text-decoration:none;" do %>
+			<%= link_to delete_production_history_url, :class =>"delete_entry", :style => "cursor:pointer; text-decoration:none;" do %>
 				<i class='icon-remove'></i>Delete
 			<% end %> 
 		</td>
