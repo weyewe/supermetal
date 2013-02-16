@@ -1,9 +1,9 @@
 <%= render :partial => "layouts/masthead" ,:locals => {
-	:title => "Report Pengerjaan",
-	:description => "Lihat progress pengerjaan order client"
+	:title => "Welcome!",
+	:description => ""
 }%>
 
-<%= create_breadcrumb(@breadcrumbs).html_safe %>
+<%#= create_breadcrumb(@breadcrumbs).html_safe %>
 
 <div id="content">
 
@@ -11,36 +11,88 @@
 		
 		
 		<div class="row">
-			
-			<div class="span12">
-				 
-				<table class="table table-bordered table-striped table-highlight" id='tableview'>
-					<thead>
-						<tr>
-							<th>Code</th> 
-							<th>Customer</th>
-							<th style="font-weight:bold;">Pending Production</th>
-							<th style="font-weight:bold;">Pending Post Production</th>
-							<th style="font-weight:bold;">Ready</th>
-							<th>Pengiriman</th> 
-						</tr>
-					</thead>
-					<tbody> 
-						<% @objects.each do |object| %>
-							<%#= render :partial =>  'home/entry', :locals => {
-								:object => object 
-							} %> 
-						<% end %>
-					</tbody>
-				</table>
-
+			<h1>Pembuatan Customer dan Sales Order</h1>
+			<ul>
+				<div>
+					<h2>Customer</h2>
+					<p>
+						Menambah atau edit data customer
+					</p>
+				</div>
+				<div>
+					<h2>Sales Order</h2>
+					<p>
+						Membuat Sales Order Baru
+					</p>
+				</div>
+			</ul>
+		</div> <!-- /.row -->
+		
+		<div class="row">
+			<h1>Pengerjaan Pabrik</h1>
+			<ul> 
+				<div>
+					<h2>Pre Production Result</h2>
+					<p>
+						Update hasil pengerjaan pattern:  jumlah yang rusak dan ok
+					</p>
+				</div>
 				
+				<div>
+					<h2>Production Result</h2>
+					<p>
+						Update hasil pengerjaan cor:  jumlah yang rusak (harus di lebur ulang), 
+						jumlah yang masih dapat diperbaiki (cor) dan jumlah yang ok (siap kirim atau siap bubut) 
+					</p>
+				</div>
 				
+				<div>
+					<h2> Production Repair Result</h2>
+					<p>
+						Update hasil pengerjaan perbaikan cor: jumlah yang ok dan jumlah yang harus di lebur ulang
+					</p>
+				</div>
+				<div>
+					<h2>Post Production Result</h2>
+					<p>
+						Update hasil pengerjaan bubut: jumlah yang rusak karena keropos, 
+						jumlah yang rusak karena gagal bubut, dan jumlah yang ok
+					</p>
+				</div>				
+			</ul>
+		</div> <!-- /.row -->
+		
+		
+		<div class="row">
+			<h1>Keluar masuk barang</h1>
+			<ul> 
+				<div>
+					<h2>Delivery</h2>
+					<p>
+						Pengiriman hasil pengerjaan pabrik. 
+					</p>
+				</div>
 				
-			 
+				<div>
+					<h2>Item Receival (penerimaan barang untuk  hanya di bubut)</h2>
+					<p>
+						Untuk pesanan customer yang hanya membutuhkan bubut, maka setiap barang yang 
+						akan dibubut harus diterima. Penerimaan melalui <strong>Item Receival</strong>
+					</p>
+				</div>
 				
-			</div> <!-- /.span12 -->
-			
+				<div>
+					<h2>Retur Garansi</h2>
+					<p>
+						Untuk pengiriman yang telah diterima customer, tetapi dikembalikan karena alasan keropos,
+						barang yang dikembalikan itu harus diterima melalui retur garansi.
+					</p>
+				</div>			
+			</ul>
+		</div> <!-- /.row -->
+		
+		<div class="row">
+			<h1>Pembayaran</h1>
 		 
 		</div> <!-- /.row -->
 		

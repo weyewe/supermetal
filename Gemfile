@@ -9,7 +9,7 @@ gem 'pg'
 gem 'faker'
 
 gem 'netzke-core', github: "netzke/netzke-core"
-gem 'netzke-basepack', github: "netzke/netzke-basepack"
+gem 'netzke-basepack', github: "weyewe/netzke-basepack"
 gem 'netzke-communitypack', github: "netzke/netzke-communitypack"
 
 

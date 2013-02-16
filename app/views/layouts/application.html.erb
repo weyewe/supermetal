@@ -65,7 +65,15 @@
 			</ul>
 			
 			<ul class="pull-right">
+				
+				<li>
+					<%= link_to "REPORT", report_url  , :style => "background-color: rgb(240,240,240);"%>
+				</li>
+				
+				
 				<li><a href="javascript:;"><i class="icon-user"></i> Logged in as <%= current_user.email %></a></li>
+				
+				
 				
 				<li>
 					<%= link_to "Ganti Password", edit_credential_url , :class => "edit_password"%>

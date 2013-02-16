@@ -415,7 +415,7 @@ module NavigationHelper
       MANAGEMENT_NAV,
       ADMIN_NAV,
       INVENTORY_NAV,
-      REPORT_NAV, 
+      # REPORT_NAV, 
       PAYMENT_NAV,
       FACTORY_NAV,
       SALES_NAV

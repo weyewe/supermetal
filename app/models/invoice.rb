@@ -73,9 +73,6 @@ class Invoice < ActiveRecord::Base
   end
   
   def update_amount_payable
-    
-    
-    
     total_amount = BigDecimal('0') 
     
     delivery.delivery_entries.each do |de|

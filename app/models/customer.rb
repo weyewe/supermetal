@@ -21,7 +21,7 @@ class Customer < ActiveRecord::Base
   # validates_uniqueness_of :name
   
   has_many :sales_orders 
-  belongs_to :town 
+  # belongs_to :town 
   
   validate :unique_non_deleted_name 
   

@@ -5,7 +5,10 @@ Supermetal::Application.routes.draw do
   end
 
   root :to => 'home#index'
-  
+
+
+  match 'report' => 'home#report', :as => :report 
+  netzke
   
   
   resources :customers do

@@ -4,7 +4,8 @@ class HomeController < ApplicationController
                                                 :show,
                                                 :production_details,
                                                 :post_production_details,
-                                                :delivery_entry_details
+                                                :delivery_entry_details,
+                                                :report
                                                 ]
   
   def index
@@ -66,5 +67,9 @@ class HomeController < ApplicationController
     add_breadcrumb "Monitor Hutang", 'customers_with_outstanding_payment_url' 
     set_breadcrumb_for @customer, 'outstanding_payment_details_url' + "(#{@customer.id})", 
                 "Detail Outstanding Payment"
+  end
+  
+  def report
+    render(:layout => "layouts/report")
   end
 end
