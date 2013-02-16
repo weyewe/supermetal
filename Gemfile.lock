@@ -16,7 +16,7 @@ GIT
 
 GIT
   remote: git://github.com/weyewe/netzke-basepack.git
-  revision: 4027f48b669022e92f0bde841a222e69f0dbefa8
+  revision: fb6fa22d025714eb1934a1fe6d77e205f4e50085
   specs:
     netzke-basepack (0.8.2)
       netzke-core (~> 0.8.2)

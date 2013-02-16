@@ -421,22 +421,26 @@ class DeliveryEntry < ActiveRecord::Base
     self.quantity_confirmed        = params[:quantity_confirmed]
     self.quantity_confirmed_weight = BigDecimal( params[:quantity_confirmed_weight] ) 
 
+    is_delivery_return_changed = false
+    is_delivery_lost_changed = false
+    
+    if quantity_returned != params[:quantity_returned].to_i
+      is_delivery_return_changed = true 
+    end
+    
     self.quantity_returned         = params[:quantity_returned]
     self.quantity_returned_weight  = BigDecimal( params[:quantity_returned_weight] )
 
+    if quantity_lost != params[:quantity_lost].to_i
+      is_delivery_lost_changed = true 
+    end
+    
+    
     self.quantity_lost             = params[:quantity_lost]
     validate_post_production_total_sum
     return self if self.errors.size != 0 
     
-    is_delivery_return_changed = false
-    is_delivery_lost_changed = false 
-    if quantity_returned_changed? 
-      is_delivery_return_changed = true 
-    end
     
-    if quantity_lost_changed?
-      is_delivery_lost_changed = true 
-    end
     
     if self.save   
       delivery = self.delivery 

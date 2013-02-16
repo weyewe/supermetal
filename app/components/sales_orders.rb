@@ -7,11 +7,19 @@ class SalesOrders < Netzke::Basepack::Grid
   def configure(c)
     super
     c.model = "SalesOrder"
+    c.inspect_url = 'hahahaha'
     c.columns = [
       :code,
-      :customer__name
+      :customer__name,
+      {
+        name: :inspect, 
+        width: 20 
+      }
     ]
   end
+   
+  # The inspect action (and column)
+  include Netzke::Weyewe::Inspectable
 
   include PgGridTweaks # the mixin , defining sorter 
 end
