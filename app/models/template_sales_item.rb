@@ -104,6 +104,7 @@ class TemplateSalesItem < ActiveRecord::Base
   end
   
   def ready_post_production
+    return ready_post_production_only_post_production if not self.is_internal_production
     total_quantity_finished = self.post_production_results.where(:is_confirmed => true ) .sum("ok_quantity") 
      
     total_quantity_going_out = self.delivery_entries.where(
@@ -153,7 +154,7 @@ class TemplateSalesItem < ActiveRecord::Base
   end
   
   def pending_post_production
-    return 0 if not self.is_internal_production
+    return pending_post_production_only_post_production if not self.is_internal_production
     
     total_quantity_ordered = self.post_production_orders.sum("quantity") 
     total_quantity_finished = self.post_production_results.where(:is_confirmed => true ) .sum("ok_quantity")

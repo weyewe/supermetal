@@ -4,11 +4,12 @@ class GuaranteeReturns < Netzke::Basepack::Grid
     super
     c.model = "GuaranteeReturn"
     c.columns = [
-      :code,
+      :code, 
       :customer__name,
       :confirmed_at  
     ]
   end
 
   include PgGridTweaks # the mixin , defining sorter 
+  include OnlyReadGrid
 end

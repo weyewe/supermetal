@@ -22,4 +22,5 @@ class SalesOrders < Netzke::Basepack::Grid
   include Netzke::Weyewe::Inspectable
 
   include PgGridTweaks # the mixin , defining sorter 
+  include OnlyReadGrid
 end

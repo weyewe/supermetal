@@ -61,6 +61,11 @@ class Application < Netzke::Basepack::Viewport
   end
 
 # FACTORY
+  component :template_sales_items  do |c|
+    c.desc = "Daftar rangkuman pengerjaan pesanan"
+  end
+
+
   component :pre_production_results  do |c|
     c.desc = "Daftar hasil pembuatan pattern"
   end
@@ -267,6 +272,7 @@ protected
         { :text => "Factory",
           :expanded => true,
           :children => [
+            leaf("Rangkuman Pabrik", :template_sales_items, :user_suit), 
             leaf("Pre Production", :pre_production_results, :user_suit), 
             leaf("Production", :production_results, :user),
             leaf("Production Repair", :production_repair_results, :user), 

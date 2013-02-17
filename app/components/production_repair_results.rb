@@ -16,4 +16,5 @@ class ProductionRepairResults < Netzke::Basepack::Grid
   end
 
   include PgGridTweaks # the mixin , defining sorter 
+  include OnlyReadGrid
 end
