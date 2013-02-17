@@ -1,5 +1,8 @@
 class Customers < Netzke::Basepack::Grid
   
+   # Netzke::Communitypack::LiveSearchGrid
+  
+  
   # how can we not show the add, delete?
   # read only ? in the Netzke::Basepack::Grid
   # only allow add in form? How?
