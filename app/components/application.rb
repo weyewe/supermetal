@@ -54,10 +54,12 @@ class Application < Netzke::Basepack::Viewport
 # Sales 
   component :customers do |c|
     c.desc = "Daftar customer. " 
+    
   end
   
   component :sales_orders do |c|
     c.desc = "Daftar Sales Order"
+    
   end
 
 # FACTORY

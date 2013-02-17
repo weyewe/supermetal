@@ -7,7 +7,7 @@ class SalesOrders < Netzke::Basepack::Grid
   def configure(c)
     super
     c.model = "SalesOrder"
-    c.inspect_url = 'hahahaha'
+    c.inspect_url =   '/sales_order_details'
     c.columns = [
       :code,
       :customer__name,

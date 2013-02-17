@@ -61,6 +61,7 @@ class DeliveriesController < ApplicationController
 =end
   def details
     puts "We are in the details of sales order\n"*50
+    @object = Delivery.find_by_id params[:id]
   end
 
   def search_delivery

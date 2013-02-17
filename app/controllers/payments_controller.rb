@@ -48,6 +48,7 @@ class PaymentsController < ApplicationController
   DETAILS
 =end
   def details
+    @object = Payment.find_by_id params[:id]
   end
 
   def search_payment

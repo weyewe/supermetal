@@ -22,15 +22,30 @@
 			</div>
 		</div>
 		
+	 
 		
 		<div class="row">
 			
+			<% if @object.nil? %>
 				<div id="details_wrapper" style="display:none;">
 				</div>
 			 
 				<div id="details_dummy">
 					please select the record to be managed
 				</div>
+			<% else %>
+				<div id="details_wrapper" >
+					<%= render :partial => "deliveries/details", 
+						:locals => {
+					    :parent => @object ,
+							:children 		=> @object.delivery_entries.order("created_at DESC")
+				  } %>
+				</div>
+		 
+				<div id="details_dummy" style="display:none;">
+					please select the record to be managed
+				</div>
+			<% end %> 
 		</div>
 			
 			    
@@ -96,6 +111,11 @@
 		    $search_box.tokenInput( search_url , {
 						propertyToSearch: "code",
 						tokenLimit: 1, 
+						prePopulate:   	[
+								<% if not @object.nil? %> 
+								{id: <%= @object.id %>, code: '<%= @object.code %>'}
+								<% end %>
+							],
 						// resultsFormatter: function(item){ 
 						// 	var string =  "<li>" + 
 						// 				"<div style='display: inline-block; padding-left: 10px;'>"+ 

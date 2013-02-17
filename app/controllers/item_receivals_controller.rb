@@ -52,10 +52,12 @@ class ItemReceivalsController < ApplicationController
 =begin
   DETAILS
 =end
+   
   def details
     puts "We are in the details of sales order\n"*50
+    @object = ItemReceival.find_by_id params[:id]
   end
-
+  
   def search_item_receival
     search_params = params[:q]
 

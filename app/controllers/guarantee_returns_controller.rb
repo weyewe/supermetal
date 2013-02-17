@@ -54,8 +54,10 @@ class GuaranteeReturnsController < ApplicationController
 
 =begin
   DETAILS
-=end
+=end 
   def details
+    puts "We are in the details of sales order\n"*50
+    @object = GuaranteeReturn.find_by_id params[:id]
   end
 
   def search_guarantee_return
