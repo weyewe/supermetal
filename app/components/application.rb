@@ -57,7 +57,7 @@ class Application < Netzke::Basepack::Viewport
     
   end
   
-  component :sales_orders do |c|
+  component :sales_orders_and_sales_items do |c|
     c.desc = "Daftar Sales Order"
     
   end
@@ -85,17 +85,25 @@ class Application < Netzke::Basepack::Viewport
   end
   
 # ITEM MUTATION 
-  component :deliveries  do |c|
+  component :deliveries_and_delivery_entries  do |c|
+    c.desc = "Daftar hasil pengiriman"
+  end
+  
+  component :deliveries do |c|
     c.desc = "Daftar hasil pengiriman"
   end
   component :sales_returns  do |c|
     c.desc = "Daftar hasil sales retur"
   end
-  component :item_receivals  do |c|
+  component :item_receivals_and_item_receival_entries  do |c|
     c.desc = "Daftar hasil penerimaan barang untuk bubut"
   end
   component :guarantee_returns  do |c|
     c.desc = "Daftar hasil retur garansi"
+  end
+  
+  component :guarantee_returns_and_guarantee_return_entries do |c|
+    c.desc = "Daftar Retur Garansi"
   end
  
  # PAYMENT 
@@ -104,8 +112,9 @@ class Application < Netzke::Basepack::Viewport
    c.desc = "Daftar hasil retur garansi"
  end
 
- component :payments  do |c|
-   c.desc = "Daftar hasil retur garansi"
+ 
+ component :payments_and_invoice_payments do |c|
+   c.desc = "Daftar Pembayaran"
  end
   
 # #
@@ -257,7 +266,7 @@ protected
           :children => [
  
             leaf("Customer", :customers, :user_suit), 
-            leaf("Sales Order", :sales_orders, :user)#,
+            leaf("Sales Order", :sales_orders_and_sales_items, :user)#,
             # leaf("Pending Pricing Sales Item", :pending_pricing_sales_items, :user)  
           ]
         },# ,
@@ -265,10 +274,10 @@ protected
         { :text => "Terima+Keluar Barang",
            :expanded => true,
            :children => [
-             leaf("Delivery", :deliveries, :user),
+             leaf("Delivery", :deliveries_and_delivery_entries, :user),
              leaf("Sales Retur", :sales_returns, :user),
-             leaf("Penerimaan Bubut", :item_receivals, :user),
-             leaf("Penerimaan Retur Garansi", :guarantee_returns, :user)
+             leaf("Penerimaan Bubut", :item_receivals_and_item_receival_entries, :user),
+             leaf("Penerimaan Retur Garansi", :guarantee_returns_and_guarantee_return_entries, :user)
            ]
         },
         { :text => "Factory",
@@ -286,7 +295,7 @@ protected
           :expanded => true,
           :children => [
             leaf("Invoice", :invoices, :user_suit), 
-            leaf("Pembayaran", :payments, :user)
+            leaf("Pembayaran", :payments_and_invoice_payments, :user)
           ]
         }
       ]
