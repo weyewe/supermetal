@@ -16,6 +16,7 @@ class SalesOrderPdf < Prawn::Document
     @page_length = page_length
     @sales_order = sales_order
     @view = view
+    @company = Company.first 
     # page_size  [684, 792]
     font("Courier")
     
@@ -61,9 +62,9 @@ class SalesOrderPdf < Prawn::Document
     
     bounding_box( [0,cursor], :width => @page_width) do
       bounding_box([gap, bounds.top - gap], :width => width) do 
-        text  "Bangjay"  #{}"#{@company.name}"
-        text  "Alamat Bangjay"  #}"#{@company.address}"
-        text  "telpon bangjay" #  "#{@company.phone}"
+        text  "#{@company.name}"
+        text  "#{@company.address}"
+        text  "#{@company.phone}"
       end
       
       if not @customer.nil?
@@ -96,12 +97,24 @@ class SalesOrderPdf < Prawn::Document
     move_down 40
     total_active_sales_entries = @sales_order.sales_items.count 
     
-    table subscription_item_rows , :position => :center , :width => @page_width -100 do
+    # table subscription_item_rows , :position => :center , :width => @page_width -100 do
+    table subscription_item_rows , :position => :center do
       row(0).font_style = :bold
       row( total_active_sales_entries + 1).font_style = :bold 
       columns(1..3).align = :left
       self.header = true
-      self.column_widths = { 1 => 400 }
+      # total is 792
+      self.column_widths = { 
+          0 => 30 , #  entry number  
+          1 => 250,  # the item description 
+          2 => 50, # the quantity
+          3 => 200, # the pricing
+          4 => 150
+      }
+      # self.cell_style = {
+      #   :minimum_height => 50
+      # }
+      row(0).height = 40
     end
     
     
@@ -139,7 +152,7 @@ class SalesOrderPdf < Prawn::Document
     count = 0
     total_price_in_sales_order = BigDecimal("0")
     
-    header = [["No", "Item", "Quantity", "Price"]] 
+    header = [["No", "Item", "Qty", "Price", "Image"]] 
     body = [] 
     
     (@sales_order.sales_items).map do |sales_item|
@@ -178,7 +191,7 @@ class SalesOrderPdf < Prawn::Document
       
       body << [ "#{count}", 
         "#{item_data} ", sales_item.quantity,
-      "#{ price_details }  " ]
+      "#{ price_details }  ",make_cell_image_placeholder ]
     end  
     
     # footer = [[
@@ -189,6 +202,12 @@ class SalesOrderPdf < Prawn::Document
     # ]]
     
     return header + body  #+ footer 
+  end
+  
+  def make_cell_image_placeholder
+    make_cell("", {
+      :height => 100
+    })
   end
    
   def precision(num)

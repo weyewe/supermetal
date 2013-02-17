@@ -88,12 +88,20 @@ class DeliveryOrderPdf < Prawn::Document
     move_down 40
     total_active_sales_entries = @delivery_order.delivery_entries.count 
     
-    table document_data , :position => :center , :width => @page_width -100 do
+    # table document_data , :position => :center , :width => @page_width -100 do
+    table document_data , :position => :center  do
       row(0).font_style = :bold
       row( total_active_sales_entries + 1).font_style = :bold 
       columns(1..3).align = :left
       self.header = true
-      self.column_widths = { 1 => 400 }
+      # self.column_widths = { 1 => 400 }
+      self.column_widths = { 
+          0 => 30 , #  entry number  
+          1 => 250,  # the item description 
+          2 => 50, # the quantity
+          3 => 350 # the image 
+      }
+      row(0).height = 40
     end
      
   end
@@ -121,7 +129,7 @@ class DeliveryOrderPdf < Prawn::Document
   # end
   
   def document_data_header
-    [["No", "Item", "Quantity", "Diterima", "Retur", "Hilang"]] 
+    [["No", "Item", "Qty", "Image"]] 
   end
   
   def document_data_body
@@ -132,26 +140,49 @@ class DeliveryOrderPdf < Prawn::Document
       item_data = "#{sales_item.code} "  
       item_data << "\n"
       item_data << "#{sales_item.name}" 
+      item_data << "\n"
+      
+      
+      item_data << "Kondisi Barang: "
+      if delivery_entry.item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:production]
+        item_data <<  "Hasil Cor"
+      elsif delivery_entry.item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
+        item_data <<  "Hasil Bubut"
+      end
+      item_data << "\n"
+      
+      item_data << "Jenis Pengiriman: "
+      if delivery_entry.entry_case == DELIVERY_ENTRY_CASE[:normal]
+        item_data << "Normal"
+      elsif  delivery_entry.entry_case == DELIVERY_ENTRY_CASE[:premature]
+        item_data << "Prematur"
+      elsif delivery_entry.entry_case == DELIVERY_ENTRY_CASE[:guarantee_return]
+        item_data << "Hasil Retur Garansi"
+      elsif delivery_entry.entry_case == DELIVERY_ENTRY_CASE[:bad_source_fail_post_production]
+        item_data << "Casting Keropos"
+      elsif delivery_entry.entry_case == DELIVERY_ENTRY_CASE[:technical_failure_post_production]
+        item_data << "Gagal Bubut"
+      end
+      
+      
+      
        
       quantity_data = "#{delivery_entry.quantity_sent}" 
       quantity_data << "\n"
       
-      if delivery_entry.entry_case == DELIVERY_ENTRY_CASE[:guarantee_return]
-        quantity_data << "Hasil Retur Garansi"
-      elsif delivery_entry.entry_case == DELIVERY_ENTRY_CASE[:bad_source_fail_post_production]
-        quantity_data << "Casting Keropos"
-      elsif delivery_entry.entry_case == DELIVERY_ENTRY_CASE[:technical_failure_post_production]
-        quantity_data << "Gagal Bubut"
-      end
       
        
       [ "#{count}", 
         "#{item_data} ", quantity_data,
-        '',
-        '',
-        ''
+      make_cell_image_placeholder
        ]
     end
+  end
+  
+  def make_cell_image_placeholder
+    make_cell("", {
+      :height => 100
+    })
   end
    
   def document_data 

@@ -994,7 +994,7 @@ class SalesItem < ActiveRecord::Base
   end
   
   def pending_guarantee_return
-     
+     self.guarantee_return_entries.count  - self.delivery_entries.where(:entry_case => DELIVERY_ENTRY_CASE[:guarantee_return]).count
   end
   
   

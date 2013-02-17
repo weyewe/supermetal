@@ -59,7 +59,9 @@ class User < ActiveRecord::Base
      
     
     if new_object.valid?
-      UserMailer.notify_new_user_registration( new_object , password    ).deliver
+      if Rails.env.production?
+        UserMailer.notify_new_user_registration( new_object , password    ).deliver
+      end
       # send_company_admin_approval_notification( company_admin ).deliver
       # NewsletterMailer.send_company_admin_approval_notification( company_admin ).deliver
     end

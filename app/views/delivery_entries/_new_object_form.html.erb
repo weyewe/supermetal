@@ -18,6 +18,17 @@
   <% end %>
  
 
+	<%#= f.input :entry_case, :label =>"Kasus Pengiriman"   %>
+	<%= f.input :entry_case, :label => "Kasus Pengiriman" do %>
+     <%= f.select :entry_case, 
+         DeliveryEntry.all_selectable_delivery_entry_cases %>
+  <% end %>
+
+	<%#= f.input :item_condition, :label =>"Kondisi Barang"   %>
+	<%= f.input :item_condition, :label => "Kondisi Barang" do %>
+     <%= f.select :item_condition, 
+         DeliveryEntry.all_selectable_delivery_entry_item_conditions %>
+  <% end %>
  
 	
 	<hr />

@@ -118,11 +118,46 @@ IMAGE_ASSET_URL = {
 # }
 
 MATERIAL = {
-  :alumunium => "Alumunium",
+  :alumunium_bronze => "Alumunium Bronze",
   :copper   => 'Copper',
   :iron => "Iron"
 }
 
+
+MATERIAL_CODE = [
+  {
+      :name => "Alumunium Bronze",
+      :value => "H"
+  },
+   {
+    :name => "Kuningan",
+    :value => "G"
+  },
+  {
+    :name => "Bronze",
+    :value => "F"
+  },
+  {
+    :name => "Alumunium",
+    :value => "E"
+  },
+  {
+    :name => "Stainless Steel",
+    :value => "D"
+  },
+  {
+    :name => "FC",
+    :value => "A"
+  },
+   {
+    :name => "FCD",
+    :value => "B"
+  },
+  {
+    :name => "Steel",
+    :value => "C"
+  }
+]
 
 =begin
   PRODUCTION RELATED
@@ -268,7 +303,7 @@ DELIVERY_ENTRY_CASE = {
 
 DELIVERY_ENTRY_CASE_VALUE = {
   :normal                  =>  "Normal", 
-  :premature             => "Prematur: pengeluaran hasil cor, padahal yg dipesan bubut", 
+  :premature             => "Prematur", 
   :guarantee_return                  => "Retur Garansi" ,
   :bad_source_fail_post_production   => "Cast Keropos (hanya bubut)", 
   :technical_failure_post_production => "Gagal bubut (hanya bubut)" ,

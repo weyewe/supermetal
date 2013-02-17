@@ -90,9 +90,10 @@ class Customer < ActiveRecord::Base
     selectables  =  self.all_ready_sales_items 
     result = []
     selectables.each do |selectable| 
-      result << [ "#{selectable.code}" , 
+      result << [ "[#{selectable.code}] #{selectable.sales_order.code}  " , 
                       selectable.id ]  
     end
+    
     return result
   end
   

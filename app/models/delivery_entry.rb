@@ -631,14 +631,15 @@ class DeliveryEntry < ActiveRecord::Base
   def self.all_selectable_delivery_entry_cases
     result = []
     
-    result << [ "#{DELIVERY_ENTRY_CASE_VALUE[:ready_production]}" , 
-                    DELIVERY_ENTRY_CASE[:ready_production] ] 
+    result << [ "#{DELIVERY_ENTRY_CASE_VALUE[:normal]}" , 
+                    DELIVERY_ENTRY_CASE[:normal] ] 
                     
-    result << [ "#{DELIVERY_ENTRY_CASE_VALUE[:ready_post_production]}" , 
-                    DELIVERY_ENTRY_CASE[:ready_post_production] ] 
+    result << [ "#{DELIVERY_ENTRY_CASE_VALUE[:premature]}" , 
+                    DELIVERY_ENTRY_CASE[:premature] ] 
     
     result << [ "#{DELIVERY_ENTRY_CASE_VALUE[:guarantee_return]}" , 
                     DELIVERY_ENTRY_CASE[:guarantee_return] ] 
+                    
     result << [ "#{DELIVERY_ENTRY_CASE_VALUE[:bad_source_fail_post_production]}" , 
                     DELIVERY_ENTRY_CASE[:bad_source_fail_post_production] ]
                     
@@ -647,14 +648,26 @@ class DeliveryEntry < ActiveRecord::Base
     return result
   end
   
-  def normal_delivery_entry?
-    sales_item = self.sales_item
-    if sales_item.only_production?
-      return self.entry_case == DELIVERY_ENTRY_CASE[:ready_production]
-    elsif sales_item.is_post_production? 
-      return self.entry_case == DELIVERY_ENTRY_CASE[:ready_post_production]
-    end
+  def self.all_selectable_delivery_entry_item_conditions
+    result = []
+    
+    result << [ "Hasil Cor" , 
+                    DELIVERY_ENTRY_ITEM_CONDITION[:production] ] 
+                    
+    result << [ "Hasil Bubut" , 
+                    DELIVERY_ENTRY_ITEM_CONDITION[:post_production] ] 
+     
+    return result
   end
+  
+  # def normal_delivery_entry?
+  #   sales_item = self.sales_item
+  #   if sales_item.only_production?
+  #     return self.entry_case == DELIVERY_ENTRY_CASE[:ready_production]
+  #   elsif sales_item.is_post_production? 
+  #     return self.entry_case == DELIVERY_ENTRY_CASE[:ready_post_production]
+  #   end
+  # end
   
   def billed_quantity
     quantity = 0 
@@ -676,6 +689,12 @@ class DeliveryEntry < ActiveRecord::Base
     end
     
     return weight
+  end
+  
+  def payable_delivery_entry?
+    not ( self.entry_case == DELIVERY_ENTRY_CASE[:guarantee_return]  ||
+         self.entry_case == DELIVERY_ENTRY_CASE[:technical_failure_post_production]  
+      )
   end
   
   def total_delivery_entry_price

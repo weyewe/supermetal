@@ -45,10 +45,28 @@ class InvoicePdf < Prawn::Document
           :size => 15, 
           :align => :center 
           
+      text "Delivery: #{@invoice.delivery.code}", 
+          :size => 12, 
+          :align => :center
       confirmed_date =  @invoice.created_at.in_time_zone(LOCAL_TIME_ZONE)
+      
+      
       text "Date: #{confirmed_date.day}/#{confirmed_date.month}/#{confirmed_date.year}", 
           :size => 12, 
           :align => :center
+    
+   
+      due_date = @invoice.due_date 
+      due_date_string = "Jatuh Tempo: "
+      if not due_date.nil?
+        due_date = due_date.in_time_zone(LOCAL_TIME_ZONE)
+        due_date_string << "#{due_date.day}/#{due_date.month}/#{due_date.year}"
+      end
+      
+      text  due_date_string, 
+          :size => 12, 
+          :align => :center
+    
     end 
   end
   
@@ -99,12 +117,20 @@ class InvoicePdf < Prawn::Document
     move_down 40
     total_active_sales_entries = @delivery.delivery_entries.count 
     
-    table document_data  , :position => :center , :width => @page_width -100 do
+    table document_data  , :position => :center  do
       row(0).font_style = :bold
       row( total_active_sales_entries + 1).font_style = :bold 
       columns(1..3).align = :left
       self.header = true
-      self.column_widths = { 1 => 400 }
+      # self.column_widths = { 1 => 400 }
+      self.column_widths = { 
+          0 => 30 , #  entry number  
+          1 => 250,  # the item description 
+          2 => 120, # the quantity
+          3 => 150, # the price ,
+          4 => 150 # the total
+      }
+      row(0).height = 40
     end
     
     
@@ -145,7 +171,10 @@ class InvoicePdf < Prawn::Document
   def document_data_body
     count =  0 
     total_price_in_invoice = BigDecimal("0")
+    
+    table_body = [] 
     (@delivery.delivery_entries).map do |delivery_entry|
+      next if not delivery_entry.payable_delivery_entry?
       sales_item = delivery_entry.sales_item 
       count = count + 1 
       item_data = "#{sales_item.code} "  
@@ -153,6 +182,29 @@ class InvoicePdf < Prawn::Document
       item_data << "#{sales_item.name}"
       item_data << "\n"
       item_data << "#{sales_item.description}"
+      item_data << "\n"
+      item_data << "Kondisi Barang: "
+      if delivery_entry.item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:production]
+        item_data <<  "Hasil Cor"
+      elsif delivery_entry.item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
+        item_data <<  "Hasil Bubut"
+      end
+      item_data << "\n"
+      
+      item_data << "Jenis Pengiriman: "
+      if delivery_entry.entry_case == DELIVERY_ENTRY_CASE[:normal]
+        item_data << "Normal"
+      elsif  delivery_entry.entry_case == DELIVERY_ENTRY_CASE[:premature]
+        item_data << "Prematur"
+      elsif delivery_entry.entry_case == DELIVERY_ENTRY_CASE[:guarantee_return]
+        item_data << "Hasil Retur Garansi"
+      elsif delivery_entry.entry_case == DELIVERY_ENTRY_CASE[:bad_source_fail_post_production]
+        item_data << "Casting Keropos"
+      elsif delivery_entry.entry_case == DELIVERY_ENTRY_CASE[:technical_failure_post_production]
+        item_data << "Gagal Bubut"
+      end
+      
+      
       total_price = BigDecimal("0")
       
         
@@ -165,54 +217,68 @@ class InvoicePdf < Prawn::Document
       end
       
       price_details = ""
-      if delivery_entry.normal_delivery_entry? 
-          if sales_item.is_pending_pricing?
-            price_details << "Biaya Pending"
-          else
-            if sales_item.is_pre_production?
-              price_details << "Biaya Pola: #{precision( sales_item.pre_production_price) }" + "\n"
-            end
-
-            if sales_item.is_production?
-              price_details << "Biaya Cetak: #{precision( sales_item.production_price) }" 
-              if sales_item.is_pricing_by_weight?
-                price_details <<" per kg"  
-              else
-                price_details <<" per piece" 
-              end
-          
-              price_details << "\n"
-            end
-
-            if sales_item.is_post_production?
-              price_details << "Biaya Bubut: #{precision( sales_item.post_production_price) }" 
-            end
-          end
-          
-          total_price = delivery_entry.total_delivery_entry_price
-          total_price_in_invoice += delivery_entry.total_delivery_entry_price
+      
+      if sales_item.is_pending_pricing?
+        price_details << "Biaya Pending"
       else
-        if delivery_entry.entry_case == DELIVERY_ENTRY_CASE[:guarantee_return]
-          price_details << "FREE" + "\n"
-          price_details << "Pengembalian Garansi Retur"
+        if sales_item.is_pre_production?
+          price_details << "Biaya Pola: #{precision( sales_item.pre_production_price) }" + "\n"
         end
-        
-        total_price = BigDecimal('0')
+
+        if sales_item.is_production?
+          price_details << "Biaya Cetak: #{precision( sales_item.production_price) }" 
+          if sales_item.is_pricing_by_weight?
+            price_details <<" per kg"  
+          else
+            price_details <<" per piece" 
+          end
+      
+          price_details << "\n"
+        end
+
+        if sales_item.is_post_production?
+          price_details << "Biaya Bubut: #{precision( sales_item.post_production_price) }" 
+        end
       end
       
+      total_price = delivery_entry.total_delivery_entry_price
+      total_price_in_invoice += delivery_entry.total_delivery_entry_price
+  
       
       
-      [ "#{count}", 
+      table_body << [ "#{count}", 
         "#{item_data} ", quantity_details,
         price_details, 
       "#{precision(total_price)}" ]
-    end  + 
-    [[
+      
+    end  
+    
+    
+    base_price_row =  [[
+      "",
+      " ", '',
+    "Harga Pokok",  
+    "#{precision(total_price_in_invoice)}"
+    ]]
+    
+    
+    tax_amount = 0.1 *total_price_in_invoice 
+    tax_row =  [[
+      "",
+      " ", '',
+    "Pajak (10%)  ",  
+    "#{precision( tax_amount )}"
+    ]] 
+    
+    total_amount = tax_amount + total_price_in_invoice
+    total_row =  [[
       "",
       " ", '',
     "Total  ",  
-    "#{precision(total_price_in_invoice)}"
+    "#{precision(total_amount)}"
     ]]
+    
+    return table_body + base_price_row  + tax_row + total_row 
   end
    
   def document_data 

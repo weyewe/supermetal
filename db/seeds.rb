@@ -189,9 +189,17 @@ admin.set_as_main_user
 
 customer_1 = Customer.create :name => "Dixzell"
 customer_2 = Customer.create :name => "Bangka Terbang"
-copper = Material.create :name => MATERIAL[:copper], :code => "C"
-alumunium = Material.create :name => MATERIAL[:alumunium], :code => "A"
-iron = Material.create :name => MATERIAL[:iron], :code => "B"
+# copper = Material.create :name => MATERIAL[:copper], :code => "C"
+# alumunium = Material.create :name => MATERIAL[:alumunium], :code => "A"
+# iron = Material.create :name => MATERIAL[:iron], :code => "B"
+
+MATERIAL_CODE.each do |material_code|
+  Material.create :name => material_code[:name], :code => material_code[:value]
+end
+
+copper = Material.all[0]
+alumunium = Material.all[1]
+iron = Material.all[2]
 
 bank_mandiri = CashAccount.create({
   :case =>  CASH_ACCOUNT_CASE[:bank][:value]  ,
