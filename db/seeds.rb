@@ -175,6 +175,8 @@ data_entry_role = Role.create!(
 company = Company.create(:name => "Super metal", :address => "Tanggerang", :phone => "209834290840932")
 admin = User.create_main_user(   :email => "admin@gmail.com" ,:password => "willy1234", :password_confirmation => "willy1234") 
 
+admin.set_as_main_user
+
 data_entry = User.create_by_employee(admin, {
   :name => "Data Entry",
   :email => "rajakuraemas@gmail.com",
@@ -184,7 +186,7 @@ data_entry.password = 'willy1234'
 data_entry.password_confirmation = 'willy1234'
 data_entry.save
 
-admin.set_as_main_user
+
 
 
 customer_1 = Customer.create :name => "Dixzell"
