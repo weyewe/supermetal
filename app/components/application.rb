@@ -12,7 +12,7 @@ class Application < Netzke::Basepack::Viewport
     end
   end
 
-  action :about do |c|
+  action :data_entry do |c|
     c.icon = :information
   end
 
@@ -35,7 +35,7 @@ class Application < Netzke::Basepack::Viewport
     c.intro_html = "Laporan hasil kegiatan operasional Supermetal"
     c.items = [
       { layout: :border,
-        tbar: [header_html, '->', :about, current_user ? :sign_out : :sign_in],
+        tbar: [header_html, '->', :data_entry ],
         items: [
           { region: :west, item_id: :navigation, width: 300, split: true, xtype: :treepanel, root: menu, root_visible: false, title: "Navigation" },
           { region: :center, layout: :border, border: false, items: [
