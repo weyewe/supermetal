@@ -1,4 +1,4 @@
-class Payments < Netzke::Basepack::Grid
+class Payments < Netzke::Communitypack::LiveSearchGrid
    
   
   def configure(c)

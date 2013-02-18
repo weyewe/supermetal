@@ -1,4 +1,4 @@
-class SalesOrders < Netzke::Basepack::Grid
+class SalesOrders < Netzke::Communitypack::LiveSearchGrid #Netzke::Basepack::Grid
   
   # how can we not show the add, delete?
   # read only ? in the Netzke::Basepack::Grid

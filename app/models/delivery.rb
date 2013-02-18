@@ -10,6 +10,11 @@ class Delivery < ActiveRecord::Base
   
   has_one :invoice
   
+  scope :live_search, lambda { |search| 
+    search = "%#{search}%"
+    joins(:customer).where{ (code =~ search) |  
+          (customer.name =~ search )} 
+   }
   
   def self.create_by_employee( employee, params ) 
     return nil if employee.nil? 

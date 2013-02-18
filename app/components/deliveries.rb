@@ -1,4 +1,4 @@
-class Deliveries < Netzke::Basepack::Grid
+class Deliveries < Netzke::Communitypack::LiveSearchGrid
   
   
   

@@ -1,4 +1,4 @@
-class Customers < Netzke::Basepack::Grid
+class Customers < Netzke::Basepack::Grid #Netzke::Communitypack::LiveSearchGrid # 
   
    # Netzke::Communitypack::LiveSearchGrid
   

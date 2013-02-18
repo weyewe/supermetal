@@ -5,6 +5,13 @@ class SalesOrder < ActiveRecord::Base
   has_many :sales_items 
   
   belongs_to :customer 
+  
+  
+  scope :live_search, lambda { |search| 
+    search = "%#{search}%"
+    joins(:customer).where{ (code =~ search) |  
+          (customer.name =~ search )} 
+   }
    
   def self.active_objects
     self.where(:is_deleted => false ).order("created_at DESC")

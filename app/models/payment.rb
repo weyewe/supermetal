@@ -42,6 +42,12 @@ class Payment < ActiveRecord::Base
   validate :validate_downpayment_usage_is_less_than_remaining_downpayment
   
   
+  scope :live_search, lambda { |search| 
+    search = "%#{search}%"
+    joins(:customer).where{ (code =~ search) |  
+          (customer.name =~ search )} 
+   }
+   
   
   def total_amount_paid_must_be_greater_than_zero
     total_amount_paid = :downpayment_usage_amount , :downpayment_addition_amount , :amount_paid
