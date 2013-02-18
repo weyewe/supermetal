@@ -98,9 +98,15 @@ class TemplateSalesItem < ActiveRecord::Base
                                   :is_confirmed => true,
                                   :is_finalized => true,
                                   :is_deleted => false  ).sum("quantity_lost")
+                                  
+    # deduct with the quantity being post produced: success or fail
+    
+    confirmed_total_quantity_used_for_post_production = self.post_production_results.where(
+      :is_confirmed => true
+    ).sum("processed_quantity")
               
     total_quantity_finished - total_quantity_going_out - confirmed_total_quantity_going_out - 
-                confirmed_total_quantity_returned - confirmed_total_quantity_lost
+                confirmed_total_quantity_returned - confirmed_total_quantity_lost - confirmed_total_quantity_used_for_post_production
   end
   
   def ready_post_production

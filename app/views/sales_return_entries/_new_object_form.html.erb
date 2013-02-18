@@ -15,19 +15,24 @@
 		<%= new_object.delivery_entry.sales_item.code %>
 	</h2>  
  
-  
-	<hr />
-		<%= f.input :quantity_for_post_production, :label =>"Jumlah diperbaiki"   %>
-		<%= f.input :weight_for_post_production, :label =>"Berat  diperbaiki", 
-				:hint => "Dalam kilogram, sensitif sampai 2 decimal. Contoh: <b>2.15</b>kg"   %> 
-				
+
 	<hr />
 		<%= f.input :quantity_for_production, :label =>"Jumlah Lebur Ulang"   %>
 		<%= f.input :weight_for_production, :label =>"Berat Lebur Ulang", 
 				:hint => "Dalam kilogram, sensitif sampai 2 decimal. Contoh: <b>2.15</b>kg"   %>
- 
+  
+	<hr />
+		<%= f.input :quantity_for_production_repair, :label =>"Jumlah perbaiki Cor"   %>
+		<%= f.input :weight_for_production_repair, :label =>"Berat  perbaiki Cor", 
+				:hint => "Dalam kilogram, sensitif sampai 2 decimal. Contoh: <b>2.15</b>kg"   %>
+				
+				
+	<hr />
+		<%= f.input :quantity_for_post_production, :label =>"Jumlah diperbaiki Bubut"   %>
+		<%= f.input :weight_for_post_production, :label =>"Berat  diperbaiki Bubut", 
+				:hint => "Dalam kilogram, sensitif sampai 2 decimal. Contoh: <b>2.15</b>kg"   %> 
+				
 	
-
   <div class="form-actions">
 	
 		<% if new_object.persisted? %>

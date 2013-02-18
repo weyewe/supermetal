@@ -6,6 +6,23 @@ class SalesReturnEntry < ActiveRecord::Base
   
   validates_presence_of :sales_item_id 
   validates_presence_of :delivery_entry_id 
+  validate :prevent_invalid_repair_treatment 
+  
+  def prevent_invalid_repair_treatment
+    delivery_entry = self.delivery_entry
+    
+    if delivery_entry.item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:production]
+      if quantity_for_post_production.present? and quantity_for_post_production != 0 
+        errors.add(:quantity_for_post_production , "Kondisi barang yang di kirim adalah hasil cor. Tidak boleh perbaiki bubut")
+      end
+    else
+      
+      if quantity_for_production_repair.present? and quantity_for_production_repair != 0 
+        errors.add(:quantity_for_production_repair , "Kondisi barang yang di kirim adalah bubut. Tidak boleh perbaiki cor")
+      end
+      
+    end
+  end
   
   def SalesReturnEntry.create_by_employee( employee, sales_return, delivery_entry)
     
@@ -88,7 +105,7 @@ class SalesReturnEntry < ActiveRecord::Base
     
     if  quantity_for_production_repair.present?  and quantity_for_production_repair == 0  and 
               weight_for_production_repair > BigDecimal('0')
-      self.errors.add(:weight_for_post_production , "Berat harus 0 karena kuantitas perbaiki  = 0" )  
+      self.errors.add(:weight_for_production_repair , "Berat harus 0 karena kuantitas perbaiki  = 0" )  
     end
   end
   
