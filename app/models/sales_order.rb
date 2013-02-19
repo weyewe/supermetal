@@ -19,7 +19,7 @@ class SalesOrder < ActiveRecord::Base
   
   def delete(employee) 
     return nil if employee.nil? 
-    if self.is_confirmed? or self.is_finalized? 
+    if self.is_confirmed?  
       ActiveRecord::Base.transaction do
         self.post_confirm_delete( employee) 
       end
