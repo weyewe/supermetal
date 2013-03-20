@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130203145546) do
+ActiveRecord::Schema.define(:version => 20130320021048) do
 
   create_table "banks", :force => true do |t|
     t.datetime "created_at", :null => false
@@ -223,9 +223,9 @@ ActiveRecord::Schema.define(:version => 20130203145546) do
 
   create_table "materials", :force => true do |t|
     t.string   "name"
-    t.boolean  "is_active",  :default => true
-    t.datetime "created_at",                   :null => false
-    t.datetime "updated_at",                   :null => false
+    t.boolean  "is_deleted", :default => false
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
     t.string   "code"
   end
 
@@ -631,6 +631,7 @@ ActiveRecord::Schema.define(:version => 20130203145546) do
     t.boolean  "is_main_user",           :default => false
     t.datetime "created_at",                                :null => false
     t.datetime "updated_at",                                :null => false
+    t.string   "authentication_token"
   end
 
   add_index "users", ["email"], :name => "index_users_on_email", :unique => true

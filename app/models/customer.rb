@@ -1,5 +1,7 @@
 class Customer < ActiveRecord::Base
-  attr_accessible :name, :contact_person, :phone, :mobile , :email, :bbm_pin, :address, :town_id , :office_address, :delivery_address
+  include UniqueNonDeleted
+  validate :unique_non_deleted_name 
+  attr_accessible :name, :contact_person, :phone, :mobile , :email, :bbm_pin, :town_id , :office_address, :delivery_address
   
   has_many :sales_orders 
   has_many :deliveries
@@ -70,10 +72,10 @@ class Customer < ActiveRecord::Base
   end
   
   def self.active_objects
-    self.where(:is_deleted => false).order("created_at DESC")
+    self.where(:is_deleted => false).order("id DESC")
   end
   
-  def delete
+  def delete(employee)
     self.is_deleted = true
     self.save 
   end

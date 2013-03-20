@@ -9,6 +9,8 @@ $(document).ready(function(){
 		<% if @object.persisted? == false or @object.is_deleted %>
 			$.msgbox("Berhasil menghapus sales order: <%= @object.code %>");
 		<% else %>
+			var $row = $("#parent_entry-<%= @object.id %>")
+			$row.spin(false);
 			$.msgbox("Error: <%= @object.errors.messages %>", 
 						{type: "error"});
 		<% end %>

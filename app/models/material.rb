@@ -1,10 +1,13 @@
 class Material < ActiveRecord::Base
+  include UniqueNonDeleted
   attr_accessible :name, :code 
   
   validates_presence_of :name  
+  validates_presence_of :code 
+  validate :unique_non_deleted_name 
   
   def self.active_objects
-    self.where(:is_active => true).order("created_at DESC")
+    self.where(:is_deleted => false).order("id DESC")
   end
   
   def self.all_selectables
@@ -20,7 +23,7 @@ class Material < ActiveRecord::Base
   
   
   def delete
-    self.is_active = false
+    self.is_deleted = true 
     self.save 
   end
 end

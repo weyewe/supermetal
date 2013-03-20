@@ -5,8 +5,11 @@ class HomeController < ApplicationController
                                                 :production_details,
                                                 :post_production_details,
                                                 :delivery_entry_details,
-                                                :report
+                                                :report,
+                                                :extjs
                                                 ]
+                                                
+  skip_before_filter :authenticate_user! , :only => [:extjs]
   
   def index
     @objects = SalesItem.joins(:sales_order => [:customer]).where{
@@ -71,5 +74,9 @@ class HomeController < ApplicationController
   
   def report
     render(:layout => "layouts/report")
+  end
+  
+  def extjs
+    render(:layout => "layouts/extjs")
   end
 end

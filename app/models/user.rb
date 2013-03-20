@@ -3,7 +3,7 @@ class User < ActiveRecord::Base
   # :token_authenticatable, :confirmable,
   # :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :trackable, :validatable
+         :recoverable, :rememberable, :trackable, :validatable, :token_authenticatable
 
   # Setup accessible (or protected) attributes for your model
   attr_accessible :email, :password, :password_confirmation, :remember_me, :name , :role_id
@@ -27,7 +27,7 @@ class User < ActiveRecord::Base
   end
   
   def self.active_objects
-    self.where(:is_deleted => false).order("created_at DESC")
+    self.where(:is_deleted => false).order("id DESC")
   end
   
   def delete(employee)
@@ -44,11 +44,13 @@ class User < ActiveRecord::Base
   def User.create_by_employee( employee, params)
     return nil if employee.nil? 
     
+    admin_role = Role.find_by_name ROLE_NAME[:admin]
+    
     new_object                        = User.new 
     password                         = UUIDTools::UUID.timestamp_create.to_s[0..7]
     new_object.name                  = params[:name]
     new_object.email                 = params[:email] 
-    new_object.role_id               = params[:role_id]
+    new_object.role_id               =  admin_role.id
     
     new_object.password              = password
     new_object.password_confirmation = password 
@@ -72,12 +74,14 @@ class User < ActiveRecord::Base
   def update_by_employee( employee, params)
     return nil if employee.nil? 
       
+    admin_role = Role.find_by_name ROLE_NAME[:admin]
+    
     self.name                  = params[:name]
     self.email                 = params[:email] 
     
     
     if  self.is_main_user == false  
-      self.role_id               = params[:role_id]
+      self.role_id               = admin_role.id
     end
     
     self.save
