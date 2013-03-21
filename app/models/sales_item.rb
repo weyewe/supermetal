@@ -333,6 +333,7 @@ class SalesItem < ActiveRecord::Base
   end
   
   def update_template_sales_item
+    return nil if not self.is_confirmed?
     template_sales_item = self.template_sales_item
     template_sales_item.update_from_sales_item( self) 
   end

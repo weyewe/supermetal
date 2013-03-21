@@ -51,6 +51,7 @@ gem 'awesome_nested_set'
 gem "cancan"
 
 gem 'the_role'
+gem 'jbuilder'
 
 # Gems used only for assets and not required
 # in production environments by default.
