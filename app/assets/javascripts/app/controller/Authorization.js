@@ -87,6 +87,28 @@ Ext.define("AM.controller.Authorization", {
  		                 }
  	                ]
  								},
+								{
+									text:'Pabrik', 
+	                viewClass:'Will', 
+	                iconCls:'text-folder', 
+	                expanded: true,
+	                children:
+	                [
+	                    
+                    { 
+                        text:'Penerimaan Barang Bubut', 
+                        viewClass:'AM.view.sales.Customer', 
+                        leaf:true, 
+                        iconCls:'text' 
+                    },
+                    { 
+                        text:'Pengerjaan Pabrik', 
+                        viewClass:'AM.view.factory.TemplateSalesItem', 
+                        leaf:true, 
+                        iconCls:'text' 
+                    }
+	                ]
+								},
  								{
  									text:'Sales', 
  	                viewClass:'Will', 

@@ -45,6 +45,9 @@ Supermetal::Application.routes.draw do
     match 'confirm_sales_order' => 'sales_orders#confirm', :as => :confirm_sales_order, :method => :post
     resources :sales_items
     
+    resources :template_sales_items
+    resources :pre_production_results   
+    
     resources :deliveries 
     match 'confirm_delivery' => 'deliveries#confirm', :as => :confirm_delivery, :method => :post
     resources :delivery_entries 
