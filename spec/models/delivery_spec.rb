@@ -17,7 +17,7 @@ describe Delivery do
     @admin_role = Role.find_by_name ROLE_NAME[:admin]
     @admin =  User.create_main_user(   :email => "admin@gmail.com" ,:password => "willy1234", :password_confirmation => "willy1234") 
     
-    @copper = Material.create :name => MATERIAL[:copper]
+    @copper = Material.create :name => MATERIAL[:copper], :code => 'C'
     @customer = FactoryGirl.create(:customer,  :name => "Weyewe",
                                             :contact_person => "Willy" )  
                                             
@@ -110,7 +110,7 @@ describe Delivery do
   end
    
   it 'should have ready production and ready post production' do
-    @template_sales_item.ready_production.should == @ok_production_quantity
+    @template_sales_item.ready_production.should == @ok_production_quantity - @ppr.processed_quantity
     @template_sales_item.ready_post_production.should == @ok_post_production_quantity
   end
   

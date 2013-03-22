@@ -3,11 +3,15 @@ Ext.define('AM.model.TemplateSalesItem', {
   	fields: [
     	{ name: 'id', type: 'int' },
     	{ name: 'name', type: 'string' },
+			{ name: 'code', type: 'string' },
+
 			{ name: 'pending_production', type: 'int' },
 			{ name: 'pending_post_production', type: 'int' },
 			{ name: 'pending_production_repair', type: 'int' },
 			{ name: 'ready_production', type: 'int' },
 			{ name: 'ready_post_production', type: 'int' }
+			
+		
   	],
 
   	idProperty: 'id' ,proxy: {

@@ -6,7 +6,15 @@ Ext.define('AM.view.factory.templatesalesitem.List' ,{
 
 	initComponent: function() {
 		this.columns = [
-			{ header: 'Nama',  dataIndex: 'name',  flex: 1 , sortable: false},
+			// { header: 'Nama',  dataIndex: 'name',  flex: 1 , sortable: false},
+			{
+				xtype : 'templatecolumn',
+				text : "Item",
+				flex : 1,
+				tpl : '<b>{code}</b>' + '<br />' + 
+							'{name}' 
+			},
+			
 			{
 				xtype : 'templatecolumn',
 				text : "Cor",

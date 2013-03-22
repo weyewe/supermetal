@@ -162,7 +162,7 @@ Ext.define('AM.controller.TemplateSalesItems', {
 		var preProductionResultGrid = this.getPreProductionResultList();
 		
 		if(preProductionResultGrid){
-			preProductionResultGrid.setTitle("Pre Production: " + record.get('name'));
+			preProductionResultGrid.setTitle("Pre Production: " + record.get('code'));
 			preProductionResultGrid.getStore().load({
 				params : {
 					template_sales_item_id : record.get('id')

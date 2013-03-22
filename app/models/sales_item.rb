@@ -209,6 +209,10 @@ class SalesItem < ActiveRecord::Base
   # end
   
   def SalesItem.create_sales_item( employee, sales_order, params ) 
+    puts "Inside the create sales item"
+    puts "the params[:material_id]: #{params[:material_id]}"
+    
+    puts params
     return nil if employee.nil?
     return nil if sales_order.nil? 
     
@@ -216,7 +220,8 @@ class SalesItem < ActiveRecord::Base
     new_object.creator_id = employee.id 
     new_object.sales_order_id = sales_order.id 
     
-    new_object.material_id           = params[:material_id]       
+    new_object.material_id           = params[:material_id] 
+    puts "THE material ID : #{params[:material_id]}"      
     new_object.is_pre_production     = params[:is_pre_production] 
     new_object.is_production       = params[:is_production]    
     # new_object.is_production         = true # by default  

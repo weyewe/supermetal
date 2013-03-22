@@ -19,7 +19,7 @@ class ProductionOrder < ActiveRecord::Base
         :quantity                 => sales_item.quantity_for_production           ,
         :source_document_entry    => sales_item.class.to_s          ,
         :source_document_entry_id => sales_item.id                  ,
-        :source_document          => sales_item.sales_order.to_s    ,
+        :source_document          => sales_item.sales_order.class.to_s    ,
         :source_document_id       => sales_item.sales_order_id  
       )
   end

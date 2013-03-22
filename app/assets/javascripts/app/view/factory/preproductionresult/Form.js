@@ -68,18 +68,20 @@ Ext.define('AM.view.factory.preproductionresult.Form', {
 				{
 					xtype: 'displayfield',
 					fieldLabel: 'Nama Item',
-					name: 'item_name',
+					name: 'template_sales_item_name',
 					value: '10'
 				},
 				
 				 
 				{
 					fieldLabel: 'Jumlah OK',
-					name: 'quantity_ok' 
+					name: 'ok_quantity' ,
+					xtype : 'textfield'
 				},
 				{
 					fieldLabel: 'Jumlah Rusak',
-					name: 'broken_quantity' 
+					name: 'broken_quantity' ,
+					xtype : 'textfield'
 				} 
 			]
     }];
