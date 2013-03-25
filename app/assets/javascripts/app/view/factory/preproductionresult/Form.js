@@ -65,12 +65,6 @@ Ext.define('AM.view.factory.preproductionresult.Form', {
 					name: 'template_sales_item_code',
 					value: '10'
 				},
-				{
-					xtype: 'displayfield',
-					fieldLabel: 'Nama Item',
-					name: 'template_sales_item_name',
-					value: '10'
-				},
 				
 				 
 				{
@@ -82,7 +76,17 @@ Ext.define('AM.view.factory.preproductionresult.Form', {
 					fieldLabel: 'Jumlah Rusak',
 					name: 'broken_quantity' ,
 					xtype : 'textfield'
-				} 
+				},
+				{
+					fieldLabel: 'Mulai',
+					name: 'started_at' ,
+					xtype : 'datetimefield'
+				},
+				{
+					fieldLabel: 'Selesai',
+					name: 'finished_at' ,
+					xtype : 'datetimefield'
+				}
 			]
     }];
 

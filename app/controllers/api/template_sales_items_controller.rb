@@ -22,7 +22,7 @@ class Api::TemplateSalesItemsController < Api::BaseApiController
       @total = TemplateSalesItem.count
     end
     
-    render :json => { :template_sales_items => @objects , :total => @total , :success => true }
+    # render :json => { :template_sales_items => @objects , :total => @total , :success => true }
   end
 
   def create

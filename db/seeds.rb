@@ -210,148 +210,148 @@ bank_mandiri = CashAccount.create({
 })
 
 ## ADDING SALES ORDER + SALES ITEMS 
-
-sales_order   = SalesOrder.create_by_employee( admin , {
-  :customer_id    => customer_1.id,          
-  :payment_term   => PAYMENT_TERM[:cash],    
-  :order_date     => Date.new(2012, 12, 15)   
-})
-
-quantity_in_sales_item = 50 
-has_production_sales_item = SalesItem.create_sales_item( admin, sales_order,  {
-    :material_id => copper.id, 
-    :is_pre_production => true , 
-    :is_production     => true, 
-    :is_post_production => true, 
-    :is_delivered => true, 
-    :delivery_address => "Perumahan Citra Garden 1 Blok AC2/3G",
-    :quantity_for_production => quantity_in_sales_item,
-    :quantity_for_post_production => quantity_in_sales_item,
-    :description => "Bla bla bla bla bla", 
-    :delivery_address => "Yeaaah babyy", 
-    :requested_deadline => Date.new(2013, 3,5 ),
-    :weight_per_piece   => '15',
-    :name => "Sales Item Ini" ,
-    :is_pending_pricing    => false, 
-    :is_pricing_by_weight  => false , 
-    :pre_production_price  => "50000", 
-    :production_price      => "20000",
-    :post_production_price => "150000"
-  })
-  
-  
-  
-pp_sales_order   = SalesOrder.create_by_employee( admin , {
-  :customer_id    => customer_1.id,          
-  :payment_term   => PAYMENT_TERM[:cash],    
-  :order_date     => Date.new(2012, 12, 15)   
-})
-
- 
-   
- puts "BEFORE CONFIRM the sales order code: #{sales_order.code}\n"*10
- sales_order.confirm( admin )
- pp_sales_order.confirm(admin)
- puts "AFTER CONFIRM the sales order code: #{sales_order.code}\n"*10
- 
- has_production_sales_item.reload 
- template_sales_item = has_production_sales_item.template_sales_item 
-
-
- pr = ProductionResult.create_result( admin,  {
-   :ok_quantity            => 20          ,
-   :repairable_quantity    => 0  ,
-   :broken_quantity        => 0      ,
-   :ok_weight              => "#{20*10}"            ,
-   :repairable_weight      => '0'    ,
-   :broken_weight          => '0'        ,
-   :started_at             => DateTime.new(2012,12,10,20,5,5)           ,
-   :finished_at            => DateTime.new(2012,12,15,20,5,5)           ,
-   :template_sales_item_id => template_sales_item.id 
-
- } )
- 
- 
-ppr = PostProductionResult.create_result(admin, {
- :ok_quantity         => 10       ,
- :broken_quantity     => 1    ,
- :bad_source_quantity => 0  ,
- :ok_weight           => '90'          ,
- :broken_weight       => '8'        ,
- :bad_source_weight   => '0'  ,
- :started_at          =>  DateTime.new(2012,12,11,23,1,1)       ,
- :finished_at         => DateTime.new(2012,12,15,23,1,1)    ,
- :template_sales_item_id => template_sales_item.id 
-})
-
-ppr.confirm( admin )
-
-# ADDING DELIVERY 
-delivery = Delivery.create_by_employee( admin, {
-  :customer_id => customer_1.id ,
-  :delivery_address => "This is delivery address",
-  :delivery_date    => Date.new( 2012,12,12)
-} )  
-
-has_production_sales_item.reload 
-template_sales_item.reload 
-# ok quantity = 10
-# quantity sent = ok_quantity - 5 
-# quantity sent = 5 
-
-puts "Total ready post production: #{template_sales_item.ready_post_production}"
-quantity_sent = template_sales_item.ready_post_production - 5
-
-delivery_entry = DeliveryEntry.create_delivery_entry( admin, delivery,  {
-  :sales_item_id => has_production_sales_item.id ,
-  :quantity_sent => quantity_sent,
-  :quantity_sent_weight =>  (quantity_sent*20).to_s,
-  :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production],
-  :entry_case => DELIVERY_ENTRY_CASE[:normal]
-} ) 
-
-puts "This is the message:* ************************"
-delivery_entry.errors.messages.each do |msg|
-  puts "The message: #{msg}"
-end
- 
- 
-delivery.confirm( admin )  
-delivery.reload 
-delivery_entry.reload 
-
-
-puts "Before update post delivery\n"*10
-delivery_entry.update_post_delivery(admin, {
-  :quantity_confirmed => quantity_sent , 
-  :quantity_confirmed_weight => "#{quantity_sent * 20}",
-  :quantity_returned => 0 ,
-  :quantity_returned_weight => '0' ,
-  :quantity_lost => 0
-})
-
-delivery_entry.reload 
- 
-delivery.reload 
-delivery.finalize(admin)
-
-delivery.reload
-pending_payment =  delivery.invoice.confirmed_pending_payment
-total_sum = ( pending_payment*0.5 ).to_s
-payment = Payment.create_by_employee(admin, {
-  :payment_method => PAYMENT_METHOD[:bank_transfer],
-  :customer_id    => customer_1.id , 
-  :note           => "Dibayarkan dengan nomor transaksi AC/2323flkajfeaij",
-  :amount_paid => total_sum,
-  :cash_account_id => bank_mandiri.id,
-  :downpayment_addition_amount => "0",
-  :downpayment_usage_amount => "0" 
-})
-
-invoice_payment = InvoicePayment.create_invoice_payment( admin, payment,  {
-  :invoice_id  => delivery.invoice.id , 
-  :amount_paid => total_sum
-} )
-
-payment.confirm( admin)
+# 
+# sales_order   = SalesOrder.create_by_employee( admin , {
+#   :customer_id    => customer_1.id,          
+#   :payment_term   => PAYMENT_TERM[:cash],    
+#   :order_date     => Date.new(2012, 12, 15)   
+# })
+# 
+# quantity_in_sales_item = 50 
+# has_production_sales_item = SalesItem.create_sales_item( admin, sales_order,  {
+#     :material_id => copper.id, 
+#     :is_pre_production => true , 
+#     :is_production     => true, 
+#     :is_post_production => true, 
+#     :is_delivered => true, 
+#     :delivery_address => "Perumahan Citra Garden 1 Blok AC2/3G",
+#     :quantity_for_production => quantity_in_sales_item,
+#     :quantity_for_post_production => quantity_in_sales_item,
+#     :description => "Bla bla bla bla bla", 
+#     :delivery_address => "Yeaaah babyy", 
+#     :requested_deadline => Date.new(2013, 3,5 ),
+#     :weight_per_piece   => '15',
+#     :name => "Sales Item Ini" ,
+#     :is_pending_pricing    => false, 
+#     :is_pricing_by_weight  => false , 
+#     :pre_production_price  => "50000", 
+#     :production_price      => "20000",
+#     :post_production_price => "150000"
+#   })
+#   
+#   
+#   
+# pp_sales_order   = SalesOrder.create_by_employee( admin , {
+#   :customer_id    => customer_1.id,          
+#   :payment_term   => PAYMENT_TERM[:cash],    
+#   :order_date     => Date.new(2012, 12, 15)   
+# })
+# 
+#  
+#    
+#  puts "BEFORE CONFIRM the sales order code: #{sales_order.code}\n"*10
+#  sales_order.confirm( admin )
+#  pp_sales_order.confirm(admin)
+#  puts "AFTER CONFIRM the sales order code: #{sales_order.code}\n"*10
+#  
+#  has_production_sales_item.reload 
+#  template_sales_item = has_production_sales_item.template_sales_item 
+# 
+# 
+#  pr = ProductionResult.create_result( admin,  {
+#    :ok_quantity            => 20          ,
+#    :repairable_quantity    => 0  ,
+#    :broken_quantity        => 0      ,
+#    :ok_weight              => "#{20*10}"            ,
+#    :repairable_weight      => '0'    ,
+#    :broken_weight          => '0'        ,
+#    :started_at             => DateTime.new(2012,12,10,20,5,5)           ,
+#    :finished_at            => DateTime.new(2012,12,15,20,5,5)           ,
+#    :template_sales_item_id => template_sales_item.id 
+# 
+#  } )
+#  
+#  
+# ppr = PostProductionResult.create_result(admin, {
+#  :ok_quantity         => 10       ,
+#  :broken_quantity     => 1    ,
+#  :bad_source_quantity => 0  ,
+#  :ok_weight           => '90'          ,
+#  :broken_weight       => '8'        ,
+#  :bad_source_weight   => '0'  ,
+#  :started_at          =>  DateTime.new(2012,12,11,23,1,1)       ,
+#  :finished_at         => DateTime.new(2012,12,15,23,1,1)    ,
+#  :template_sales_item_id => template_sales_item.id 
+# })
+# 
+# ppr.confirm( admin )
+# 
+# # ADDING DELIVERY 
+# delivery = Delivery.create_by_employee( admin, {
+#   :customer_id => customer_1.id ,
+#   :delivery_address => "This is delivery address",
+#   :delivery_date    => Date.new( 2012,12,12)
+# } )  
+# 
+# has_production_sales_item.reload 
+# template_sales_item.reload 
+# # ok quantity = 10
+# # quantity sent = ok_quantity - 5 
+# # quantity sent = 5 
+# 
+# puts "Total ready post production: #{template_sales_item.ready_post_production}"
+# quantity_sent = template_sales_item.ready_post_production - 5
+# 
+# delivery_entry = DeliveryEntry.create_delivery_entry( admin, delivery,  {
+#   :sales_item_id => has_production_sales_item.id ,
+#   :quantity_sent => quantity_sent,
+#   :quantity_sent_weight =>  (quantity_sent*20).to_s,
+#   :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production],
+#   :entry_case => DELIVERY_ENTRY_CASE[:normal]
+# } ) 
+# 
+# puts "This is the message:* ************************"
+# delivery_entry.errors.messages.each do |msg|
+#   puts "The message: #{msg}"
+# end
+#  
+#  
+# delivery.confirm( admin )  
+# delivery.reload 
+# delivery_entry.reload 
+# 
+# 
+# puts "Before update post delivery\n"*10
+# delivery_entry.update_post_delivery(admin, {
+#   :quantity_confirmed => quantity_sent , 
+#   :quantity_confirmed_weight => "#{quantity_sent * 20}",
+#   :quantity_returned => 0 ,
+#   :quantity_returned_weight => '0' ,
+#   :quantity_lost => 0
+# })
+# 
+# delivery_entry.reload 
+#  
+# delivery.reload 
+# delivery.finalize(admin)
+# 
+# delivery.reload
+# pending_payment =  delivery.invoice.confirmed_pending_payment
+# total_sum = ( pending_payment*0.5 ).to_s
+# payment = Payment.create_by_employee(admin, {
+#   :payment_method => PAYMENT_METHOD[:bank_transfer],
+#   :customer_id    => customer_1.id , 
+#   :note           => "Dibayarkan dengan nomor transaksi AC/2323flkajfeaij",
+#   :amount_paid => total_sum,
+#   :cash_account_id => bank_mandiri.id,
+#   :downpayment_addition_amount => "0",
+#   :downpayment_usage_amount => "0" 
+# })
+# 
+# invoice_payment = InvoicePayment.create_invoice_payment( admin, payment,  {
+#   :invoice_id  => delivery.invoice.id , 
+#   :amount_paid => total_sum
+# } )
+# 
+# payment.confirm( admin)
 

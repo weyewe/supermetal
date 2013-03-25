@@ -6,9 +6,14 @@ class Api::PreProductionResultsController < Api::BaseApiController
   end
 
   def create
+    params[:pre_production_result][:started_at] = extract_datetime( params[:pre_production_result][:started_at].getutc )
+    params[:pre_production_result][:finished_at] = extract_datetime( params[:pre_production_result][:finished_at].getutc )
     @object = PreProductionResult.create_result(current_user,  params[:pre_production_result] )  
     
+    # get the datetime => separated
+    # it is GMT+7 time.. convert to GMT +0 
     
+    return 
  
     if @object.errors.size == 0 
       render :json => { :success => true, 
@@ -29,6 +34,9 @@ class Api::PreProductionResultsController < Api::BaseApiController
   def update
     
     @object = PreProductionResult.find_by_id params[:id] 
+    
+    params[:pre_production_result][:started_at] = extract_datetime( params[:pre_production_result][:started_at].getutc )
+    params[:pre_production_result][:finished_at] = extract_datetime( params[:pre_production_result][:finished_at].getutc )
     @object.update_result(current_user,  params[:pre_production_result])
      
     if @object.errors.size == 0 

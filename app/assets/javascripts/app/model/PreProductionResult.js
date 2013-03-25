@@ -10,10 +10,8 @@ Ext.define('AM.model.PreProductionResult', {
 			{ name: 'ok_quantity', type: 'int' },
 			{ name: 'broken_quantity', type: 'int' },
 			
-			{ name: 'started_date', type: 'date' },
-			{ name: 'started_time', type: 'time' },
-			{ name: 'finished_date', type: 'date' },
-			{ name: 'finished_time', type: 'time' },
+			{ name: 'started_at', type: 'datetime' },
+			{ name: 'finished_at', type: 'datetime' }, 
 			{ name: 'is_confirmed',type: 'boolean', defaultValue: false }
 			
 			

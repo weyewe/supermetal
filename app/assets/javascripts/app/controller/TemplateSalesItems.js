@@ -24,7 +24,7 @@ Ext.define('AM.controller.TemplateSalesItems', {
   init: function() {
     this.control({
       'templatesalesitemlist': {
-        itemdblclick: this.editObject,
+        // itemdblclick: this.editObject,
         selectionchange: this.selectionChange,
 				afterrender : this.loadObjectList,
       },
@@ -34,9 +34,9 @@ Ext.define('AM.controller.TemplateSalesItems', {
       'templatesalesitemlist button[action=addObject]': {
         click: this.addObject
       },
-      'templatesalesitemlist button[action=editObject]': {
-        click: this.editObject
-      },
+      // 'templatesalesitemlist button[action=editObject]': {
+      //   click: this.editObject
+      // },
       'templatesalesitemlist button[action=deleteObject]': {
         click: this.deleteObject
       }// ,

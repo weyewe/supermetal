@@ -362,3 +362,5 @@ SALES_ITEM_CREATION_CASE= {
   :repeat =>  2 , 
   :generic => 3
 }
+
+UTC_OFFSET = 7 

@@ -3,6 +3,7 @@ json.total @total
 json.template_sales_items @objects do |object|
 	json.id 				object.id 
 	json.name 			object.name
+	json.code 			object.code
 	
 	json.pending_production 				object.pending_production
 	json.pending_production_repair 	object.pending_production_repair
