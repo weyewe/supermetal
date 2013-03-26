@@ -8,8 +8,17 @@ Ext.define('AM.view.factory.preproductionresult.List' ,{
 	initComponent: function() {
 		this.columns = [
 			{ header: 'ID',  dataIndex: 'id',  flex: 1 , sortable: false},
+			{
+				xtype : 'templatecolumn',
+				text : "Item",
+				flex : 1,
+				tpl : '<b>{template_sales_item_code}</b>' + '<br />' + 
+							'{template_sales_item_name}' 
+			},
 			{ header: 'Quantity OK',  dataIndex: 'ok_quantity',  flex: 1 , sortable: false},
-			{ header: 'Quantity Rusak',  dataIndex: 'broken_quantity',  flex: 1 , sortable: false} 
+			{ header: 'Quantity Rusak',  dataIndex: 'broken_quantity',  flex: 1 , sortable: false},
+			{ header: 'Mulai',  dataIndex: 'started_at',  flex: 1 , sortable: false} ,
+			{ header: 'Selesai',  dataIndex: 'finished_at',  flex: 1 , sortable: false}  
 		];
 
 		this.addObjectButton = new Ext.Button({

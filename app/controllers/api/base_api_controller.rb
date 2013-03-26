@@ -19,19 +19,27 @@ class Api::BaseApiController < ApplicationController
     end
     
     date_array = datetime.split(" ").first 
+    puts "The date_array : #{date_array}"
     date_array = date_array.split('/')
     
     time_array =  datetime.split(" ").last 
+    puts "The time_array : #{time_array}"
     time_array = time_array.split(':')
+    
+    
     
     year  = 0
     month = 0 
     day   = 0
     if date_array.nil? || date_array.length == 0  
     else
-      year  = date_array[0]
-      month = date_array[1]
-      day   = date_array[2]
+      year  = date_array[2].to_i
+      month = date_array[1].to_i 
+      day   = date_array[0].to_i 
+      
+      puts "year: #{year}"
+      puts "month : #{month}"
+      puts "day : #{day}"
     end
  
     hour   = 0 
@@ -39,13 +47,16 @@ class Api::BaseApiController < ApplicationController
     second = 0 
     if time_array.nil? || time_array.length == 0  
     else
-      year   = time_array[0]
-      month  = time_array[1]
-      day    = time_array[2]
+      hour    = time_array[0].to_i
+      minute  = time_array[1].to_i
+      second  = time_array[2].to_i
+      puts "hour: #{hour}"
+      puts "minute : #{minute}"
+      puts "second : #{second}"
     end        
               
-              
-              
+     
+     
     new_datetime = DateTime.new( year, 
                   month, 
                   day, 
@@ -54,8 +65,17 @@ class Api::BaseApiController < ApplicationController
                   second, 
                   Rational( UTC_OFFSET , 24) )
               
-    return new_datetime 
+    return new_datetime.getutc 
     
     # get the utc: new_datetime.getutc
   end
+  
+  # def format_datetime( datetime ) 
+  #   return nil if datetime.nil? 
+  #   
+  #   a = datetime.in_time_zone("Jakarta")
+  #   
+  #   return "#{a.day}/#{a.month}/#{a.year}" + " " + 
+  #           "#{a.hour}:#{a.min}:#{a.sec}"
+  # end
 end

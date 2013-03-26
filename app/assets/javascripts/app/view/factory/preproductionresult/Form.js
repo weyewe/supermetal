@@ -80,12 +80,14 @@ Ext.define('AM.view.factory.preproductionresult.Form', {
 				{
 					fieldLabel: 'Mulai',
 					name: 'started_at' ,
-					xtype : 'datetimefield'
+					xtype : 'datetimefield',
+					format: 'd/m/Y'
 				},
 				{
 					fieldLabel: 'Selesai',
 					name: 'finished_at' ,
-					xtype : 'datetimefield'
+					xtype : 'datetimefield',
+					format: 'd/m/Y'
 				}
 			]
     }];

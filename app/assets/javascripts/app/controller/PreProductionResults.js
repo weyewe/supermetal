@@ -74,6 +74,20 @@ Ext.define('AM.controller.PreProductionResults', {
     var view = Ext.widget('preproductionresultform');
     view.down('form').loadRecord(record);
 		view.setParentData( parentRecord );
+		
+		console.log("The started at : " + record.get('started_at') );
+		// view.down('form').getForm().findField('started_at').setValue(record.get('started_at'));
+		
+		
+		// try this : http://aboutfrontend.com/extjs/extjs-date-format-demystified/
+		// var iso_date = Date.parseDate(record.get("started_at"), "d/m/Y H:i:s");
+		
+		// http://www.mysamplecode.com/2012/03/extjs-convert-string-to-date.html
+		var myDate = Ext.Date.parse(record.get("started_at"), "d/m/Y H:i:s");
+		console.log("The date: " + myDate);
+		
+		view.down('form').getForm().findField('started_at').setValue( myDate );
+		
   },
 
   updateObject: function(button) {

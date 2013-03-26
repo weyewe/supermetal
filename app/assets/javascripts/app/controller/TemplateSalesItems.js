@@ -169,11 +169,9 @@ Ext.define('AM.controller.TemplateSalesItems', {
 				},
 				callback : function(records, options, success){
 					var totalObject  = records.length;
-					if( totalObject ===  0 ){
-						preProductionResultGrid.enableRecordButtons(); 
-					}else{
-						preProductionResultGrid.disableRecordButtons(); 
-					}
+					preProductionResultGrid.enableRecordButtons(); 
+					
+	
 				}
 			});
 		}
