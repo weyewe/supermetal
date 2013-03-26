@@ -1,4 +1,4 @@
-if @object.errors.size == 0 
+if not @object.nil? and @object.errors.size == 0 
 
 	json.success true
 	json.total   @total 
@@ -18,11 +18,19 @@ if @object.errors.size == 0
 		json.finished_at format_datetime( object.finished_at )
 	end
 	
-else
+elsif not @object.nil? and @object.errors.size !=  0 
  
   json.success false 
 	json.message do
 		json.errors  extjs_error_format( @object.errors )  
+	end
+
+elsif @object.nil?
+	json.success false 
+	json.message do
+		json.errors do 
+			json.generic_errors "Ada Yang belum di confirm"
+		end
 	end
 	
 end

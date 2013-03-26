@@ -83,10 +83,10 @@ Ext.define('AM.controller.PreProductionResults', {
 		// var iso_date = Date.parseDate(record.get("started_at"), "d/m/Y H:i:s");
 		
 		// http://www.mysamplecode.com/2012/03/extjs-convert-string-to-date.html
-		var myDate = Ext.Date.parse(record.get("started_at"), "d/m/Y H:i:s");
-		console.log("The date: " + myDate);
-		
-		view.down('form').getForm().findField('started_at').setValue( myDate );
+		// var myDate = Ext.Date.parse(record.get("started_at"), "d/m/Y H:i:s");
+		// console.log("The date: " + myDate);
+		// 
+		// view.down('form').getForm().findField('started_at').setValue( myDate );
 		
   },
 
@@ -155,6 +155,15 @@ Ext.define('AM.controller.PreProductionResults', {
 					var errors = message['errors'];
 					form.getForm().markInvalid(errors);
 					this.reject();
+					
+					if( errors["generic_errors"] ){
+						Ext.MessageBox.show({
+						           title: 'ERROR',
+						           msg: errors["generic_errors"],
+						           buttons: Ext.MessageBox.OK, 
+						           icon: Ext.MessageBox.ERROR
+						       });
+					}
 				}
 			});
 		} 
