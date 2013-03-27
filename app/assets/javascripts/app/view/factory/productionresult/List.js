@@ -1,8 +1,8 @@
-Ext.define('AM.view.factory.preproductionresult.List' ,{
+Ext.define('AM.view.factory.productionresult.List' ,{
   	extend: 'Ext.grid.Panel',
-  	alias : 'widget.preproductionresultlist',
+  	alias : 'widget.productionresultlist',
 
-  	store: 'PreProductionResults', 
+  	store: 'ProductionResults', 
  
 
 	initComponent: function() {
@@ -15,8 +15,31 @@ Ext.define('AM.view.factory.preproductionresult.List' ,{
 				tpl : '<b>{template_sales_item_code}</b>' + '<br />' + 
 							'{template_sales_item_name}' 
 			},
-			{ header: 'Quantity OK',  dataIndex: 'ok_quantity',  flex: 1 , sortable: false},
-			{ header: 'Quantity Rusak',  dataIndex: 'broken_quantity',  flex: 1 , sortable: false},
+			
+			{
+				xtype : 'templatecolumn',
+				text : "OK",
+				flex : 1,
+				tpl : 'Jumlah: <b>{ok_quantity}</b>' + '<br />' + 
+							'Berat: <b>{ok_weight}</b>' + '<br />' + 
+							'Berat Tap: <b>{ok_tap_weight}</b>' 
+			},
+			{
+				xtype : 'templatecolumn',
+				text : "Perbaiki",
+				flex : 1,
+				tpl : 'Jumlah: <b>{repairable_quantity}</b>' + '<br />' + 
+							'Berat: <b>{repairable_weight}</b>' +  '<br />'+ 
+							'Berat Tap: <b>{repairable_tap_weight}</b>'
+			},
+			{
+				xtype : 'templatecolumn',
+				text : "Rusak",
+				flex : 1,
+				tpl : 'Jumlah: <b>{broken_quantity}</b>' + '<br />' + 
+							'Berat: <b>{broken_weight}</b>'
+			},
+		
 			{ header: 'Mulai',  dataIndex: 'started_at',  flex: 1 , sortable: false} ,
 			{ header: 'Selesai',  dataIndex: 'finished_at',  flex: 1 , sortable: false} ,
 			{ header: 'Konfirmasi',  dataIndex: 'is_confirmed',  flex: 1 , sortable: false}

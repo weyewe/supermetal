@@ -47,6 +47,10 @@ Supermetal::Application.routes.draw do
     
     resources :template_sales_items
     resources :pre_production_results   
+    match 'confirm_pre_production_result' => 'pre_production_results#confirm' , :as => :confirm_pre_production_result, :method => :post 
+    
+    resources :production_results   
+    match 'confirm_production_result' => 'production_results#confirm' , :as => :confirm_production_result, :method => :post
     
     resources :deliveries 
     match 'confirm_delivery' => 'deliveries#confirm', :as => :confirm_delivery, :method => :post

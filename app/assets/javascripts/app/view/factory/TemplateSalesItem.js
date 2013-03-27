@@ -23,6 +23,12 @@ Ext.define('AM.view.factory.TemplateSalesItem', {
 						// html : "Big MOrono",
 						title: 'Hasil Pola'
 					},
+					
+					{
+						xtype: 'productionresultlist',
+						// html : "Big MOrono",
+						title: 'Hasil Cor'
+					},
 					{
 						html : "Production",
 						title : 'Hasil Cor'

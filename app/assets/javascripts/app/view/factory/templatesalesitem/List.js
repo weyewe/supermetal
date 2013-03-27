@@ -14,6 +14,13 @@ Ext.define('AM.view.factory.templatesalesitem.List' ,{
 				tpl : '<b>{code}</b>' + '<br />' + 
 							'{name}' 
 			},
+			{
+				xtype : 'templatecolumn',
+				text : "Pola",
+				flex : 1,
+				tpl : 'OK: <b>{ok_pre_production}</b>' + '<br />' + 
+							'Rusak: <b>{broken_pre_production}</b>' 
+			},
 			
 			{
 				xtype : 'templatecolumn',

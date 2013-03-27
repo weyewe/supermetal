@@ -5,6 +5,9 @@ Ext.define('AM.model.TemplateSalesItem', {
     	{ name: 'name', type: 'string' },
 			{ name: 'code', type: 'string' },
 
+			{ name: 'ok_pre_production', type: 'int' },
+			{ name: 'broken_pre_production', type: 'int' },
+
 			{ name: 'pending_production', type: 'int' },
 			{ name: 'pending_post_production', type: 'int' },
 			{ name: 'pending_production_repair', type: 'int' },

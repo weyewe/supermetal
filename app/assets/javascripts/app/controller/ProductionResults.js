@@ -1,19 +1,19 @@
-Ext.define('AM.controller.PreProductionResults', {
+Ext.define('AM.controller.ProductionResults', {
   extend: 'Ext.app.Controller',
 
-  stores: ['PreProductionResults', 'TemplateSalesItems'],
-  models: ['PreProductionResult'],
+  stores: ['ProductionResults', 'TemplateSalesItems'],
+  models: ['ProductionResult'],
 
   views: [
-    'factory.preproductionresult.List',
-    'factory.preproductionresult.Form',
+    'factory.productionresult.List',
+    'factory.productionresult.Form',
 		'factory.templatesalesitem.List'
   ],
 
   refs: [
 		{
 			ref: 'list',
-			selector: 'preproductionresultlist'
+			selector: 'productionresultlist'
 		},
 		{
 			ref : 'templateSalesItemList',
@@ -27,24 +27,24 @@ Ext.define('AM.controller.PreProductionResults', {
 
   init: function() {
     this.control({
-      'preproductionresultlist': {
+      'productionresultlist': {
         itemdblclick: this.editObject,
         selectionchange: this.selectionChange,
 				afterrender : this.loadObjectList
       },
-      'preproductionresultform button[action=save]': {
+      'productionresultform button[action=save]': {
         click: this.updateObject
       },
-      'preproductionresultlist button[action=addObject]': {
+      'productionresultlist button[action=addObject]': {
         click: this.addObject
       },
-      'preproductionresultlist button[action=editObject]': {
+      'productionresultlist button[action=editObject]': {
         click: this.editObject
       },
-      'preproductionresultlist button[action=deleteObject]': {
+      'productionresultlist button[action=deleteObject]': {
         click: this.deleteObject
       },
-			'preproductionresultlist button[action=confirmObject]': {
+			'productionresultlist button[action=confirmObject]': {
         click: this.confirmObject
       },
 		
@@ -63,7 +63,7 @@ Ext.define('AM.controller.PreProductionResults', {
 			return; 
 		}
 		 
-    var view = Ext.widget('preproductionresultform');
+    var view = Ext.widget('productionresultform');
 		
 		view.setParentData( record );
 		 
@@ -78,22 +78,9 @@ Ext.define('AM.controller.PreProductionResults', {
     var record = this.getList().getSelectedObject();
 		if( !parentRecord  || !record) {return;}
 
-    var view = Ext.widget('preproductionresultform');
+    var view = Ext.widget('productionresultform');
     view.down('form').loadRecord(record);
 		view.setParentData( parentRecord );
-		
-		// console.log("The started at : " + record.get('started_at') );
-		// view.down('form').getForm().findField('started_at').setValue(record.get('started_at'));
-		
-		
-		// try this : http://aboutfrontend.com/extjs/extjs-date-format-demystified/
-		// var iso_date = Date.parseDate(record.get("started_at"), "d/m/Y H:i:s");
-		
-		// http://www.mysamplecode.com/2012/03/extjs-convert-string-to-date.html
-		// var myDate = Ext.Date.parse(record.get("started_at"), "d/m/Y H:i:s");
-		// console.log("The date: " + myDate);
-		// 
-		// view.down('form').getForm().findField('started_at').setValue( myDate );
 		
   },
 
@@ -103,7 +90,7 @@ Ext.define('AM.controller.PreProductionResults', {
 		var list = this.getList();
 
 		var parentRecord = this.getTemplateSalesItemList().getSelectedObject();
-    var store = this.getPreProductionResultsStore();
+    var store = this.getProductionResultsStore();
     var record = form.getRecord();
     var values = form.getValues();
 
@@ -116,7 +103,7 @@ Ext.define('AM.controller.PreProductionResults', {
 				success : function(record){
 					form.setLoading(false);
 					//  since the grid is backed by store, if store changes, it will be updated
-					form.fireEvent('item_quantity_changed');
+					// form.fireEvent('item_quantity_changed');
 					store.load({
 						params: {
 							template_sales_item_id : parentRecord.get('id')
@@ -124,6 +111,7 @@ Ext.define('AM.controller.PreProductionResults', {
 					});
 					
 					win.close();
+					
 					list.fireEvent('confirmed', record);
 				},
 				failure : function(record,op ){
@@ -139,7 +127,7 @@ Ext.define('AM.controller.PreProductionResults', {
 		}else{
 			//  no record at all  => gonna create the new one 
 			var me  = this; 
-			var newObject = new AM.model.PreProductionResult( values ) ;
+			var newObject = new AM.model.ProductionResult( values ) ;
 			
 			// learnt from here
 			// http://www.sencha.com/forum/showthread.php?137580-ExtJS-4-Sync-and-success-failure-processing
@@ -182,7 +170,7 @@ Ext.define('AM.controller.PreProductionResults', {
     var record = this.getList().getSelectedObject();
 
     if (record) {
-      var store = this.getPreProductionResultsStore();
+      var store = this.getProductionResultsStore();
       store.remove(record);
       store.sync();
 // to do refresh programmatically
@@ -200,7 +188,7 @@ Ext.define('AM.controller.PreProductionResults', {
 		if(!record){return;}
 		
 		Ext.Ajax.request({
-		    url: 'api/confirm_pre_production_result',
+		    url: 'api/confirm_production_result',
 		    method: 'POST',
 		    params: {
 					id : record.get('id')

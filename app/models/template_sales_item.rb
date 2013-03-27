@@ -70,6 +70,14 @@ class TemplateSalesItem < ActiveRecord::Base
   end
   
   
+  def ok_pre_production
+    self.pre_production_results.where(:is_confirmed => true).sum("ok_quantity")
+  end
+  
+  def broken_pre_production
+    self.pre_production_results.where(:is_confirmed => true).sum("broken_quantity")
+  end
+  
   
   def ready_production
     total_quantity_finished = self.production_results.where(:is_confirmed => true ) .sum("ok_quantity") +
