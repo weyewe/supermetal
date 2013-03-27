@@ -203,22 +203,26 @@ Ext.define('AM.controller.Deliveries', {
 			return; 
 		}
 		var deliveryEntryGrid = this.getDeliveryEntryList();
-		// deliveryEntryGrid.setTitle("Purchase Order: " + record.get('code'));
-		deliveryEntryGrid.setObjectTitle( record ) ;
-		deliveryEntryGrid.getStore().load({
-			params : {
-				sales_order_id : record.get('id')
-			},
-			callback : function(records, options, success){
-				
-				var totalObject  = records.length;
-				if( totalObject ===  0 ){
-					deliveryEntryGrid.enableRecordButtons(); 
-				}else{
-					deliveryEntryGrid.enableRecordButtons(); 
+		
+		if(deliveryEntryGrid){
+			// deliveryEntryGrid.setTitle("Purchase Order: " + record.get('code'));
+			deliveryEntryGrid.setObjectTitle( record ) ;
+			deliveryEntryGrid.getStore().load({
+				params : {
+					delivery_id : record.get('id')
+				},
+				callback : function(records, options, success){
+
+					var totalObject  = records.length;
+					if( totalObject ===  0 ){
+						deliveryEntryGrid.enableRecordButtons(); 
+					}else{
+						deliveryEntryGrid.enableRecordButtons(); 
+					}
 				}
-			}
-		});
+			});
+		}
+		
 		
 
     if (selections.length > 0) {

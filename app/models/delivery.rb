@@ -16,6 +16,15 @@ class Delivery < ActiveRecord::Base
           (customer.name =~ search )} 
    }
   
+  
+  def self.active_objects
+    self.where(:is_deleted => false).order("id DESC")
+  end
+  
+  def active_delivery_entries
+    self.delivery_entries.where(:is_deleted => false).order("id DESC")
+  end
+  
   def self.create_by_employee( employee, params ) 
     return nil if employee.nil? 
     

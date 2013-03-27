@@ -808,4 +808,26 @@ class DeliveryEntry < ActiveRecord::Base
     return total_amount
   end
   
+  def item_condition_name
+    if self.item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:production]
+      return "Cor"
+    elsif self.item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
+      return "Bubut"
+    end
+  end
+  
+  def entry_case_name
+    if self.entry_case == DELIVERY_ENTRY_CASE[:normal]
+      return "Normal"
+    elsif self.entry_case == DELIVERY_ENTRY_CASE[:premature]
+      return "Prematur"
+    elsif self.entry_case == DELIVERY_ENTRY_CASE[:guarantee_return]
+      return "Garansi"
+    elsif self.entry_case == DELIVERY_ENTRY_CASE[:bad_source_fail_post_production]
+      return "Keropos"
+    elsif self.entry_case == DELIVERY_ENTRY_CASE[:technical_failure_post_production]
+      return "Gagal bubut"
+    end
+  end
+  
 end

@@ -22,8 +22,10 @@ Ext.define('AM.model.DeliveryEntry', {
 			
 			{ name: 'entry_case', type: 'int' },
 			{ name: 'entry_case_name', type: 'string' },
+			{ name: 'item_condition', type: 'int'},
+			{ name: 'item_condition_name', type : 'string'},
 			
-			{ name: 'is_confirmed',type: 'boolean', defaultValue: false } 
+			{ name: 'is_confirmed',type: 'boolean', defaultValue: false } ,
 			{ name: 'is_finalized',type: 'boolean', defaultValue: false } 
 			
   	],

@@ -23,6 +23,9 @@ Supermetal::Application.routes.draw do
     match 'search_delivery' => 'deliveries#search', :as => :search_deliveries, :method => :get
     match 'search_delivery_entry' => 'delivery_entries#search', :as => :search_delivery_entries, :method => :get
     
+    match 'search_sales_items' => 'sales_items#search', :as => :search_sales_items, :method => :get
+    match 'search_delivery_entry_case'  => "delivery_entries#search_entry_case" , :as => :search_delivery_entry_case, :method => :get
+    match 'search_delivery_item_condition'  => "delivery_entries#search_item_condition" , :as => :search_delivery_item_condition, :method => :get
     
     resources :employees
     resources :materials
