@@ -2,7 +2,7 @@ if not @object.nil? and @object.errors.size == 0
 
 	json.success true
 	json.total   @total 
-	json.production_results [@object] do |object|
+	json.post_production_results [@object] do |object|
 		json.id 				object.id 
 		json.is_confirmed 				object.is_confirmed 
 	
@@ -14,6 +14,7 @@ if not @object.nil? and @object.errors.size == 0
 		json.ok_weight 				object.ok_weight
 		json.broken_weight 		object.broken_weight
 		json.bad_source_weight 		object.bad_source_weight
+		
 
 		json.template_sales_item_id   		object.template_sales_item.id
 		json.template_sales_item_code   	object.template_sales_item.code

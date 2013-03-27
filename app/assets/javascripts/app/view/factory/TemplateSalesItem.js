@@ -20,26 +20,20 @@ Ext.define('AM.view.factory.TemplateSalesItem', {
 				items : [
 					{
 						xtype: 'preproductionresultlist',
-						// html : "Big MOrono",
 						title: 'Hasil Pola'
 					},
-					
 					{
 						xtype: 'productionresultlist',
-						// html : "Big MOrono",
 						title: 'Hasil Cor'
 					},
+			 
 					{
-						html : "Production",
-						title : 'Hasil Cor'
+						xtype: 'productionrepairresultlist',
+						title: 'Perbaiki Cor'
 					},
 					{
-						html : "Production Repair",
-						title : 'Hasil Perbaiki Cor'
-					},
-					{
-						html : "Post Production",
-						title : 'Hasil Bubut'
+						xtype : "postproductionresultlist",
+						title : 'Bubut'
 					}
 				]
 			}

@@ -24,6 +24,14 @@ Ext.define('AM.controller.TemplateSalesItems', {
 			selector : 'productionresultlist'
 		},
 		{
+			ref : 'productionRepairResultList',
+			selector : 'productionrepairresultlist'
+		},
+		{
+			ref : 'postProductionResultList',
+			selector : 'postproductionresultlist'
+		},
+		{
 			ref : 'tabWrapper',
 			selector : 'templatesalesitemProcess tabpanel'
 		}
@@ -54,7 +62,12 @@ Ext.define('AM.controller.TemplateSalesItems', {
 			'productionresultlist' : {
 				'confirmed' : this.reloadStore
 			},
-			
+			'productionrepairresultlist' : {
+				'confirmed' : this.reloadStore
+			},
+			'postproductionresultlist' : {
+				'confirmed' : this.reloadStore
+			},
 			'templatesalesitemProcess tabpanel' : {
 				tabchange : this.refreshActiveTab
 			}
@@ -75,7 +88,6 @@ Ext.define('AM.controller.TemplateSalesItems', {
  
 
 	reloadStore : function(record){
-		console.log("IT IS CONFIRMED");
 		var list = this.getList();
 		var store = this.getTemplateSalesItemsStore();
 		
@@ -85,21 +97,17 @@ Ext.define('AM.controller.TemplateSalesItems', {
 	},
 	
 	refreshActiveTab : function(tabpanel, newCard, oldCard){
-		console.log("The newCard xtype: " + newCard.getXType() );
 		var record = this.getList().getSelectedObject();
-		
+		if(!record){
+			return; 
+		}
 		if( newCard.getStore ){
-			console.log("The get store exists");
 			newCard.getStore().load({
 				params : {
 					template_sales_item_id : record.get('id')
 				},
 			});
-			
-			
-		}else{
-			console.log("The get store doesn't exist");
-		}
+		} 
 	},
 
 	loadObjectList : function(me){
@@ -199,10 +207,13 @@ Ext.define('AM.controller.TemplateSalesItems', {
 		}
 		var preProductionResultGrid = this.getPreProductionResultList();
 		var productionResultGrid = this.getProductionResultList(); 
+		var productionRepairResultGrid = this.getProductionRepairResultList();
+		var postProductionResultGrid =  this.getPostProductionResultList();
 		
 		preProductionResultGrid.setTitle("Pre Production: " + record.get('code'));
 		productionResultGrid.setTitle("Cor: " + record.get("code"));
-		
+		productionRepairResultGrid.setTitle("Perbaiki Cor: " + record.get("code"));
+		postProductionResultGrid.setTitle("Bubut: " + record.get("code"));
 		
 		// set active item to preProductionResultGrid
 		// and load it up
@@ -218,6 +229,8 @@ Ext.define('AM.controller.TemplateSalesItems', {
 					var totalObject  = records.length;
 					preProductionResultGrid.enableRecordButtons(); 
 					productionResultGrid.enableRecordButtons();
+					productionRepairResultGrid.enableRecordButtons();
+					postProductionResultGrid.enableRecordButtons();
 				}
 			});
 		}
