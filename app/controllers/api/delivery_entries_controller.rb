@@ -30,7 +30,13 @@ class Api::DeliveryEntriesController < Api::BaseApiController
   def update
     @object = DeliveryEntry.find_by_id params[:id] 
     @parent = @object.delivery 
-    @object.update_delivery_entry(current_user,  params[:delivery_entry])
+    
+    if params[:update_post_delivery].present?  
+      @object.update_post_delivery( current_user, params[:delivery_entry] )
+    else
+      @object.update_delivery_entry(current_user, @parent,  params[:delivery_entry])
+    end
+    
      
     if @object.errors.size == 0 
       render :json => { :success => true,   
@@ -96,11 +102,8 @@ class Api::DeliveryEntriesController < Api::BaseApiController
   end
   
   def search_entry_case
-    
-    
-    
     selected_id = params[:selected_id]
-    if selected_id.nil?
+    if not selected_id.present?
       @objects = [
           {
             :value => DELIVERY_ENTRY_CASE[:normal],
@@ -124,35 +127,37 @@ class Api::DeliveryEntriesController < Api::BaseApiController
           }
         ]
     else
-      if selected_id == DELIVERY_ENTRY_ITEM_CONDITION[:normal]
+      puts "In the search entry_case\n"*10
+      puts "The selected_id:#{ selected_id.to_i} "
+      if selected_id.to_i == DELIVERY_ENTRY_CASE[:normal]
         @objects = [
             {
               :value => DELIVERY_ENTRY_CASE[:normal],
               :text => "Normal"
             }
           ]
-      elsif selected_id == DELIVERY_ENTRY_ITEM_CONDITION[:premature]
+      elsif selected_id.to_i == DELIVERY_ENTRY_CASE[:premature]
         @objects = [
             {
               :value => DELIVERY_ENTRY_CASE[:premature],
               :text => "Prematur"
             }
           ]
-      elsif selected_id == DELIVERY_ENTRY_ITEM_CONDITION[:guarantee_return]
+      elsif selected_id.to_i == DELIVERY_ENTRY_CASE[:guarantee_return]
         @objects = [
             {
               :value => DELIVERY_ENTRY_CASE[:guarantee_return],
               :text => "Garansi"
             }
           ]
-      elsif selected_id == DELIVERY_ENTRY_ITEM_CONDITION[:bad_source_fail_post_production]
+      elsif selected_id.to_i == DELIVERY_ENTRY_CASE[:bad_source_fail_post_production]
         @objects = [
             {
               :value => DELIVERY_ENTRY_CASE[:bad_source_fail_post_production],
               :text => "Keropos"
             }
           ]
-      elsif selected_id == DELIVERY_ENTRY_ITEM_CONDITION[:technical_failure_post_production]
+      elsif selected_id.to_i == DELIVERY_ENTRY_CASE[:technical_failure_post_production]
         @objects = [
             {
               :value => DELIVERY_ENTRY_CASE[:technical_failure_post_production],
@@ -170,7 +175,7 @@ class Api::DeliveryEntriesController < Api::BaseApiController
   def search_item_condition
     selected_id = params[:selected_id]
     
-    if selected_id.nil?
+    if not selected_id.present?
       @objects = [
           {
             :value => DELIVERY_ENTRY_ITEM_CONDITION[:production],
@@ -182,14 +187,14 @@ class Api::DeliveryEntriesController < Api::BaseApiController
           }
         ]
     else
-      if selected_id == DELIVERY_ENTRY_ITEM_CONDITION[:production]
+      if selected_id.to_i == DELIVERY_ENTRY_ITEM_CONDITION[:production]
         @objects = [
             {
               :value => DELIVERY_ENTRY_ITEM_CONDITION[:production],
               :text => "Hasil Cor"
             }
           ]
-      elsif selected_id == DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
+      elsif selected_id.to_i == DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
         @objects = [
             {
               :value => DELIVERY_ENTRY_ITEM_CONDITION[:post_production],

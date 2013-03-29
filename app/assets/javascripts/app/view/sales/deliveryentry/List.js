@@ -13,37 +13,30 @@ Ext.define('AM.view.sales.deliveryentry.List' ,{
 				text : "Item",
 				flex : 1,
 				dataIndex : 'name',
-				tpl : '<b>{name}</b>' + 
-							'<br />' + 
-							'{description}'
+				tpl : '<b>{sales_item_code}</b>' + '<br />' + 
+							'{sales_item_name}'+ '<br />' + '<br />' + 
+							'Kasus Pengiriman: ' + '{entry_case_name}'+ '<br />' + 
+							'Kondisi Barang: ' + '{item_condition_name}' 
 				
 			},
 			{
 				xtype : 'templatecolumn',
-				text : "Spec",
+				text : "Pengiriman",
 				flex : 1,
-				dataIndex : 'weight_per_piece',
-				tpl : 'Kuantitas Cor: <b>{quantity_for_production}</b>' + '<br />' + 
-							'Kuantitas Bubut: <b>{quantity_for_post_production}</b>'+  '<br />' +  
-							'Berat Satuan: <b>{weight_per_piece}</b> kg'
+				tpl : 'Kuantitas: <b>{quantity_sent}</b>' + '<br />' + 
+							'Berat: <b>{quantity_sent_weight}</b>' 
 			},
 			{
 				xtype : 'templatecolumn',
-				text : "Service",
+				text : "Finalisasi Pengiriman",
 				flex : 1,
-				tpl : 'Pola: <b>{is_pre_production}</b>' + '<br />' + 
-							'Cor: <b>{is_production}</b>'+  '<br />' +  
-							'Bubut: <b>{is_post_production}</b>'
-			},
-			{
-				xtype : 'templatecolumn',
-				text : "Biaya",
-				flex : 1,
-				tpl : 'Pending Pricing: <b>{is_pending_pricing}</b>' + '<br />' + 
-							'Pola: <b>{pre_production_price}</b>' + '<br />' + 
-							'Cor: <b>{production_price}</b>'+  '<br />' +  
-							'Biaya Cor berdasar berat: <b>{is_pricing_by_weight}</b>'+  '<br />' +  
-							'Bubut: <b>{post_production_price}</b>'
+				tpl : 'Kuantitas Terkirim: <b>{quantity_confirmed}</b>' + '<br />' +
+							'Berat Terkirim: <b>{quantity_confirmed_weight}</b>' + '<br />' + '<br />' + 
+							
+							'Kuantitas Retur: <b>{quantity_returned}</b>'+  '<br />' +  
+							'Berat Retur: <b>{quantity_returned_weight}</b>' + '<br />' + '<br />' + 
+							
+							'Hilang: <b>{quantity_lost}</b>'
 			}
 			 
 		];
@@ -61,9 +54,16 @@ Ext.define('AM.view.sales.deliveryentry.List' ,{
 			disabled: true
 		});
 		
+	 
 		this.deleteObjectButton = new Ext.Button({
 			text: 'Delete',
 			action: 'deleteObject',
+			disabled: true
+		});
+		
+		this.finalizeObjectButton = new Ext.Button({
+			text: 'Finalize',
+			action: 'finalizeObject',
 			disabled: true
 		});
 
@@ -72,7 +72,7 @@ Ext.define('AM.view.sales.deliveryentry.List' ,{
 
 
 
-		this.tbar = [this.addObjectButton, this.editObjectButton, this.deleteObjectButton ];
+		this.tbar = [this.addObjectButton, this.editObjectButton,   this.deleteObjectButton, this.finalizeObjectButton  ];
 		this.bbar = Ext.create("Ext.PagingToolbar", {
 			store	: this.store, 
 			displayInfo: true,
@@ -105,5 +105,12 @@ Ext.define('AM.view.sales.deliveryentry.List' ,{
 	
 	setObjectTitle : function(record){
 		this.setTitle("Delivery: " + record.get("code"));
+	},
+	enableFinalizeButton: function(record){
+		if(record.get('is_confirmed') === true ){
+			this.finalizeObjectButton.enable();
+		}else{
+			this.finalizeObjectButton.disable();
+		}
 	}
 });

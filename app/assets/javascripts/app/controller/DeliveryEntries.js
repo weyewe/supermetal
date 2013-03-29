@@ -18,6 +18,10 @@ Ext.define('AM.controller.DeliveryEntries', {
 		{
 			ref : 'parentList',
 			selector : 'deliverylist'
+		},
+		{
+			ref: 'viewport',
+			selector: 'vp'
 		}
 	],
 
@@ -31,6 +35,9 @@ Ext.define('AM.controller.DeliveryEntries', {
       'deliveryentryform button[action=save]': {
         click: this.updateObject
       },
+			'deliveryentryfinalizeform button[action=save]': {
+        click: this.updatePostDeliveryObject
+      },
       'deliveryentrylist button[action=addObject]': {
         click: this.addObject
       },
@@ -39,6 +46,9 @@ Ext.define('AM.controller.DeliveryEntries', {
       },
       'deliveryentrylist button[action=deleteObject]': {
         click: this.deleteObject
+      },
+			'deliveryentrylist button[action=finalizeObject]': {
+        click: this.finalizeObject
       },
 
 			// monitor parent(delivery) update
@@ -55,6 +65,9 @@ Ext.define('AM.controller.DeliveryEntries', {
 		me.getStore().loadData([],false);
 	},
 
+
+	
+	
 	reloadStore : function(record){
 		var list = this.getList();
 		var store = this.getDeliveryEntriesStore();
@@ -111,6 +124,59 @@ Ext.define('AM.controller.DeliveryEntries', {
 		// console.log("The selected poe id: " + record.get('purchase_order_entry_id'));
 		view.setComboBoxData(record); 
   },
+
+	updatePostDeliveryObject : function(button){
+		var me = this; 
+		var win = button.up('window');
+    var form = win.down('form');
+
+		var parentRecord = this.getParentList().getSelectedObject();
+	
+    var store = this.getDeliveryEntriesStore();
+    var record = form.getRecord();
+    var values = form.getValues();
+
+		form.setLoading( true ) ;
+ 
+		
+		if(record){
+			
+			record.set( values );
+			 
+			form.query('checkbox').forEach(function(checkbox){
+				record.set( checkbox['name']  ,checkbox['checked'] ) ;
+			});
+			
+			form.setLoading(true);
+			record.save({
+				params : {
+					delivery_id : parentRecord.get('id'),
+					update_post_delivery: true 
+				},
+				success : function(record){
+					form.setLoading(false);
+					//  since the grid is backed by store, if store changes, it will be updated
+					// form.fireEvent('item_quantity_changed');
+					store.load({
+						params: {
+							delivery_id : parentRecord.get('id')
+						}
+					});
+					
+					win.close();
+				},
+				failure : function(record,op ){
+					form.setLoading(false);
+					var message  = op.request.scope.reader.jsonData["message"];
+					var errors = message['errors'];
+					form.getForm().markInvalid(errors);
+					
+					this.reject(); 
+				}
+			});
+			
+		}
+	},
 
   updateObject: function(button) {
     var win = button.up('window');
@@ -246,13 +312,36 @@ Ext.define('AM.controller.DeliveryEntries', {
 
   },
 
+	finalizeObject: function(){
+		var parentRecord = this.getParentList().getSelectedObject();
+    var record = this.getList().getSelectedObject();
+		if(!record || !parentRecord){
+			return; 
+		}
+
+    var view = Ext.widget('deliveryentryfinalizeform', {
+			parentRecord : parentRecord
+		});
+
+    view.down('form').loadRecord(record);
+		view.setParentData( parentRecord );
+		// console.log("selected record id: " + record.get('id'));
+		// console.log("The selected poe id: " + record.get('purchase_order_entry_id'));
+		// view.setComboBoxData(record);
+		
+	},
+
   selectionChange: function(selectionModel, selections) {
     var grid = this.getList();
 
-		// var record = this.getList().getSelectedObject();
+		var record = this.getList().getSelectedObject();
+		
+		if(!record){return;}
+		
 
     if (selections.length > 0) {
       grid.enableRecordButtons();
+			grid.enableFinalizeButton(record) ;
     } else {
       grid.disableRecordButtons();
     }

@@ -11,6 +11,7 @@ Ext.define('AM.view.sales.delivery.List' ,{
 			{ header: 'Code',  dataIndex: 'code',  flex: 1 , sortable: false},
 			{ header: 'Customer',  dataIndex: 'customer_name',  flex: 1 , sortable: false},
 			{ header: 'Confirmed?',  dataIndex: 'is_confirmed',  flex: 1 , sortable: false},
+			{ header: 'Finalized?',  dataIndex: 'is_finalized',  flex: 1 , sortable: false}
 		];
 
 		this.addObjectButton = new Ext.Button({
@@ -35,10 +36,16 @@ Ext.define('AM.view.sales.delivery.List' ,{
 			action: 'confirmObject',
 			disabled: true
 		});
+		
+		this.finalizeObjectButton = new Ext.Button({
+			text: 'Finalize',
+			action: 'finalizeObject',
+			disabled: true
+		});
+		
+	 
 
-
-
-		this.tbar = [this.addObjectButton, this.editObjectButton, this.deleteObjectButton, this.confirmObjectButton ];
+		this.tbar = [this.addObjectButton, this.editObjectButton, this.deleteObjectButton, this.confirmObjectButton , this.finalizeObjectButton];
 		this.bbar = Ext.create("Ext.PagingToolbar", {
 			store	: this.store, 
 			displayInfo: true,
@@ -65,5 +72,18 @@ Ext.define('AM.view.sales.delivery.List' ,{
 		this.editObjectButton.disable();
 		this.deleteObjectButton.disable();
 		this.confirmObjectButton.disable();
+	},
+	
+	adjustConfirmFinalizeButtons: function(record){
+		if(record.get("is_confirmed") === true && record.get("is_finalized") === false ){
+			this.confirmObjectButton.disable();
+			this.finalizeObjectButton.enable();
+		}else if(record.get("is_confirmed") === false && record.get("is_finalized") === false ){
+			this.confirmObjectButton.enable();
+			this.finalizeObjectButton.disable();
+		}else if(record.get("is_confirmed") === true && record.get("is_finalized") === true ){
+			this.confirmObjectButton.disable();
+			this.finalizeObjectButton.disable();
+		}
 	}
 });

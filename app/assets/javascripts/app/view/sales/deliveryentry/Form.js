@@ -233,45 +233,60 @@ Ext.define('AM.view.sales.deliveryentry.Form', {
 		this.down('form').getForm().findField('delivery_code').setValue(record.get('code')); 
 	},
 	
+	setSelectedSalesItem: function( sales_item_id ){
+		var comboBox = this.down('form').getForm().findField('sales_item_id'); 
+		var me = this; 
+		var store = comboBox.store; 
+		store.load({
+			params: {
+				selected_id : sales_item_id 
+			},
+			callback : function(records, options, success){
+				me.setLoading(false);
+				comboBox.setValue( sales_item_id );
+			}
+		});
+	},
+	
+	setSelectedEntryCase: function( entry_case ){
+		var comboBox = this.down('form').getForm().findField('entry_case'); 
+		var me = this; 
+		var store = comboBox.store; 
+		store.load({
+			params: {
+				selected_id : entry_case 
+			},
+			callback : function(records, options, success){
+				me.setLoading(false);
+				comboBox.setValue( entry_case );
+			}
+		});
+	},
+	
+	setSelectedItemCondition: function( item_condition ){
+		var comboBox = this.down('form').getForm().findField('item_condition'); 
+		var me = this; 
+		var store = comboBox.store; 
+		store.load({
+			params: {
+				selected_id : item_condition 
+			},
+			callback : function(records, options, success){
+				me.setLoading(false);
+				comboBox.setValue( item_condition );
+			}
+		});
+	},
+	
 	setComboBoxData : function( record){
 		var me = this; 
 		me.setLoading(true);
 		
-		var comboBox = this.down('form').getForm().findField('sales_item_id'); 
-		var store = comboBox.store; 
-		store.load({
-			params: {
-				selected_id : record.get("sales_item_id")
-			},
-			callback : function(records, options, success){
-				me.setLoading(false);
-				comboBox.setValue( record.get("sales_item_id"));
-			}
-		});
 		
-		var comboBox = this.down('form').getForm().findField('entry_case'); 
-		var store = comboBox.store; 
-		store.load({
-			params: {
-				selected_id : record.get("entry_case")
-			},
-			callback : function(records, options, success){
-				me.setLoading(false);
-				comboBox.setValue( record.get("entry_case"));
-			}
-		});
-		
-		var comboBox = this.down('form').getForm().findField('item_condition'); 
-		var store = comboBox.store; 
-		store.load({
-			params: {
-				selected_id : record.get("item_condition")
-			},
-			callback : function(records, options, success){
-				me.setLoading(false);
-				comboBox.setValue( record.get("item_condition"));
-			}
-		});
+		me.setSelectedSalesItem( record.get("sales_item_id")  ) ;
+		me.setSelectedEntryCase( record.get("entry_case")  ) ;
+		me.setSelectedItemCondition( record.get("item_condition")  ) ;
+	 
 	}
 });
 

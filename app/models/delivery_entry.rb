@@ -262,7 +262,7 @@ class DeliveryEntry < ActiveRecord::Base
     self.item_condition           = params[:item_condition]
     
     update_invoice = true 
-    if sales_item_id_changed? or quantity_changed? or quantity_sent_weight_changed? or 
+    if sales_item_id_changed? or quantity_sent_changed? or quantity_sent_weight_changed? or 
       entry_case_changed? or item_condition_changed? 
       update_invoice = true
     else

@@ -48,6 +48,9 @@ Ext.define('AM.controller.Deliveries', {
 			'deliverylist button[action=confirmObject]': {
         click: this.confirmObject
       },
+			'deliverylist button[action=finalizeObject]': {
+        click: this.finalizeObject
+      }
 
 
     });
@@ -86,6 +89,38 @@ Ext.define('AM.controller.Deliveries', {
 		});
 	},
 
+	finalizeObject: function(){
+		var me  = this;
+		var record = this.getList().getSelectedObject();
+		var list = this.getList();
+		me.getViewport().setLoading( true ) ;
+		
+		if(!record){return;}
+		
+		Ext.Ajax.request({
+		    url: 'api/finalize_delivery',
+		    method: 'POST',
+		    params: {
+					id : record.get('id')
+		    },
+		    jsonData: {},
+		    success: function(result, request ) {
+						me.getViewport().setLoading( false );
+						list.getStore().load({
+							callback : function(records, options, success){
+								// this => refers to a store 
+								record = this.getById(record.get('id'));
+								// record = records.getById( record.get('id'))
+								list.fireEvent('confirmed', record);
+							}
+						});
+						
+		    },
+		    failure: function(result, request ) {
+						me.getViewport().setLoading( false ) ;
+		    }
+		});
+	},
 
  
 
@@ -227,6 +262,7 @@ Ext.define('AM.controller.Deliveries', {
 
     if (selections.length > 0) {
       grid.enableRecordButtons();
+			grid.adjustConfirmFinalizeButtons( record);
     } else {
       grid.disableRecordButtons();
     }

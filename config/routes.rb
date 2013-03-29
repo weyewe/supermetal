@@ -63,8 +63,9 @@ Supermetal::Application.routes.draw do
     
     resources :deliveries 
     match 'confirm_delivery' => 'deliveries#confirm', :as => :confirm_delivery, :method => :post
+    match 'finalize_delivery' => 'deliveries#finalize', :as => :finalize_delivery, :method => :post
+    
     resources :delivery_entries 
-    match 'update_post_delivery' => 'delivery_entries#update_post_delivery', :as => :update_post_delivery, :method => :post
     
     resources :sales_returns
     match 'confirm_sales_return' => 'sales_returns#confirm', :as => :confirm_sales_return, :method => :post

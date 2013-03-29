@@ -76,4 +76,16 @@ class Api::DeliveriesController < Api::BaseApiController
       render :json => { :success => false, :total => Delivery.active_objects.count }  
     end
   end
+  
+  def finalize
+     @object = Delivery.find_by_id params[:id]
+      # add some defensive programming.. current user has role admin, and current_user is indeed belongs to the company 
+      @object.finalize( current_user  )  
+
+      if @object.is_finalized? 
+        render :json => { :success => true, :total => Delivery.active_objects.count }  
+      else
+        render :json => { :success => false, :total => Delivery.active_objects.count }  
+      end
+  end
 end

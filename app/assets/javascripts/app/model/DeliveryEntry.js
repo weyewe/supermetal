@@ -8,6 +8,7 @@ Ext.define('AM.model.DeliveryEntry', {
 			
 			{ name: 'sales_item_id', type: 'int' },
 			{ name: 'sales_item_name', type: 'string' },
+			{ name: 'sales_item_code', type: 'string' },
 			 
 			{ name: 'quantity_sent', type: 'int' },
 			{ name: 'quantity_sent_weight', type: 'string' },

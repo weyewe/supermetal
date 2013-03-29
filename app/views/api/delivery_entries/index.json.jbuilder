@@ -14,6 +14,7 @@ json.delivery_entries @objects do |object|
 	
 	json.sales_item_id				object.sales_item_id
 	json.sales_item_name			object.sales_item.name
+	json.sales_item_code			object.sales_item.code
 	
 	json.quantity_sent 				object.quantity_sent
 	json.quantity_confirmed 	object.quantity_confirmed
