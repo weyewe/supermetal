@@ -2,7 +2,6 @@ Ext.define('AM.model.SalesReturnEntry', {
   	extend: 'Ext.data.Model',
   	fields: [
     	{ name: 'id', type: 'int' },
-    	{ name: 'code', type: 'string' } ,
 			{ name: 'sales_return_code', type: 'string' },
 			{ name: 'sales_return_id', type: 'int' },
 			
@@ -11,6 +10,11 @@ Ext.define('AM.model.SalesReturnEntry', {
 			{ name: 'sales_item_id', type: 'string' },
 			{ name: 'delivery_entry_id', type: 'string' },
 			{ name: 'delivery_entry_code', type: 'string' },
+			
+			{ name: 'quantity_returned', type: 'int' },
+			
+			{ name: 'delivery_entry_item_condition_name', type: 'string' },
+			{ name: 'delivery_entry_entry_case_name', type: 'string' },
 			
 			{ name: 'quantity_for_post_production', type: 'int' },
 			{ name: 'quantity_for_production', type: 'int' },
@@ -22,7 +26,7 @@ Ext.define('AM.model.SalesReturnEntry', {
 			
 	   
 			 
-			{ name: 'is_confirmed',type: 'boolean', defaultValue: false },
+			{ name: 'is_confirmed',type: 'boolean', defaultValue: false } 
 		 
 			
   	],

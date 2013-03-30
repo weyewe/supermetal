@@ -15,10 +15,10 @@ Ext.define('AM.view.sales.SalesReturn', {
 			{
 				xtype : 'salesreturnlist' ,
 				flex : 1  
-			}// ,
-			// {
-			// 	xtype : 'salesitemlist',
-			// 	flex : 1 
-			// }
+			},
+			{
+				xtype : 'salesreturnentrylist',
+				flex : 1 
+			}
 		]
 });

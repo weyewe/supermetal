@@ -4,14 +4,14 @@ Ext.define('AM.view.sales.salesreturnentry.Form', {
 
   title : 'Add / Edit Entry',
   layout: 'fit',
-	width	: 960,
+	width	: 500,
   autoShow: true,  // does it need to be called?
 	modal : true, 
 // win.show() 
 // if autoShow == true.. on instantiation, will automatically be called 
 	parentRecord : null, 
 	// autoHeight : true, 
-	height : 500,
+	// height : 500,
 	
 	
 	// overflow : auto, 
@@ -26,25 +26,145 @@ Ext.define('AM.view.sales.salesreturnentry.Form', {
 		if( !this.parentRecord){ return; }
 		var me = this; 
 		
-		
-    this.items = [{
+		this.items = [{
       xtype: 'form',
 			msgTarget	: 'side',
 			border: false,
       bodyPadding: 10,
 			fieldDefaults: {
-          labelWidth: 100,
+          labelWidth: 165,
 					anchor: '100%'
       },
-			height : 350,
-			overflowY : 'auto', 
-			layout : 'hbox', 
-			// height : 400,
-			items : [
-				me.itemInfo(), 
-				me.pricingInfo()
+      items: [
+				{
+					xtype: 'fieldset',
+					title: "Perbaiki Cor",
+					items : [
+						 {
+							fieldLabel : 'Jumlah',
+							name : 'quantity_for_production_repair',
+							xtype : 'field'
+						},
+						{
+							fieldLabel : 'Berat(kg)',
+							name : 'weight_for_production_repair',
+							xtype : 'field'
+						}
+						
+					]
+				},
+				{
+					xtype: 'fieldset',
+					title: "Lebur Ulang",
+					items : [
+						 {
+							fieldLabel : 'Jumlah',
+							name : 'quantity_for_production',
+							xtype : 'field'
+						},
+						{
+							fieldLabel : 'Berat(kg)',
+							name : 'weight_for_production',
+							xtype : 'field'
+						}
+						
+					]
+				},
+				{
+					xtype: 'fieldset',
+					title: "Perbaiki Bubut",
+					items : [
+						 {
+							fieldLabel : 'Jumlah',
+							name : 'quantity_for_post_production',
+							xtype : 'field'
+						},
+						{
+							fieldLabel : 'Berat(kg)',
+							name : 'weight_for_post_production',
+							xtype : 'field'
+						}
+						
+					]
+				}
 			]
     }];
+
+
+		
+			//     this.items = [{
+			//       xtype: 'form',
+			// msgTarget	: 'side',
+			// border: false,
+			//       bodyPadding: 10,
+			// fieldDefaults: {
+			//           labelWidth: 100,
+			// 		anchor: '100%'
+			//       },
+			// height : 350,
+			// overflowY : 'auto', 
+			// layout : 'vbox', 
+			// // height : 400,
+			// items : [
+			// 	// {
+			// 	// 	xtype: 'displayfield',
+			// 	// 	fieldLabel: 'Delivery',
+			// 	// 	name: 'delivery_code',
+			// 	// 	value: '10'
+			// 	// },
+			// 	{
+			// 		xtype: 'fieldset',
+			// 		title: "Perbaiki Cor",
+			// 		items : [
+			// 			 {
+			// 				fieldLabel : 'Jumlah',
+			// 				name : 'quantity_for_production_repair',
+			// 				xtype : 'field'
+			// 			},
+			// 			{
+			// 				fieldLabel : 'Berat(kg)',
+			// 				name : 'weight_for_production_repair',
+			// 				xtype : 'field'
+			// 			}
+			// 			
+			// 		]
+			// 	},
+			// 	{
+			// 		xtype: 'fieldset',
+			// 		title: "Lebur Ulang",
+			// 		items : [
+			// 			 {
+			// 				fieldLabel : 'Jumlah',
+			// 				name : 'quantity_for_production',
+			// 				xtype : 'field'
+			// 			},
+			// 			{
+			// 				fieldLabel : 'Berat(kg)',
+			// 				name : 'weight_for_production',
+			// 				xtype : 'field'
+			// 			}
+			// 			
+			// 		]
+			// 	},
+			// 	{
+			// 		xtype: 'fieldset',
+			// 		title: "Perbaiki Bubut",
+			// 		items : [
+			// 			 {
+			// 				fieldLabel : 'Jumlah',
+			// 				name : 'quantity_for_post_production',
+			// 				xtype : 'field'
+			// 			},
+			// 			{
+			// 				fieldLabel : 'Berat(kg)',
+			// 				name : 'weight_for_post_production',
+			// 				xtype : 'field'
+			// 			}
+			// 			
+			// 		]
+			// 	}
+			// ]
+			//     }];
 
     this.buttons = [{
       text: 'Save',
@@ -321,25 +441,25 @@ Ext.define('AM.view.sales.salesreturnentry.Form', {
 
 
 	setParentData: function( record ){
-		this.down('form').getForm().findField('sales_order_code').setValue(record.get('code')); 
+		// this.down('form').getForm().findField('sales_order_code').setValue(record.get('code')); 
 	},
 	
 	setComboBoxData : function( record){
 
-		var me = this; 
-		me.setLoading(true);
-		var comboBox = this.down('form').getForm().findField('material_id'); 
-		
-		var store = comboBox.store; 
-		store.load({
-			params: {
-				selected_id : record.get("material_id")
-			},
-			callback : function(records, options, success){
-				me.setLoading(false);
-				comboBox.setValue( record.get("material_id"));
-			}
-		});
+		// var me = this; 
+		// me.setLoading(true);
+		// var comboBox = this.down('form').getForm().findField('material_id'); 
+		// 
+		// var store = comboBox.store; 
+		// store.load({
+		// 	params: {
+		// 		selected_id : record.get("material_id")
+		// 	},
+		// 	callback : function(records, options, success){
+		// 		me.setLoading(false);
+		// 		comboBox.setValue( record.get("material_id"));
+		// 	}
+		// });
 	}
 });
 

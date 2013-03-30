@@ -8,7 +8,16 @@ Ext.define('AM.view.sales.salesreturn.List' ,{
 	initComponent: function() {
 		this.columns = [
 			{ header: 'ID', dataIndex: 'id'},
-			{ header: 'Code',  dataIndex: 'code',  flex: 1 , sortable: false},
+			{
+				xtype : 'templatecolumn',
+				text : "Code",
+				flex : 1,
+				dataIndex : 'name',
+				tpl : 'Sales Return: <b>{code}</b>' + 
+							'<br />' +  '<br />' +
+							'Delivery: <b>{delivery_code}</b>'
+				
+			},
 			{ header: 'Customer',  dataIndex: 'customer_name',  flex: 1 , sortable: false},
 			{ header: 'Confirmed?',  dataIndex: 'is_confirmed',  flex: 1 , sortable: false},
 		];
@@ -38,7 +47,8 @@ Ext.define('AM.view.sales.salesreturn.List' ,{
 
 
 
-		this.tbar = [this.addObjectButton, this.editObjectButton, this.deleteObjectButton, this.confirmObjectButton ];
+		// this.tbar = [this.addObjectButton, this.editObjectButton, this.deleteObjectButton, this.confirmObjectButton ];
+		this.tbar = [this.confirmObjectButton] 
 		this.bbar = Ext.create("Ext.PagingToolbar", {
 			store	: this.store, 
 			displayInfo: true,
@@ -56,14 +66,14 @@ Ext.define('AM.view.sales.salesreturn.List' ,{
 	},
 
 	enableRecordButtons: function() {
-		this.editObjectButton.enable();
-		this.deleteObjectButton.enable();
+		// this.editObjectButton.enable();
+		// this.deleteObjectButton.enable();
 		this.confirmObjectButton.enable();
 	},
 
 	disableRecordButtons: function() {
-		this.editObjectButton.disable();
-		this.deleteObjectButton.disable();
+		// this.editObjectButton.disable();
+		// this.deleteObjectButton.disable();
 		this.confirmObjectButton.disable();
 	}
 });

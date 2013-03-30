@@ -4,6 +4,7 @@ Ext.define('AM.model.SalesReturn', {
     	{ name: 'id', type: 'int' },
     	{ name: 'code', type: 'string' } ,
 			{ name: 'delivery_id', type: 'int' },
+			{ name: 'delivery_code', type: 'string' },
 			{ name: 'customer_name', type: 'string'},
 			{ name: 'is_confirmed',type: 'boolean', defaultValue: false } 
   	],

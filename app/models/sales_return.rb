@@ -22,6 +22,14 @@ class SalesReturn < ActiveRecord::Base
     return new_object 
   end
   
+  def self.active_objects
+    self.order("id DESC")
+  end
+  
+  def active_sales_return_entries
+    self.sales_return_entries.order("id DESC")
+  end
+  
   def generate_code
     start_datetime = Date.today.at_beginning_of_month.to_datetime
     end_datetime = Date.today.next_month.at_beginning_of_month.to_datetime

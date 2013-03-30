@@ -7,43 +7,41 @@ Ext.define('AM.view.sales.salesreturnentry.List' ,{
 
 	initComponent: function() {
 		this.columns = [
-			{ header: 'Code',  dataIndex: 'code',  flex: 1 , sortable: false},
+			{ header: 'Code',  dataIndex: 'sales_return_code',  flex: 1 , sortable: false},
 			{
 				xtype : 'templatecolumn',
 				text : "Item",
 				flex : 1,
 				dataIndex : 'name',
-				tpl : '<b>{name}</b>' + 
+				tpl : '<b>{sales_item_code}</b>' + 
 							'<br />' + 
-							'{description}'
-				
+							'{sales_item_name}' + '<br />' + 
+							'Kondisi: ' + '<b>{delivery_entry_item_condition_name}</b>' +  '<br />' + 
+							'Kasus: ' + '<b>{delivery_entry_entry_case_name}</b>'
 			},
+			{ header: 'Quantity',  dataIndex: 'quantity_returned',  flex: 1 , sortable: false},
 			{
 				xtype : 'templatecolumn',
-				text : "Spec",
+				text : "Perbaiki Cor",
 				flex : 1,
 				dataIndex : 'weight_per_piece',
-				tpl : 'Kuantitas Cor: <b>{quantity_for_production}</b>' + '<br />' + 
-							'Kuantitas Bubut: <b>{quantity_for_post_production}</b>'+  '<br />' +  
-							'Berat Satuan: <b>{weight_per_piece}</b> kg'
+				tpl : 'Kuantitas: <b>{quantity_for_production_repair}</b>' + '<br />' + 
+							'Berat : <b>{weight_for_production_repair}</b>' 
 			},
 			{
 				xtype : 'templatecolumn',
-				text : "Service",
+				text : "Lebur Ulang",
 				flex : 1,
-				tpl : 'Pola: <b>{is_pre_production}</b>' + '<br />' + 
-							'Cor: <b>{is_production}</b>'+  '<br />' +  
-							'Bubut: <b>{is_post_production}</b>'
+				tpl : 'Kuantitas: <b>{quantity_for_production}</b>' + '<br />' + 
+							'Berat: <b>{weight_for_production}</b>' 
 			},
 			{
 				xtype : 'templatecolumn',
-				text : "Biaya",
+				text : "Perbaiki Bubut",
 				flex : 1,
-				tpl : 'Pending Pricing: <b>{is_pending_pricing}</b>' + '<br />' + 
-							'Pola: <b>{pre_production_price}</b>' + '<br />' + 
-							'Cor: <b>{production_price}</b>'+  '<br />' +  
-							'Biaya Cor berdasar berat: <b>{is_pricing_by_weight}</b>'+  '<br />' +  
-							'Bubut: <b>{post_production_price}</b>'
+				dataIndex : 'weight_per_piece',
+				tpl : 'Kuantitas: <b>{quantity_for_post_production}</b>' + '<br />' + 
+							'Berat : <b>{weight_for_post_production}</b>' 
 			}
 			 
 		];
@@ -72,7 +70,7 @@ Ext.define('AM.view.sales.salesreturnentry.List' ,{
 
 
 
-		this.tbar = [this.addObjectButton, this.editObjectButton, this.deleteObjectButton ];
+		this.tbar = [  this.editObjectButton ];
 		this.bbar = Ext.create("Ext.PagingToolbar", {
 			store	: this.store, 
 			displayInfo: true,
