@@ -13,17 +13,42 @@ class Api::BaseApiController < ApplicationController
   end
   
   
+  def extract_date( date ) 
+    if date.nil? or date.length == 0 
+      return nil 
+    end
+    
+    date_array = date.split("/")
+    
+    year  = 0
+    month = 0 
+    day   = 0
+    if date_array.nil? || date_array.length == 0  
+    else
+      year  = date_array[2].to_i
+      month = date_array[1].to_i 
+      day   = date_array[0].to_i 
+      
+      # puts "year: #{year}"
+      # puts "month : #{month}"
+      # puts "day : #{day}"
+    end
+    
+    new_date = Date.new( year, month, day)
+    return new_date 
+  end
+  
   def extract_datetime( datetime )
     if datetime.nil? or datetime.length ==0 
       return  nil 
     end
     
     date_array = datetime.split(" ").first 
-    puts "The date_array : #{date_array}"
+    # puts "The date_array : #{date_array}"
     date_array = date_array.split('/')
     
     time_array =  datetime.split(" ").last 
-    puts "The time_array : #{time_array}"
+    # puts "The time_array : #{time_array}"
     time_array = time_array.split(':')
     
     
@@ -37,9 +62,9 @@ class Api::BaseApiController < ApplicationController
       month = date_array[1].to_i 
       day   = date_array[0].to_i 
       
-      puts "year: #{year}"
-      puts "month : #{month}"
-      puts "day : #{day}"
+      # puts "year: #{year}"
+      # puts "month : #{month}"
+      # puts "day : #{day}"
     end
  
     hour   = 0 
@@ -50,9 +75,9 @@ class Api::BaseApiController < ApplicationController
       hour    = time_array[0].to_i
       minute  = time_array[1].to_i
       second  = time_array[2].to_i
-      puts "hour: #{hour}"
-      puts "minute : #{minute}"
-      puts "second : #{second}"
+      # puts "hour: #{hour}"
+      # puts "minute : #{minute}"
+      # puts "second : #{second}"
     end        
               
      

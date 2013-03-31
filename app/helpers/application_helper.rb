@@ -111,13 +111,11 @@ BREADCRUMB
   def format_date( date ) 
     return nil if date.nil?  
     
-    a = dat
+    a = date
     day = a.day
     month = a.month
     year = a.year
-    hour = a.hour
-    minute = a.min
-    second = a.sec 
+  
     
     if day.to_s.length == 1 
       day = "0#{day}"

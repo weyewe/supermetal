@@ -8,9 +8,28 @@ Ext.define('AM.view.payment.invoice.List' ,{
 	initComponent: function() {
 		this.columns = [
 			{ header: 'ID', dataIndex: 'id'},
-			{ header: 'Code',  dataIndex: 'code',  flex: 1 , sortable: false},
-			{ header: 'Customer',  dataIndex: 'customer_name',  flex: 1 , sortable: false},
-			{ header: 'Confirmed?',  dataIndex: 'is_confirmed',  flex: 1 , sortable: false},
+			{
+				xtype : 'templatecolumn',
+				text : "Code",
+				flex : 1,
+				tpl : '<b>{code}</b>' + 
+							'<br />' +  '<br />' +
+							'Delivery: <b>{delivery_code}</b>'
+				
+			},
+			{ header: 'Jatuh Tempo',  dataIndex: 'due_date',  flex: 1 , sortable: false},
+			
+			{
+				xtype : 'templatecolumn',
+				text : "Total",
+				flex : 1,
+				tpl : 'Total: <b>{amount_payable}</b>' + 	'<br />' +
+						  																		'<br />' +
+							'Harga Jual: <b>{base_amount_payable}</b>'		+ 	'<br />' +
+							'PPn (10%): <b>{tax_amount_payable}</b>' + '<br />'
+				
+			},
+			{ header: 'Belum Dibayar',  dataIndex: 'confirmed_pending_payment',  flex: 1 , sortable: false}
 		];
 
 		this.addObjectButton = new Ext.Button({

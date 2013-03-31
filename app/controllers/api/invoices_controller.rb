@@ -30,7 +30,9 @@ class Api::InvoicesController < Api::BaseApiController
   def update
     
     @object = Invoice.find_by_id params[:id] 
-    @object.update_by_employee(current_user,  params[:invoice])
+    
+    due_date =  extract_date(params[:invoice][:due_date])
+    @object.update_due_date( current_user, due_date )
      
     if @object.errors.size == 0 
       render :json => { :success => true,   

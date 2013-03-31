@@ -44,31 +44,12 @@ Ext.define('AM.view.payment.invoice.Form', {
 					anchor: '100%'
       },
       items: [
+				 
 				{
-	        xtype: 'hidden',
-	        name : 'id',
-	        fieldLabel: 'id'
-	      },
-				{
-					fieldLabel: ' Customer ',
-					xtype: 'combo',
-					queryMode: 'remote',
-					forceSelection: true, 
-					displayField : 'customer_name',
-					valueField : 'customer_id',
-					pageSize : 5,
-					minChars : 1, 
-					allowBlank : false, 
-					triggerAction: 'all',
-					store : remoteJsonStore, 
-					listConfig : {
-						getInnerTpl: function(){
-							return '<div data-qtip="{customer_name}">' +  
-												'<div class="combo-name">{customer_name}</div>' + 
-										 '</div>';
-						}
-					},
-					name : 'customer_id' 
+					fieldLabel: 'Jatuh Tempo',
+					xtype: 'datefield',
+					name : 'due_date' ,
+					format: 'd/m/Y'
 				}
 			]
     }];
@@ -86,21 +67,21 @@ Ext.define('AM.view.payment.invoice.Form', {
   },
 
 	setComboBoxData : function( record){
-		var me = this; 
-		me.setLoading(true);
-		var comboBox = this.down('form').getForm().findField('customer_id'); 
-		var selectedRecordId = record.get("customer_id");
-		
-		var store = comboBox.store; 
-		store.load({
-			params: {
-				selected_id : selectedRecordId
-			},
-			callback : function(records, options, success){
-				me.setLoading(false);
-				comboBox.setValue( selectedRecordId );
-			}
-		});
+		// var me = this; 
+		// me.setLoading(true);
+		// var comboBox = this.down('form').getForm().findField('customer_id'); 
+		// var selectedRecordId = record.get("customer_id");
+		// 
+		// var store = comboBox.store; 
+		// store.load({
+		// 	params: {
+		// 		selected_id : selectedRecordId
+		// 	},
+		// 	callback : function(records, options, success){
+		// 		me.setLoading(false);
+		// 		comboBox.setValue( selectedRecordId );
+		// 	}
+		// });
 	}
 });
 
