@@ -9,8 +9,7 @@ class Invoice < ActiveRecord::Base
   has_many :payments, :through => :invoice_payments 
   validates_presence_of :customer_id 
   
-  
-  
+ 
   def Invoice.create_by_employee( employee, delivery) 
     return nil if employee.nil?
     return nil if delivery.nil? 
@@ -85,6 +84,8 @@ class Invoice < ActiveRecord::Base
     end
     
     self.amount_payable =  (1.0 + 0.1)*total_amount # with the tax 
+    self.base_amount_payable = (1.0)*total_amount
+    self.tax_amount_payable = 0.1*total_amount 
     self.save  
   end
   

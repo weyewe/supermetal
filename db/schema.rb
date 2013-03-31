@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130320021048) do
+ActiveRecord::Schema.define(:version => 20130331135729) do
 
   create_table "banks", :force => true do |t|
     t.datetime "created_at", :null => false
@@ -184,17 +184,19 @@ ActiveRecord::Schema.define(:version => 20130320021048) do
     t.integer  "creator_id"
     t.integer  "customer_id"
     t.string   "code"
-    t.decimal  "amount_payable",     :precision => 11, :scale => 2, :default => 0.0
+    t.decimal  "amount_payable",      :precision => 11, :scale => 2, :default => 0.0
     t.date     "due_date"
-    t.boolean  "is_confirmed",                                      :default => false
+    t.boolean  "is_confirmed",                                       :default => false
     t.integer  "confirmer_id"
     t.datetime "confirmed_at"
-    t.boolean  "is_finalized",                                      :default => false
-    t.boolean  "is_paid",                                           :default => false
+    t.boolean  "is_finalized",                                       :default => false
+    t.boolean  "is_paid",                                            :default => false
     t.integer  "paid_declarator_id"
     t.datetime "paid_at"
-    t.datetime "created_at",                                                           :null => false
-    t.datetime "updated_at",                                                           :null => false
+    t.datetime "created_at",                                                            :null => false
+    t.datetime "updated_at",                                                            :null => false
+    t.decimal  "base_amount_payable", :precision => 11, :scale => 2, :default => 0.0
+    t.decimal  "tax_amount_payable",  :precision => 11, :scale => 2, :default => 0.0
   end
 
   create_table "item_receival_entries", :force => true do |t|

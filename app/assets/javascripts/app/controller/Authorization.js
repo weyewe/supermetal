@@ -140,10 +140,27 @@ Ext.define("AM.controller.Authorization", {
                          viewClass:'AM.view.sales.SalesReturn', 
                          leaf:true, 
                          iconCls:'text' 
+                     }
+ 	                    
+ 	                ]
+ 								},
+								{
+ 									text:'Payment', 
+ 	                viewClass:'Will', 
+ 	                iconCls:'text-folder', 
+ 	                expanded: true,
+ 	                children:
+ 	                [
+ 	                    
+                     { 
+                         text:'Invoice', 
+                         viewClass:'AM.view.payment.Invoice', 
+                         leaf:true, 
+                         iconCls:'text' 
                      },
- 										{ 
-                         text:'Delivery Lost', 
-                         viewClass:'AM.view.sales.DeliveryLost', 
+                     { 
+                         text:'Pembayaran', 
+                         viewClass:'AM.view.payment.Payment', 
                          leaf:true, 
                          iconCls:'text' 
                      }

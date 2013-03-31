@@ -74,6 +74,8 @@ Supermetal::Application.routes.draw do
     resources :delivery_losts
     match 'confirm_delivery_lost' => 'delivery_losts#confirm', :as => :confirm_delivery_lost, :method => :post
     resources :delivery_lost_entries 
+    
+    resources :invoices 
   end
   
   

@@ -107,6 +107,29 @@ BREADCRUMB
     return "#{day}/#{month}/#{year}" + " " + 
             "#{hour}:#{minute}:#{second}"
   end
+  
+  def format_date( date ) 
+    return nil if date.nil?  
+    
+    a = dat
+    day = a.day
+    month = a.month
+    year = a.year
+    hour = a.hour
+    minute = a.min
+    second = a.sec 
+    
+    if day.to_s.length == 1 
+      day = "0#{day}"
+    end
+    
+    if month.to_s.length == 1 
+      month = "0#{month}"
+    end
+  
+    
+    return "#{day}/#{month}/#{year}" 
+  end
 
   def print_date(datetime)
     if datetime.nil? 
