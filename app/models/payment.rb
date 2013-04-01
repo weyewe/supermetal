@@ -421,4 +421,16 @@ class Payment < ActiveRecord::Base
   def calculated_sales_tax
     BigDecimal('0')
   end
+  
+  def payment_method_name
+    if    self.payment_method == PAYMENT_METHOD_CASE[:bank_transfer][:value]
+      return PAYMENT_METHOD_CASE[:bank_transfer][:name]
+    elsif self.payment_method == PAYMENT_METHOD_CASE[:cash][:value]
+      return PAYMENT_METHOD_CASE[:cash][:name]
+    elsif self.payment_method == PAYMENT_METHOD_CASE[:giro][:value]
+      return PAYMENT_METHOD_CASE[:giro][:name]
+    elsif self.payment_method == PAYMENT_METHOD_CASE[:only_downpayment][:value]
+      return PAYMENT_METHOD_CASE[:only_downpayment][:name]
+    end
+  end
 end

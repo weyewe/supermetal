@@ -27,6 +27,9 @@ Supermetal::Application.routes.draw do
     match 'search_delivery_entry_case'  => "delivery_entries#search_entry_case" , :as => :search_delivery_entry_case, :method => :get
     match 'search_delivery_item_condition'  => "delivery_entries#search_item_condition" , :as => :search_delivery_item_condition, :method => :get
     
+    match 'search_cash_account'  => "cash_accounts#search" , :as => :search_cash_account, :method => :get
+    match 'search_payment_method'  => "payments#search_payment_method" , :as => :search_cash_account, :method => :get
+    
     resources :employees
     resources :materials
     resources :vendors
@@ -76,6 +79,9 @@ Supermetal::Application.routes.draw do
     resources :delivery_lost_entries 
     
     resources :invoices 
+    resources :payments
+    
+    
   end
   
   
