@@ -162,8 +162,13 @@ Ext.define('AM.view.payment.payment.Form', {
 					name : 'payment_method' 
 				},
 				{
-					fieldLabel: 'Uang Diterima',
+					fieldLabel: 'Jumlah untuk Pembayaran',
 					name: 'amount_paid' ,
+					xtype : 'textfield'
+				},
+				{
+					fieldLabel: 'Jumlah untuk Penambahan DP',
+					name: 'downpayment_addition_amount' ,
 					xtype : 'textfield'
 				},
 				{
@@ -171,11 +176,7 @@ Ext.define('AM.view.payment.payment.Form', {
 					name: 'downpayment_usage_amount' ,
 					xtype : 'textfield'
 				},
-				{
-					fieldLabel: 'Penambahan DP',
-					name: 'downpayment_addition_amount' ,
-					xtype : 'textfield'
-				},
+				
 			]
     }];
 

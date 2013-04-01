@@ -78,4 +78,37 @@ class Api::InvoicesController < Api::BaseApiController
   #     render :json => { :success => false, :total => Invoice.count }  
   #   end
   # end
+  
+  def search
+    search_params = params[:query]
+    selected_id = params[:selected_id]
+    if params[:selected_id].nil?  or params[:selected_id].length == 0 
+      selected_id = nil
+    end
+    
+    selected_customer_id = params[:customer_id]
+    
+    query = "%#{search_params}%"
+    # on PostGre SQL, it is ignoring lower case or upper case 
+    
+    if  selected_id.nil?
+      @objects = Invoice.joins(:delivery, :customer ).where{ (code  =~ query )   & 
+                                (customer_id.eq selected_customer_id)
+                              }.
+                        page(params[:page]).
+                        per(params[:limit]).
+                        order("id DESC")
+    else
+      @objects = Invoice.joins(:delivery, :customer).where{ (id.eq selected_id)  & 
+                                (customer_id.eq customer_id)
+                              }.
+                        page(params[:page]).
+                        per(params[:limit]).
+                        order("id DESC")
+    end
+    
+    @total = @objects.count
+    @success = true 
+    # render :json => { :records => @objects , :total => @objects.count, :success => true }
+  end
 end

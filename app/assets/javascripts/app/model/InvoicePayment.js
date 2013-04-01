@@ -1,8 +1,7 @@
-Ext.define('AM.model.Invoice', {
+Ext.define('AM.model.InvoicePayment', {
   	extend: 'Ext.data.Model',
   	fields: [
     	{ name: 'id', type: 'int' },
-    	{ name: 'code', type: 'string' } ,
 
 			{ name: 'payment_id', type: 'int'},
 			{ name: 'payment_code', type: 'string'},
@@ -18,19 +17,19 @@ Ext.define('AM.model.Invoice', {
 	 
 
   	idProperty: 'id' ,proxy: {
-			url: 'api/invoices',
+			url: 'api/invoice_payments',
 			type: 'rest',
 			format: 'json',
 
 			reader: {
-				root: 'invoices',
+				root: 'invoice_payments',
 				successProperty: 'success',
 				totalProperty : 'total'
 			},
 
 			writer: {
 				getRecordData: function(record) {
-					return { invoice : record.data };
+					return { invoice_payment : record.data };
 				}
 			}
 		}

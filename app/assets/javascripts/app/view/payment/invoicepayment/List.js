@@ -7,36 +7,14 @@ Ext.define('AM.view.payment.invoicepayment.List' ,{
 
 	initComponent: function() {
 		this.columns = [
-			{ header: 'Code',  dataIndex: 'code',  flex: 1 , sortable: false},
+			{ header: 'Code',  dataIndex: 'invoice_code',  flex: 1 , sortable: false},
 			{
 				xtype : 'templatecolumn',
-				text : "Item",
+				text : "Jumlah",
 				flex : 1,
 				dataIndex : 'name',
-				tpl : '<b>{payment_item_code}</b>' + '<br />' + 
-							'{payment_item_name}'+ '<br />' + '<br />' + 
-							'Kasus Pengiriman: ' + '{entry_case_name}'+ '<br />' + 
-							'Kondisi Barang: ' + '{item_condition_name}' 
+				tpl : '<b>{amount_paid}</b>'  
 				
-			},
-			{
-				xtype : 'templatecolumn',
-				text : "Pengiriman",
-				flex : 1,
-				tpl : 'Kuantitas: <b>{quantity_sent}</b>' + '<br />' + 
-							'Berat: <b>{quantity_sent_weight}</b>' 
-			},
-			{
-				xtype : 'templatecolumn',
-				text : "Finalisasi Pengiriman",
-				flex : 1,
-				tpl : 'Kuantitas Terkirim: <b>{quantity_confirmed}</b>' + '<br />' +
-							'Berat Terkirim: <b>{quantity_confirmed_weight}</b>' + '<br />' + '<br />' + 
-							
-							'Kuantitas Retur: <b>{quantity_returned}</b>'+  '<br />' +  
-							'Berat Retur: <b>{quantity_returned_weight}</b>' + '<br />' + '<br />' + 
-							
-							'Hilang: <b>{quantity_lost}</b>'
 			}
 			 
 		];

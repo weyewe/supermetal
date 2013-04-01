@@ -2,7 +2,7 @@ class Api::InvoicePaymentsController < Api::BaseApiController
   
   def index
     @parent = Payment.find_by_id params[:payment_id]
-    @objects = @parent.invoice_payments.joins(:payment).page(params[:page]).per(params[:limit]).order("id DESC")
+    @objects = @parent.invoice_payments.joins(:payment, :invoice).page(params[:page]).per(params[:limit]).order("id DESC")
     @total = @parent.invoice_payments.count
   end
 
@@ -30,7 +30,7 @@ class Api::InvoicePaymentsController < Api::BaseApiController
   def update
     @object = InvoicePayment.find_by_id params[:id] 
     @parent = @object.payment 
-    @object.update_invoice_payment(current_user,  params[:invoice_payment])
+    @object.update_invoice_payment(current_user,  @parent, params[:invoice_payment])
      
     if @object.errors.size == 0 
       render :json => { :success => true,   

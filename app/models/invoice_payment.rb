@@ -11,7 +11,7 @@ class InvoicePayment < ActiveRecord::Base
   
   def amount_paid_must_be_greater_than_zero_and_less_than_remaining_payable
     invoice = self.invoice 
-    if amount_paid.present? and 
+    if amount_paid.present? and not invoice.nil? and 
         ( amount_paid <= BigDecimal("0") or 
           amount_paid > invoice.confirmed_pending_payment    )
       errors.add(:amount_paid , "Jumlah yang dibayar harus lebih dari 0 "+ 

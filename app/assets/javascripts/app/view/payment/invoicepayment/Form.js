@@ -25,6 +25,42 @@ Ext.define('AM.view.payment.invoicepayment.Form', {
 		if( !this.parentRecord){ return; }
 		var me = this; 
 		
+		var remoteJsonStore = Ext.create(Ext.data.JsonStore, {
+			storeId : 'invoice_search',
+			fields	: [
+	 				{
+						name : 'invoice_id',
+						mapping : "id"
+					},
+					{
+						name : 'invoice_code',
+						mapping : 'code'
+					},
+					{
+						name :'invoice_customer_name',
+						mapping : 'customer_name'
+					},
+					{
+						name :'invoice_pending_payment',
+						mapping : 'confirmed_pending_payment'
+					},
+					
+			],
+			proxy  	: {
+				type : 'ajax',
+				url : 'api/search_invoice',
+				extraParams: {
+					customer_id : this.parentRecord.get('customer_id')
+		    },
+				reader : {
+					type : 'json',
+					root : 'records', 
+					totalProperty  : 'total'
+				}
+			},
+			autoLoad : false 
+		});
+		
  
 		this.items = [{
       xtype: 'form',
@@ -37,22 +73,34 @@ Ext.define('AM.view.payment.invoicepayment.Form', {
       },
       items: [
 				{
-					xtype: 'displayfield',
-					fieldLabel: 'Delivery',
-					name: 'delivery_code',
-					value: '10'
+					fieldLabel: 'Invoice',
+					xtype: 'combo',
+					queryMode: 'remote',
+					forceSelection: true, 
+					displayField : 'invoice_code',
+					valueField : 'invoice_id',
+					pageSize : 5,
+					minChars : 1, 
+					allowBlank : false, 
+					triggerAction: 'all',
+					store : remoteJsonStore , 
+					listConfig : {
+						getInnerTpl: function(){
+							return  	'<div data-qtip="{invoice_code}">' +  
+													'<div class="combo-name">{invoice_code}</div>' + 
+													'<div>Customer: {invoice_customer_name}</div>' + 
+													'<div>Belum Dibayar: {invoice_pending_payment}</div>' + 
+							 					'</div>';
+						}
+					},
+					name : 'invoice_id' 
 				},
 				
 				{
-					fieldLabel : 'Jumlah Dikirim',
-					name : 'quantity_sent',
+					fieldLabel : 'Jumlah Pembayaran',
+					name : 'amount_paid',
 					xtype : 'field'
-				},
-				{
-					fieldLabel : 'Berat Dikirim (kg)',
-					name : 'quantity_sent_weight',
-					xtype : 'field'
-				}
+				} 
 				
 			]
     }];
@@ -76,7 +124,7 @@ Ext.define('AM.view.payment.invoicepayment.Form', {
 
 
 	setParentData: function( record ){
-		this.down('form').getForm().findField('payment_code').setValue(record.get('code')); 
+		// this.down('form').getForm().findField('payment_code').setValue(record.get('code')); 
 	},
 	 
 	setComboBoxData : function( record){
@@ -88,6 +136,19 @@ Ext.define('AM.view.payment.invoicepayment.Form', {
 		// me.setSelectedEntryCase( record.get("entry_case")  ) ;
 		// me.setSelectedItemCondition( record.get("item_condition")  ) ;
 		// 	 
+		var invoice_id = record.get("invoice_id");
+		var comboBox = this.down('form').getForm().findField('invoice_id'); 
+		var me = this; 
+		var store = comboBox.store; 
+		store.load({
+			params: {
+				selected_id : invoice_id 
+			},
+			callback : function(records, options, success){
+				me.setLoading(false);
+				comboBox.setValue( invoice_id );
+			}
+		});
 	}
 });
 

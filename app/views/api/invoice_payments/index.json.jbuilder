@@ -1,19 +1,14 @@
 json.success true 
 json.total @total
-json.invoices @objects do |object|
+json.invoice_payments @objects do |object|
 	json.id 				object.id 
-	json.code 			object.code
 	
-	json.delivery_code object.delivery.code
-	json.customer_name object.customer.name 
+	json.payment_id object.payment.id
+	json.payment_code object.payment.code 
 	
-	json.due_date 					format_date( object.due_date )  
-	
-	json.amount_payable 						object.amount_payable
-	json.base_amount_payable 				object.base_amount_payable
-	json.tax_amount_payable 				object.tax_amount_payable 	
-	
-	
-	json.confirmed_pending_payment object.confirmed_pending_payment 
+	json.invoice_id object.invoice.id
+	json.invoice_code object.invoice.code
+
+	json.amount_paid 			  object.amount_paid 
 	json.is_confirmed object.is_confirmed 
 end

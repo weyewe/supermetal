@@ -30,6 +30,8 @@ Supermetal::Application.routes.draw do
     match 'search_cash_account'  => "cash_accounts#search" , :as => :search_cash_account, :method => :get
     match 'search_payment_method'  => "payments#search_payment_method" , :as => :search_cash_account, :method => :get
     
+    match 'search_invoice'  => "invoices#search" , :as => :search_invoice, :method => :get
+    
     resources :employees
     resources :materials
     resources :vendors
@@ -80,6 +82,7 @@ Supermetal::Application.routes.draw do
     
     resources :invoices 
     resources :payments
+    match 'confirm_payment' => 'payments#confirm', :as => :confirm_payment, :method => :post
     resources :invoice_payments 
     
     
