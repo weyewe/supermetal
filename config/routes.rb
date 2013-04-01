@@ -28,11 +28,15 @@ Supermetal::Application.routes.draw do
     match 'search_delivery_item_condition'  => "delivery_entries#search_item_condition" , :as => :search_delivery_item_condition, :method => :get
     
     match 'search_cash_account'  => "cash_accounts#search" , :as => :search_cash_account, :method => :get
+    match 'search_cash_account_case'  => "cash_accounts#search_case" , :as => :search_cash_account_case, :method => :get
+    
     match 'search_payment_method'  => "payments#search_payment_method" , :as => :search_cash_account, :method => :get
     
     match 'search_invoice'  => "invoices#search" , :as => :search_invoice, :method => :get
     
     resources :employees
+    resources :cash_accounts
+    
     resources :materials
     resources :vendors
     resources :customers

@@ -1,48 +1,44 @@
-Ext.define('AM.view.management.employee.List' ,{
+Ext.define('AM.view.sales.guaranteereturn.List' ,{
   	extend: 'Ext.grid.Panel',
-  	alias : 'widget.employeelist',
+  	alias : 'widget.guaranteereturnlist',
 
-  	store: 'Employees', 
+  	store: 'GuaranteeReturns', 
  
 
 	initComponent: function() {
 		this.columns = [
 			{ header: 'ID', dataIndex: 'id'},
-			{ header: ' Name',  dataIndex: 'name',  flex: 1 , sortable: false} 
+			{ header: 'Code',  dataIndex: 'code',  flex: 1 , sortable: false},
+			{ header: 'Customer',  dataIndex: 'customer_name',  flex: 1 , sortable: false},
+			{ header: 'Confirmed?',  dataIndex: 'is_confirmed',  flex: 1 , sortable: false},
 		];
 
 		this.addObjectButton = new Ext.Button({
-			text: 'Add Employee',
+			text: 'Add Guarantee Return',
 			action: 'addObject'
 		});
 
 		this.editObjectButton = new Ext.Button({
-			text: 'Edit Employee',
+			text: 'Edit Guarantee Return',
 			action: 'editObject',
 			disabled: true
 		});
 
 		this.deleteObjectButton = new Ext.Button({
-			text: 'Delete Employee',
+			text: 'Delete Guarantee Return',
 			action: 'deleteObject',
 			disabled: true
 		});
 		
-		// this.filler = new Ext.toolbar.FillView({});  
-		
-		this.searchField = new Ext.form.field.Text({
-			name: 'searchField',
-			hideLabel: true,
-			width: 200,
-			emptyText : "Search",
-			checkChangeBuffer: 300
-		}); 
+		this.confirmObjectButton = new Ext.Button({
+			text: 'Confirm',
+			action: 'confirmObject',
+			disabled: true
+		});
 
 
 
-
-		// this.tbar = [this.addObjectButton, this.editObjectButton, this.deleteObjectButton, '->', this.searchObjectButton ];
-		this.tbar = [this.addObjectButton, this.editObjectButton, this.deleteObjectButton,  this.searchField ];
+		this.tbar = [this.addObjectButton, this.editObjectButton, this.deleteObjectButton, this.confirmObjectButton ];
 		this.bbar = Ext.create("Ext.PagingToolbar", {
 			store	: this.store, 
 			displayInfo: true,
@@ -62,10 +58,12 @@ Ext.define('AM.view.management.employee.List' ,{
 	enableRecordButtons: function() {
 		this.editObjectButton.enable();
 		this.deleteObjectButton.enable();
+		this.confirmObjectButton.enable();
 	},
 
 	disableRecordButtons: function() {
 		this.editObjectButton.disable();
 		this.deleteObjectButton.disable();
+		this.confirmObjectButton.disable();
 	}
 });

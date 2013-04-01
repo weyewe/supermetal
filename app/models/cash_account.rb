@@ -29,4 +29,31 @@ class CashAccount < ActiveRecord::Base
     return nil if self.payments.count != 0
     self.destroy
   end
+  
+  def self.create_by_employee( employee, params) 
+    new_object = self.new 
+    new_object.name = params[:name]
+    new_object.case = params[:case]
+    new_object.description = params[:description]
+    
+    new_object.save
+    return new_object 
+  end
+  
+  def update_by_employee( employee, params)
+    self.name = params[:name]
+    self.case = params[:case]
+    self.description = params[:description]
+
+    self.save
+    return self
+  end
+  
+  def case_name
+    if    self.case == CASH_ACCOUNT_CASE[:bank][:value]
+      return CASH_ACCOUNT_CASE[:bank][:name]
+    elsif self.case == CASH_ACCOUNT_CASE[:cash][:value]
+      return CASH_ACCOUNT_CASE[:cash][:name]
+    end
+  end
 end

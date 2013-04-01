@@ -1,8 +1,8 @@
-Ext.define('AM.view.management.employee.List' ,{
+Ext.define('AM.view.management.cashaccount.List' ,{
   	extend: 'Ext.grid.Panel',
-  	alias : 'widget.employeelist',
+  	alias : 'widget.cashaccountlist',
 
-  	store: 'Employees', 
+  	store: 'CashAccounts', 
  
 
 	initComponent: function() {
@@ -12,18 +12,18 @@ Ext.define('AM.view.management.employee.List' ,{
 		];
 
 		this.addObjectButton = new Ext.Button({
-			text: 'Add Employee',
+			text: 'Add CashAccount',
 			action: 'addObject'
 		});
 
 		this.editObjectButton = new Ext.Button({
-			text: 'Edit Employee',
+			text: 'Edit CashAccount',
 			action: 'editObject',
 			disabled: true
 		});
 
 		this.deleteObjectButton = new Ext.Button({
-			text: 'Delete Employee',
+			text: 'Delete CashAccount',
 			action: 'deleteObject',
 			disabled: true
 		});

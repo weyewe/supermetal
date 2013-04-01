@@ -68,6 +68,12 @@ Ext.define("AM.controller.Authorization", {
 	                        viewClass:'AM.view.management.User', 
 	                        leaf:true, 
 	                        iconCls:'text' 
+	                    },
+											{ 
+	                        text:'Cash Account', 
+	                        viewClass:'AM.view.management.CashAccount', 
+	                        leaf:true, 
+	                        iconCls:'text' 
 	                    }
 		                    
 		                ]
@@ -138,6 +144,18 @@ Ext.define("AM.controller.Authorization", {
  										{ 
                          text:'Sales Return', 
                          viewClass:'AM.view.sales.SalesReturn', 
+                         leaf:true, 
+                         iconCls:'text' 
+                     },
+										{ 
+                         text:'Guarantee Return', 
+                         viewClass:'AM.view.sales.GuaranteeReturn', 
+                         leaf:true, 
+                         iconCls:'text' 
+                     },
+										{ 
+                         text:'Penerimaan Bahan Bubut', 
+                         viewClass:'AM.view.sales.ItemReceival', 
                          leaf:true, 
                          iconCls:'text' 
                      }
