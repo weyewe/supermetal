@@ -90,6 +90,10 @@ Supermetal::Application.routes.draw do
     resources :invoice_payments 
     
     
+    resources :guarantee_returns
+    match 'confirm_guarantee_return' => 'guarantee_returns#confirm', :as => :confirm_guarantee_return, :method => :post
+    resources :guarantee_return_entries
+    
   end
   
   

@@ -72,7 +72,9 @@ Ext.define('AM.view.sales.guaranteereturn.Form', {
 				},
 				{
 					xtype : 'datefield',
-					fieldLabel: "Tanggal Penerimaan"
+					fieldLabel: "Tanggal Penerimaan",
+					name : 'receival_date',
+					format: 'd/m/Y'
 				}
 			]
     }];

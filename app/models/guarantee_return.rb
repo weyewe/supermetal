@@ -7,6 +7,14 @@ class GuaranteeReturn < ActiveRecord::Base
   has_many :guarantee_return_entries 
    
 
+  def self.active_objects
+    self.where(:is_deleted => false ) 
+  end
+  
+  def active_guarantee_return_entries
+    self.guarantee_return_entries.where(:is_deleted => false ) 
+  end
+
   def self.create_by_employee( employee, params ) 
     return nil if employee.nil? 
     
