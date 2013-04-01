@@ -191,22 +191,61 @@ Ext.define('AM.view.payment.payment.Form', {
     this.callParent(arguments);
   },
 
+
+	setSelectedCashAccount: function( cash_account_id ){
+		var comboBox = this.down('form').getForm().findField('cash_account_id'); 
+		var me = this; 
+		var store = comboBox.store; 
+		store.load({
+			params: {
+				selected_id : cash_account_id 
+			},
+			callback : function(records, options, success){
+				me.setLoading(false);
+				comboBox.setValue( cash_account_id );
+			}
+		});
+	},
+
+	setSelectedPaymentMethod: function( payment_method ){
+		var comboBox = this.down('form').getForm().findField('payment_method'); 
+		var me = this; 
+		var store = comboBox.store; 
+		store.load({
+			params: {
+				selected_id : payment_method 
+			},
+			callback : function(records, options, success){
+				me.setLoading(false);
+				comboBox.setValue( payment_method );
+			}
+		});
+	},
+
+ 	setSelectedCustomer: function( customer_id ){
+		var comboBox = this.down('form').getForm().findField('customer_id'); 
+		var me = this; 
+		var store = comboBox.store; 
+		store.load({
+			params: {
+				selected_id : customer_id 
+			},
+			callback : function(records, options, success){
+				me.setLoading(false);
+				comboBox.setValue( customer_id );
+			}
+		});
+	},
+	
 	setComboBoxData : function( record){
-		// var me = this; 
-		// me.setLoading(true);
-		// var comboBox = this.down('form').getForm().findField('customer_id'); 
-		// var selectedRecordId = record.get("customer_id");
-		// 
-		// var store = comboBox.store; 
-		// store.load({
-		// 	params: {
-		// 		selected_id : selectedRecordId
-		// 	},
-		// 	callback : function(records, options, success){
-		// 		me.setLoading(false);
-		// 		comboBox.setValue( selectedRecordId );
-		// 	}
-		// });
+		var me = this; 
+		me.setLoading(true);
+		
+		
+		me.setSelectedCustomer( record.get("customer_id")  ) ;
+		me.setSelectedPaymentMethod( record.get("payment_method")  ) ;
+		me.setSelectedCashAccount( record.get("cash_account_id")  ) ;
+	 
 	}
 });
 

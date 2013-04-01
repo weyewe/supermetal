@@ -184,6 +184,7 @@ class Payment < ActiveRecord::Base
     self.downpayment_usage_amount > BigDecimal('0')
   end
   
+   
   def update_by_employee( employee, params )  
     if self.is_confirmed
       self.post_confirm_update(employee, params)

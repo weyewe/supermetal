@@ -80,6 +80,7 @@ Supermetal::Application.routes.draw do
     
     resources :invoices 
     resources :payments
+    resources :invoice_payments 
     
     
   end
