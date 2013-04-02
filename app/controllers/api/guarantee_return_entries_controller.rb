@@ -30,7 +30,7 @@ class Api::GuaranteeReturnEntriesController < Api::BaseApiController
   def update
     @object = GuaranteeReturnEntry.find_by_id params[:id] 
     @parent = @object.guarantee_return 
-    @object.update_guarantee_return_entry(current_user,  params[:guarantee_return_entry])
+    @object.update_guarantee_return_entry(current_user, @parent,  params[:guarantee_return_entry])
      
     if @object.errors.size == 0 
       render :json => { :success => true,   

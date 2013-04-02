@@ -1,8 +1,8 @@
-Ext.define('AM.view.sales.guaranteereturnentry.List' ,{
+Ext.define('AM.view.factory.itemreceivalentry.List' ,{
   	extend: 'Ext.grid.Panel',
-  	alias : 'widget.guaranteereturnentrylist',
+  	alias : 'widget.itemreceivalentrylist',
 
-  	store: 'GuaranteeReturnEntries', 
+  	store: 'ItemReceivalEntries', 
  
 
 	initComponent: function() {
@@ -12,9 +12,9 @@ Ext.define('AM.view.sales.guaranteereturnentry.List' ,{
 				xtype : 'templatecolumn',
 				text : "Item",
 				flex : 1,
-				tpl : '<b>{sales_item_code}</b>' + 
+				tpl : '<b>{factory_item_code}</b>' + 
 							'<br />' + '<br />' + 
-							'{sales_item_name}' + '<br />' + 
+							'{factory_item_name}' + '<br />' + 
 							"Kondisi barang: <b>{item_condition_name}</b>" 
 			},
 			{
@@ -96,6 +96,6 @@ Ext.define('AM.view.sales.guaranteereturnentry.List' ,{
 	},
 	
 	setObjectTitle : function(record){
-		this.setTitle("Guarantee Return: " + record.get("code"));
+		this.setTitle("Item Receival: " + record.get("code"));
 	}
 });

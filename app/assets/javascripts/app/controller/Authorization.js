@@ -100,10 +100,10 @@ Ext.define("AM.controller.Authorization", {
 	                expanded: true,
 	                children:
 	                [
-	                    
+	                
                     { 
-                        text:'Penerimaan Barang Bubut', 
-                        viewClass:'AM.view.sales.Customer', 
+                        text:'Penerimaan Bahan Bubut', 
+                        viewClass:'AM.view.factory.ItemReceival', 
                         leaf:true, 
                         iconCls:'text' 
                     },
@@ -152,13 +152,8 @@ Ext.define("AM.controller.Authorization", {
                          viewClass:'AM.view.sales.GuaranteeReturn', 
                          leaf:true, 
                          iconCls:'text' 
-                     },
-										{ 
-                         text:'Penerimaan Bahan Bubut', 
-                         viewClass:'AM.view.sales.ItemReceival', 
-                         leaf:true, 
-                         iconCls:'text' 
                      }
+										
  	                    
  	                ]
  								},

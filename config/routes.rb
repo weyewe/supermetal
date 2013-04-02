@@ -94,6 +94,10 @@ Supermetal::Application.routes.draw do
     match 'confirm_guarantee_return' => 'guarantee_returns#confirm', :as => :confirm_guarantee_return, :method => :post
     resources :guarantee_return_entries
     
+    resources :item_receivals
+    match 'confirm_item_receival' => 'item_receivals#confirm', :as => :confirm_item_receival, :method => :post
+    resources :item_receival_entries
+    
   end
   
   

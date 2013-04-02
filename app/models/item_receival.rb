@@ -11,6 +11,15 @@ class ItemReceival < ActiveRecord::Base
   
   belongs_to :customer 
   has_many :item_receival_entries 
+  
+  
+  def self.active_objects
+    self.where(:is_deleted => false ) 
+  end
+  
+  def active_item_receival_entries
+    self.item_receival_entries  
+  end
 
   def self.create_by_employee( employee, params ) 
     return nil if employee.nil? 

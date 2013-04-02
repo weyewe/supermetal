@@ -7,8 +7,8 @@ Ext.define('AM.model.GuaranteeReturnEntry', {
 			{ name: 'guarantee_return_id', type: 'int' },
 			
 			{ name: 'sales_item_id', type: 'int' },
-			{ name: 'sales_item_name', type: 'int' },
-			{ name: 'sales_item_code', type: 'int' },
+			{ name: 'sales_item_name', type: 'string' },
+			{ name: 'sales_item_code', type: 'string' },
 			
 			{ name: 'item_condition', type: 'int' },
 			{ name: 'item_condition_name', type: 'string' },

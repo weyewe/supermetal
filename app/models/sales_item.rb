@@ -1027,5 +1027,11 @@ class SalesItem < ActiveRecord::Base
       post_production_guarantee_return_receival
   end
    
-  
+  def item_condition_name
+    if self.item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:production]
+      return "Cor"
+    elsif self.item_condition == DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
+      return "Bubut"
+    end
+  end
 end

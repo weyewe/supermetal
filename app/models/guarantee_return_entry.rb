@@ -12,10 +12,37 @@ class GuaranteeReturnEntry < ActiveRecord::Base
   validate :prevent_non_synced_quantity_weight
   validate :prevent_excess_guarantee_return
   validate :prevent_production_treatment_for_non_internal_item
+  validate :entry_uniqueness 
   # validate :prevent_extra_service
   
   # validate :returned_quantity_not_exceeding_delivered
   # validate :matching_treatment_for_the_given_item_condition
+  
+  def entry_uniqueness
+    sales_item = self.sales_item 
+    return nil if sales_item.nil? 
+
+    parent = self.guarantee_return  
+
+    guarantee_return_entry_count = GuaranteeReturnEntry.where(
+      :sales_item_id => self.sales_item_id,
+      :item_condition => self.item_condition, 
+      :guarantee_return_id => parent.id  
+    ).count 
+
+    
+    msg = "Item #{sales_item.code}, kondisi #{self.item_condition_name} sudah terdaftar di retur ini"
+
+    if not self.persisted? and guarantee_return_entry_count != 0
+      errors.add(:sales_item_id , "case1 : #{msg}" ) 
+    elsif self.persisted? and not (self.sales_item_id_changed? or self.item_condition_changed? ) and 
+                          guarantee_return_entry_count > 1
+      errors.add(:sales_item_id , "case2: #{msg}" ) 
+    elsif self.persisted? and (self.sales_item_id_changed? or self.item_condition_changed?) and 
+                          guarantee_return_entry_count != 0 
+      errors.add(:sales_item_id , "case3: #{msg}" ) 
+    end
+  end
   
   
   
