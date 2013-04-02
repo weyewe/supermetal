@@ -18,6 +18,7 @@ Ext.define('AM.view.sales.salesitem.List' ,{
 							'{description}'
 				
 			},
+			{ header: 'Repeat',  dataIndex: 'is_repeat_order',  flex: 1 , sortable: false},
 			{
 				xtype : 'templatecolumn',
 				text : "Spec",
@@ -54,6 +55,12 @@ Ext.define('AM.view.sales.salesitem.List' ,{
 			action: 'addObject',
 			disabled : true 
 		});
+		
+		this.repeatObjectButton = new Ext.Button({
+			text: '+Repeat',
+			action: 'repeatObject',
+			disabled : true 
+		});
 
 		this.editObjectButton = new Ext.Button({
 			text: 'Edit',
@@ -72,7 +79,7 @@ Ext.define('AM.view.sales.salesitem.List' ,{
 
 
 
-		this.tbar = [this.addObjectButton, this.editObjectButton, this.deleteObjectButton ];
+		this.tbar = [this.addObjectButton, this.repeatObjectButton, this.editObjectButton, this.deleteObjectButton ];
 		this.bbar = Ext.create("Ext.PagingToolbar", {
 			store	: this.store, 
 			displayInfo: true,
@@ -107,12 +114,14 @@ Ext.define('AM.view.sales.salesitem.List' ,{
 
 	enableRecordButtons: function() {
 		this.addObjectButton.enable();
+		this.repeatObjectButton.enable();
 		this.editObjectButton.enable();
 		this.deleteObjectButton.enable();
 	},
 
 	disableRecordButtons: function() {
 		this.addObjectButton.disable();
+		this.repeatObjectButton.disable();
 		this.editObjectButton.disable();
 		this.deleteObjectButton.disable();
 	},

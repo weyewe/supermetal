@@ -535,6 +535,8 @@ class SalesItem < ActiveRecord::Base
     new_object.description           = sample_sales_item.description
     new_object.name                  = sample_sales_item.name
     
+    new_object.is_repeat_order = true 
+    
     
     # from params  
     # new_object.quantity               = params[:quantity]  

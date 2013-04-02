@@ -109,6 +109,10 @@ Ext.define('AM.view.factory.preproductionresult.Form', {
 		this.down('form').getForm().findField('template_sales_item_id').setValue(record.get('id'));
 		this.down('form').getForm().findField('template_sales_item_name').setValue( record.get('name'));
 		this.down('form').getForm().findField('template_sales_item_code').setValue( record.get('code'));
+	},
+	
+	setComboBoxData : function( record){
+
 	}
 });
 

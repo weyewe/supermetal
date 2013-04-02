@@ -33,4 +33,7 @@ json.sales_items @objects do |object|
 	json.is_delivered					object.is_delivered
 	json.delivery_address			object.delivery_address
 	
+	json.is_repeat_order 					object.is_repeat_order
+	json.template_sales_item_id 	object.template_sales_item_id 
+	
 end

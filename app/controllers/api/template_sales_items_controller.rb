@@ -91,7 +91,6 @@ class Api::TemplateSalesItemsController < Api::BaseApiController
     
     if  selected_id.nil?  
       @objects = TemplateSalesItem.where{  
-                                (is_deleted.eq false )  & 
                                 (
                                   ( name =~ query ) | 
                                   ( code =~ query ) 
@@ -101,9 +100,7 @@ class Api::TemplateSalesItemsController < Api::BaseApiController
                         per(params[:limit]).
                         order("id DESC")
     else
-      @objects = TemplateSalesItem.where{ (id.eq selected_id)  & 
-                                (is_deleted.eq false )
-                              }.
+      @objects = TemplateSalesItem.where{ (id.eq selected_id)  }.
                         page(params[:page]).
                         per(params[:limit]).
                         order("id DESC")

@@ -9,7 +9,14 @@ class Api::SalesItemsController < Api::BaseApiController
   def create
    
     @parent = SalesOrder.find_by_id params[:sales_order_id]
-    @object = SalesItem.create_sales_item(current_user, @parent,  params[:sales_item] )  
+    
+    if params[:sales_item][:is_repeat_order].present? and params[:sales_item][:is_repeat_order] == true 
+      puts 'In the repeat order block\n'*10
+      @object = SalesItem.create_derivative_sales_item( current_user, @parent,  params[:sales_item] )
+    else
+      @object = SalesItem.create_sales_item(current_user, @parent,  params[:sales_item] )  
+    end
+    
     
     if @object.errors.size == 0 
       render :json => { :success => true, 
@@ -30,7 +37,16 @@ class Api::SalesItemsController < Api::BaseApiController
   def update
     @object = SalesItem.find_by_id params[:id] 
     @parent = @object.sales_order 
-    @object.update_sales_item(current_user,  params[:sales_item])
+    
+    
+    if params[:sales_item][:is_repeat_order].present? and params[:sales_item][:is_repeat_order] == true 
+      @object.update_derivative_sales_item(current_user, params[:sales_item])
+    else
+      @object.update_sales_item(current_user,  params[:sales_item])
+    end
+    
+    
+    
      
     if @object.errors.size == 0 
       render :json => { :success => true,   

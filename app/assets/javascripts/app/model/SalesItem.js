@@ -29,7 +29,12 @@ Ext.define('AM.model.SalesItem', {
 			{ name: 'is_delivered',type: 'boolean', defaultValue: false },
 			{ name: 'delivery_address', type: 'string'},
 			
-			{ name: 'case', type: 'int'}
+			{ name: 'case', type: 'int'},
+			
+			{ name: 'is_repeat_order',type: 'boolean', defaultValue: false },
+			{ name: 'template_sales_item_id', type: 'int' }
+			
+			
 			
   	],
 

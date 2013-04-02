@@ -31,15 +31,27 @@ Ext.define('AM.controller.SalesItems', {
       'salesitemform button[action=save]': {
         click: this.updateObject
       },
+
+			'salesitemrepeatform button[action=save]': {
+        click: this.updateObject
+      },
       'salesitemlist button[action=addObject]': {
         click: this.addObject
       },
+
+			'salesitemlist button[action=repeatObject]': {
+        click: this.addObject
+      },
+
+
       'salesitemlist button[action=editObject]': {
         click: this.editObject
       },
       'salesitemlist button[action=deleteObject]': {
         click: this.deleteObject
       },
+
+			
 
 			// monitor parent(sales_order) update
 			'salesorderlist' : {
@@ -78,7 +90,7 @@ Ext.define('AM.controller.SalesItems', {
 	},
  
 
-  addObject: function() {
+  addObject: function(button) {
 		
 		// I want to get the currently selected item 
 		var record = this.getParentList().getSelectedObject();
@@ -86,10 +98,15 @@ Ext.define('AM.controller.SalesItems', {
 			return; 
 		}
 		 
-    var view = Ext.widget('salesitemform', {
+		var widgetName = 'salesitemform';
+		if( button.action === 'repeatObject'){
+			widgetName = 'salesitemrepeatform'
+		}
+    var view = Ext.widget(widgetName , {
 			parentRecord : record 
 		});
 		view.setParentData( record );
+		
     view.show(); 
   },
 
@@ -101,7 +118,13 @@ Ext.define('AM.controller.SalesItems', {
 			return; 
 		}
 
-    var view = Ext.widget('salesitemform', {
+
+		var widgetName = 'salesitemform';
+		
+		if( record.get('is_repeat_order') ===  true ){
+			widgetName = 'salesitemrepeatform'
+		}
+    var view = Ext.widget(widgetName, {
 			parentRecord : parentRecord
 		});
 

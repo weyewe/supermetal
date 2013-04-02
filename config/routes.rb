@@ -19,6 +19,7 @@ Supermetal::Application.routes.draw do
     match 'search_material' => 'materials#search', :as => :search_materials, :method => :get
     match 'search_purchase_order_entry' => 'purchase_order_entries#search', :as => :search_purchase_order_entries, :method => :get
     match 'search_sales_order_entry' => 'sales_order_entries#search', :as => :search_sales_order_entries, :method => :get
+    match 'search_template_sales_item' => "template_sales_items#search", :as => :search_template_sales_item 
     
     match 'search_delivery' => 'deliveries#search', :as => :search_deliveries, :method => :get
     match 'search_delivery_entry' => 'delivery_entries#search', :as => :search_delivery_entries, :method => :get
@@ -175,7 +176,7 @@ Supermetal::Application.routes.draw do
 =end
   match 'search_customer' => "customers#search_customer", :as => :search_customer 
   
-  match 'search_template_sales_item' => "template_sales_items#search_template_sales_item", :as => :search_template_sales_item 
+  match 'search_template_sales_item' => "template_sales_items#search", :as => :search_template_sales_item 
   match 'search_sales_item' => "sales_items#search_sales_item", :as => :search_sales_item 
   
   match 'search_sales_order' => 'sales_orders#search_sales_order' , :as => :search_sales_order
