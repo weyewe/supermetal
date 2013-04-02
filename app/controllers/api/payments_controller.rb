@@ -1,8 +1,32 @@
 class Api::PaymentsController < Api::BaseApiController
   
   def index
-    @objects = Payment.joins(:customer, :cash_account).page(params[:page]).per(params[:limit]).order("id DESC")
-    @total = Payment.count
+    if params[:livesearch].present? 
+      livesearch = "%#{params[:livesearch]}%"
+      @objects = Payment.joins(:customer, :cash_account).where{
+        (
+          (code =~  livesearch ) | 
+          (customer.name =~ livesearch) | 
+          (cash_account.name =~ livesearch) | 
+          (cash_account.description =~ livesearch)
+        )
+        
+      }.page(params[:page]).per(params[:limit]).order("id DESC")
+      
+      @total = Payment.joins(:customer, :cash_account ).where{
+        (
+          (code =~  livesearch ) | 
+          (customer.name =~ livesearch) | 
+          (cash_account.name =~ livesearch) | 
+          (cash_account.description =~ livesearch)
+        )
+      }.count
+    else
+      @objects = Payment.joins(:customer, :cash_account).page(params[:page]).per(params[:limit]).order("id DESC")
+      @total = Payment.count
+    end
+    
+    
     # render :json => { :payments => @objects , :total => Payment.count, :success => true }
   end
 

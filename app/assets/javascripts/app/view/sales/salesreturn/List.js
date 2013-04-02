@@ -44,11 +44,18 @@ Ext.define('AM.view.sales.salesreturn.List' ,{
 			action: 'confirmObject',
 			disabled: true
 		});
+		this.searchField = new Ext.form.field.Text({
+			name: 'searchField',
+			hideLabel: true,
+			width: 200,
+			emptyText : "Search",
+			checkChangeBuffer: 300
+		});
 
 
 
 		// this.tbar = [this.addObjectButton, this.editObjectButton, this.deleteObjectButton, this.confirmObjectButton ];
-		this.tbar = [this.confirmObjectButton] 
+		this.tbar = [this.confirmObjectButton, this.searchField] ;
 		this.bbar = Ext.create("Ext.PagingToolbar", {
 			store	: this.store, 
 			displayInfo: true,

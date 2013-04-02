@@ -14,7 +14,8 @@ Ext.define('AM.view.payment.invoice.List' ,{
 				flex : 1,
 				tpl : '<b>{code}</b>' + 
 							'<br />' +  '<br />' +
-							'Delivery: <b>{delivery_code}</b>'
+							'Delivery: <b>{delivery_code}</b>' + '<br />' +
+							'Customer: <b>{customer_name}</b>'
 				
 			},
 			{ header: 'Jatuh Tempo',  dataIndex: 'due_date',  flex: 1 , sortable: false},
@@ -54,10 +55,17 @@ Ext.define('AM.view.payment.invoice.List' ,{
 			action: 'confirmObject',
 			disabled: true
 		});
+		this.searchField = new Ext.form.field.Text({
+			name: 'searchField',
+			hideLabel: true,
+			width: 200,
+			emptyText : "Search",
+			checkChangeBuffer: 300
+		});
 
 
 
-		this.tbar = [  this.editObjectButton ];
+		this.tbar = [  this.editObjectButton , this.searchField];
 		this.bbar = Ext.create("Ext.PagingToolbar", {
 			store	: this.store, 
 			displayInfo: true,

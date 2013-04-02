@@ -48,10 +48,23 @@ Ext.define('AM.controller.GuaranteeReturns', {
 			'guaranteereturnlist button[action=confirmObject]': {
         click: this.confirmObject
       },
+			'guaranteereturnlist textfield[name=searchField]': {
+        change: this.liveSearch
+      }
 
 
     });
   },
+
+	liveSearch : function(grid, newValue, oldValue, options){
+		var me = this;
+
+		me.getGuaranteeReturnsStore().getProxy().extraParams = {
+		    livesearch: newValue
+		};
+	 
+		me.getGuaranteeReturnsStore().load();
+	},
 
 	confirmObject: function(){
 		var me  = this;

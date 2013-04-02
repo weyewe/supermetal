@@ -1,8 +1,30 @@
 class Api::SalesReturnsController < Api::BaseApiController
   
   def index
-    @objects = SalesReturn.joins(  :delivery => [:customer]).active_objects.page(params[:page]).per(params[:limit]).order("id DESC")
-    @total = SalesReturn.active_objects.count
+    if params[:livesearch].present? 
+      livesearch = "%#{params[:livesearch]}%"
+      @objects = SalesReturn.joins(:delivery => [:customer]).where{
+        (
+          (code =~  livesearch ) | 
+          (delivery.code =~  livesearch ) | 
+          (delivery.customer.name =~ livesearch)
+        )
+        
+      }.page(params[:page]).per(params[:limit]).order("id DESC")
+      
+      @total = Delivery.joins(:customer).where{
+        (
+          (code =~  livesearch ) | 
+          (delivery.code =~  livesearch ) | 
+          (delivery.customer.name =~ livesearch)
+        )
+      }.count
+    else
+      @objects = SalesReturn.joins(  :delivery => [:customer]).active_objects.page(params[:page]).per(params[:limit]).order("id DESC")
+      @total = SalesReturn.active_objects.count
+    end
+    
+    
     # render :json => { :sales_returns => @objects , :total => SalesReturn.active_objects.count, :success => true }
   end
 

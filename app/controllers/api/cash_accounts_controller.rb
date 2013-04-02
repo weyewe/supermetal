@@ -4,7 +4,6 @@ class Api::CashAccountsController < Api::BaseApiController
     if params[:livesearch].present? 
       livesearch = "%#{params[:livesearch]}%"
       @objects = CashAccount.where{
-        (is_deleted.eq false) & 
         (
           (name =~  livesearch )
         )
@@ -12,7 +11,6 @@ class Api::CashAccountsController < Api::BaseApiController
       }.page(params[:page]).per(params[:limit]).order("id DESC")
       
       @total = CashAccount.where{
-        (is_deleted.eq false) & 
         (
           (name =~  livesearch )
         )

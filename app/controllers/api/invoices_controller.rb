@@ -1,8 +1,31 @@
 class Api::InvoicesController < Api::BaseApiController
   
   def index
-    @objects = Invoice.joins(:customer, :delivery).page(params[:page]).per(params[:limit]).order("id DESC")
-    @total = Invoice.count
+    if params[:livesearch].present? 
+      livesearch = "%#{params[:livesearch]}%"
+      @objects = Invoice.joins(:customer, :delivery).where{
+        (
+          (code =~  livesearch ) | 
+          (customer.name =~ livesearch) | 
+          (delivery.code =~ livesearch)
+        )
+        
+      }.page(params[:page]).per(params[:limit]).order("id DESC")
+      
+      @total = Invoice.joins(:customer, :delivery ).where{
+        (
+          (code =~  livesearch ) | 
+          (customer.name =~ livesearch) | 
+          (delivery.code =~ livesearch)
+        )
+      }.count
+    else
+      @objects = Invoice.joins(:customer, :delivery).page(params[:page]).per(params[:limit]).order("id DESC")
+      @total = Invoice.count
+    end
+    
+    
+    
     # render :json => { :invoices => @objects , :total => Invoice.count, :success => true }
   end
 

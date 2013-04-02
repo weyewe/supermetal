@@ -51,10 +51,23 @@ Ext.define('AM.controller.SalesOrders', {
 			'salesorderlist button[action=downloadObject]': {
         click: this.downloadObject
       },
+			'salesorderlist textfield[name=searchField]': {
+        change: this.liveSearch
+      }
 
 
     });
   },
+
+	liveSearch : function(grid, newValue, oldValue, options){
+		var me = this;
+
+		me.getSalesOrdersStore().getProxy().extraParams = {
+		    livesearch: newValue
+		};
+	 
+		me.getSalesOrdersStore().load();
+	},
 
 	downloadObject : function(){
 		var me  = this;

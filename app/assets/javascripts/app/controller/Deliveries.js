@@ -50,11 +50,24 @@ Ext.define('AM.controller.Deliveries', {
       },
 			'deliverylist button[action=finalizeObject]': {
         click: this.finalizeObject
+      },
+			'deliverylist textfield[name=searchField]': {
+        change: this.liveSearch
       }
 
 
     });
   },
+
+	liveSearch : function(grid, newValue, oldValue, options){
+		var me = this;
+
+		me.getDeliveriesStore().getProxy().extraParams = {
+		    livesearch: newValue
+		};
+	 
+		me.getDeliveriesStore().load();
+	},
 
 	confirmObject: function(){
 		var me  = this;

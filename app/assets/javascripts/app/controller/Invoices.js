@@ -34,10 +34,22 @@ Ext.define('AM.controller.Invoices', {
  
       'invoicelist button[action=editObject]': {
         click: this.editObject
-      } 
+      },
+			'invoicelist textfield[name=searchField]': {
+        change: this.liveSearch
+      }
     });
   },
  
+	liveSearch : function(grid, newValue, oldValue, options){
+		var me = this;
+
+		me.getInvoicesStore().getProxy().extraParams = {
+		    livesearch: newValue
+		};
+	 
+		me.getInvoicesStore().load();
+	},
 
 	loadObjectList : function(me){
 		me.getStore().load();

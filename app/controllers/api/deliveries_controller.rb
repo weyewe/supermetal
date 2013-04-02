@@ -1,8 +1,32 @@
 class Api::DeliveriesController < Api::BaseApiController
   
   def index
-    @objects = Delivery.joins(:customer).active_objects.page(params[:page]).per(params[:limit]).order("id DESC")
-    @total = Delivery.active_objects.count
+    
+    if params[:livesearch].present? 
+      livesearch = "%#{params[:livesearch]}%"
+      @objects = Delivery.joins(:customer).where{
+        (is_deleted.eq false) & 
+        (
+          (code =~  livesearch ) | 
+          (customer.name =~ livesearch)
+        )
+        
+      }.page(params[:page]).per(params[:limit]).order("id DESC")
+      
+      @total = Delivery.joins(:customer).where{
+        (is_deleted.eq false) & 
+        (
+          (code =~  livesearch ) | 
+          (customer.name =~ livesearch)
+        )
+      }.count
+    else
+      @objects = Delivery.joins(:customer).active_objects.page(params[:page]).per(params[:limit]).order("id DESC")
+      @total = Delivery.active_objects.count
+    end
+    
+    
+    
     # render :json => { :deliveries => @objects , :total => Delivery.active_objects.count, :success => true }
   end
 

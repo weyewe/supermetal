@@ -48,10 +48,23 @@ Ext.define('AM.controller.SalesReturns', {
 			'salesreturnlist button[action=confirmObject]': {
         click: this.confirmObject
       },
+			'salesreturnlist textfield[name=searchField]': {
+        change: this.liveSearch
+      }
 
 
     });
   },
+
+	liveSearch : function(grid, newValue, oldValue, options){
+		var me = this;
+
+		me.getSalesReturnsStore().getProxy().extraParams = {
+		    livesearch: newValue
+		};
+	 
+		me.getSalesReturnsStore().load();
+	},
 
 	confirmObject: function(){
 		var me  = this;

@@ -1,8 +1,31 @@
 class Api::GuaranteeReturnsController < Api::BaseApiController
   
   def index
-    @objects = GuaranteeReturn.joins(:customer).active_objects.page(params[:page]).per(params[:limit]).order("id DESC")
-    @total = GuaranteeReturn.active_objects.count
+    
+    if params[:livesearch].present? 
+      livesearch = "%#{params[:livesearch]}%"
+      @objects = GuaranteeReturn.joins(:customer).where{
+        (is_deleted.eq false) & 
+        (
+          (code =~  livesearch ) | 
+          (customer.name =~ livesearch)
+        )
+        
+      }.page(params[:page]).per(params[:limit]).order("id DESC")
+      
+      @total = GuaranteeReturn.joins(:customer).where{
+        (is_deleted.eq false) & 
+        (
+          (code =~  livesearch ) | 
+          (customer.name =~ livesearch)
+        )
+      }.count
+    else
+      @objects = GuaranteeReturn.joins(:customer).active_objects.page(params[:page]).per(params[:limit]).order("id DESC")
+      @total = GuaranteeReturn.active_objects.count
+    end
+    
+    
     # render :json => { :guarantee_returns => @objects , :total => GuaranteeReturn.active_objects.count, :success => true }
   end
 

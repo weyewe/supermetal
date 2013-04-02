@@ -1,8 +1,32 @@
 class Api::SalesOrdersController < Api::BaseApiController
   
   def index
-    @objects = SalesOrder.joins(:customer).active_objects.page(params[:page]).per(params[:limit]).order("id DESC")
-    @total = SalesOrder.active_objects.count
+    
+    
+    if params[:livesearch].present? 
+      livesearch = "%#{params[:livesearch]}%"
+      @objects = SalesOrder.joins(:customer).where{
+        (is_deleted.eq false) & 
+        (
+          (code =~  livesearch ) | 
+          (customer.name =~ livesearch)
+        )
+        
+      }.page(params[:page]).per(params[:limit]).order("id DESC")
+      
+      @total = SalesOrder.joins(:customer).where{
+        (is_deleted.eq false) & 
+        (
+          (code =~  livesearch ) | 
+          (customer.name =~ livesearch)
+        )
+      }.count
+    else
+      @objects = SalesOrder.joins(:customer).active_objects.page(params[:page]).per(params[:limit]).order("id DESC")
+      @total = SalesOrder.active_objects.count
+    end
+    
+    
     # render :json => { :sales_orders => @objects , :total => SalesOrder.active_objects.count, :success => true }
   end
 

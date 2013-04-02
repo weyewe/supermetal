@@ -48,8 +48,21 @@ Ext.define('AM.controller.Payments', {
 			'paymentlist button[action=confirmObject]': {
         click: this.confirmObject
       },
+			'paymentlist textfield[name=searchField]': {
+        change: this.liveSearch
+      }
     });
   },
+
+	liveSearch : function(grid, newValue, oldValue, options){
+		var me = this;
+
+		me.getPaymentsStore().getProxy().extraParams = {
+		    livesearch: newValue
+		};
+	 
+		me.getPaymentsStore().load();
+	},
  
 
 	confirmObject: function(){

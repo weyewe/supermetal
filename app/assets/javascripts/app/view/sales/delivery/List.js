@@ -43,9 +43,17 @@ Ext.define('AM.view.sales.delivery.List' ,{
 			disabled: true
 		});
 		
+		this.searchField = new Ext.form.field.Text({
+			name: 'searchField',
+			hideLabel: true,
+			width: 200,
+			emptyText : "Search",
+			checkChangeBuffer: 300
+		});
 	 
 
-		this.tbar = [this.addObjectButton, this.editObjectButton, this.deleteObjectButton, this.confirmObjectButton , this.finalizeObjectButton];
+		this.tbar = [this.addObjectButton, this.editObjectButton, this.deleteObjectButton, this.confirmObjectButton , 
+									this.finalizeObjectButton, , this.searchField];
 		this.bbar = Ext.create("Ext.PagingToolbar", {
 			store	: this.store, 
 			displayInfo: true,
