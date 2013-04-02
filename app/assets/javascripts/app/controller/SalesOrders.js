@@ -48,10 +48,22 @@ Ext.define('AM.controller.SalesOrders', {
 			'salesorderlist button[action=confirmObject]': {
         click: this.confirmObject
       },
+			'salesorderlist button[action=downloadObject]': {
+        click: this.downloadObject
+      },
 
 
     });
   },
+
+	downloadObject : function(){
+		var me  = this;
+		var record = this.getList().getSelectedObject();
+		if(!record){ return; }
+		if( record.get('is_confirmed') === false ){ return ;}
+		
+		window.open( '/print_sales_order/' +  record.get("id") + '.pdf' , "_blank");
+	},
 
 	confirmObject: function(){
 		var me  = this;
@@ -202,6 +214,9 @@ Ext.define('AM.controller.SalesOrders', {
 		if(!record){
 			return; 
 		}
+		
+		grid.enableDownloadButton( record );
+		
 		var salesItemGrid = this.getSalesItemList();
 		// salesItemGrid.setTitle("Purchase Order: " + record.get('code'));
 		salesItemGrid.setObjectTitle( record ) ;

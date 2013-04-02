@@ -74,6 +74,7 @@ Ext.define('AM.controller.CashAccounts', {
 		
 
     view.down('form').loadRecord(record);
+		view.setComboBoxData(record); 
   },
 
   updateObject: function(button) {

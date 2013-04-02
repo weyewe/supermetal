@@ -163,6 +163,15 @@ class SalesOrderPdf < Prawn::Document
       item_data << "\n"
       item_data << "#{sales_item.description}"
       
+      quantity_data =  ""
+      if sales_item.is_production?
+        quantity_data << "Cor: #{sales_item.quantity_for_production} \n"
+      end
+      
+      if sales_item.is_post_production
+        quantity_data << "Bubut: #{sales_item.quantity_for_post_production}"
+      end
+      
       price_details = ""
       if sales_item.is_pending_pricing?
         price_details << "Biaya Pending"
@@ -190,7 +199,7 @@ class SalesOrderPdf < Prawn::Document
       
       
       body << [ "#{count}", 
-        "#{item_data} ", sales_item.quantity,
+        "#{item_data} ", quantity_data,
       "#{ price_details }  ",make_cell_image_placeholder ]
     end  
     
