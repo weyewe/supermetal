@@ -73,13 +73,28 @@ class Api::SalesItemsController < Api::BaseApiController
     # on PostGre SQL, it is ignoring lower case or upper case 
     
     if  selected_id.nil?
-      @objects = SalesItem.joins(:template_sales_item, :sales_order ).where{ (template_sales_item.name =~ query )   & 
-                                (is_deleted.eq false )  & 
-                                (sales_order.customer_id.eq customer_id)
-                              }.
-                        page(params[:page]).
-                        per(params[:limit]).
-                        order("id DESC")
+      
+      if params[:only_post_production].present?
+        @objects = SalesItem.joins(:template_sales_item, :sales_order ).where{ (template_sales_item.name =~ query )   & 
+                                  (is_deleted.eq false )  & 
+                                  (sales_order.customer_id.eq customer_id) & 
+                                  (is_pre_production.eq false) & 
+                                  (is_production.eq false )  & 
+                                  (is_post_production.eq true ) 
+                                }.
+                          page(params[:page]).
+                          per(params[:limit]).
+                          order("id DESC")
+      else
+        @objects = SalesItem.joins(:template_sales_item, :sales_order ).where{ (template_sales_item.name =~ query )   & 
+                                  (is_deleted.eq false )  & 
+                                  (sales_order.customer_id.eq customer_id)
+                                }.
+                          page(params[:page]).
+                          per(params[:limit]).
+                          order("id DESC")
+      end
+      
     else
       @objects = SalesItem.joins(:template_sales_item, :sales_order).where{ (id.eq selected_id)  & 
                                 (is_deleted.eq false ) & 
@@ -94,4 +109,6 @@ class Api::SalesItemsController < Api::BaseApiController
     @success = true 
     # render :json => { :records => @objects , :total => @objects.count, :success => true }
   end
+  
+ 
 end

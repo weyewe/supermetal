@@ -7,7 +7,10 @@ Ext.define('AM.view.factory.itemreceival.List' ,{
 
 	initComponent: function() {
 		this.columns = [
-			{ header: 'ID', dataIndex: 'id'} 
+			{ header: 'ID', dataIndex: 'id'},
+			{ header: 'Code',  dataIndex: 'code',  flex: 1 , sortable: false},
+			{ header: 'Customer',  dataIndex: 'customer_name',  flex: 1 , sortable: false},
+			{ header: 'Confirmed?',  dataIndex: 'is_confirmed',  flex: 1 , sortable: false},
 		];
 
 		this.addObjectButton = new Ext.Button({

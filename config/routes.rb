@@ -177,6 +177,7 @@ Supermetal::Application.routes.draw do
   
   match 'search_template_sales_item' => "template_sales_items#search_template_sales_item", :as => :search_template_sales_item 
   match 'search_sales_item' => "sales_items#search_sales_item", :as => :search_sales_item 
+  
   match 'search_sales_order' => 'sales_orders#search_sales_order' , :as => :search_sales_order
   match 'search_delivery' => 'deliveries#search_delivery' , :as => :search_delivery
   

@@ -1,6 +1,6 @@
 json.success true 
 json.total @total
-json.guarantee_returns @objects do |object|
+json.item_receivals @objects do |object|
 	json.id 					object.id 
 	json.code 				object.code 
 	

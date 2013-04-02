@@ -26,18 +26,18 @@ Ext.define('AM.view.factory.itemreceivalentry.Form', {
 		var me = this; 
 		
 		var factoryItemRemoteJsonStore = Ext.create(Ext.data.JsonStore, {
-			storeId : 'factory_item_search',
+			storeId : 'sales_item_search',
 			fields	: [
 				{
-					name : 'factory_item_id',
+					name : 'sales_item_id',
 					mapping  :'id'
 				},
 				{
-					name : 'factory_item_name',
+					name : 'sales_item_name',
 					mapping : 'name'
 				},
 				{
-					name : 'factory_item_code',
+					name : 'sales_item_code',
 					mapping : 'code'
 				},
 				{
@@ -51,9 +51,10 @@ Ext.define('AM.view.factory.itemreceivalentry.Form', {
 			],
 			proxy  	: {
 				type : 'ajax',
-				url : 'api/search_factory_items',
+				url : 'api/search_sales_items',
 				extraParams: {
-					customer_id : this.parentRecord.get('customer_id')
+					customer_id : this.parentRecord.get('customer_id'),
+					only_post_production : true 
 		    },
 				reader : {
 					type : 'json',
@@ -113,8 +114,8 @@ Ext.define('AM.view.factory.itemreceivalentry.Form', {
 							xtype: 'combo',
 							queryMode: 'remote',
 							forceSelection: true, 
-							displayField : 'factory_item_code',
-							valueField : 'factory_item_id',
+							displayField : 'sales_item_code',
+							valueField : 'sales_item_id',
 							pageSize : 5,
 							minChars : 1, 
 							allowBlank : false, 
@@ -123,84 +124,20 @@ Ext.define('AM.view.factory.itemreceivalentry.Form', {
 							listConfig : {
 								getInnerTpl: function(){
 									return '<div data-qtip="{text}">' +  
-														'<div class="combo-name">{factory_item_name} ({factory_item_code})</div>' + 
+														'<div class="combo-name">{sales_item_name} ({sales_item_code})</div>' + 
 														'<div>Ready Cor: {ready_production}</div>' + 
 														'<div>Ready Bubut: {ready_post_production}</div>' + 
 												 '</div>'; 
 								}
 							},
-							name : 'factory_item_id' 
+							name : 'sales_item_id' 
 						},
 						{
-							fieldLabel: 'Kondisi Barang',
-							xtype: 'combo',
-							queryMode: 'remote',
-							forceSelection: true, 
-							displayField : 'text',
-							valueField : 'value',
-							pageSize : 5,
-							minChars : 1, 
-							allowBlank : false, 
-							triggerAction: 'all',
-							store : itemConditionRemoteJsonStore, 
-							listConfig : {
-								getInnerTpl: function(){
-									return  	'<div data-qtip="{text}">' +  
-															'<div class="combo-name">{text}</div>' + 
-									 					'</div>';
-								}
-							},
-							name : 'item_condition' 
-						}
+							fieldLabel : 'Jumlah',
+							name : 'quantity',
+							xtype : 'field'
+						},
 						
-					]
-				},
-				{
-					xtype : 'fieldset',
-					title : 'Lebur Ulang',
-					items : [
-						{
-							fieldLabel : 'Jumlah',
-							name : 'quantity_for_production',
-							xtype : 'field'
-						},
-						{
-							fieldLabel : 'Berat (kg)',
-							name : 'weight_for_production',
-							xtype : 'field'
-						}
-					]
-				},
-				{
-					xtype : 'fieldset',
-					title : 'Perbaiki Hasil Cor',
-					items : [
-						{
-							fieldLabel : 'Jumlah',
-							name : 'quantity_for_production_repair',
-							xtype : 'field'
-						},
-						{
-							fieldLabel : 'Berat (kg)',
-							name : 'weight_for_production_repair',
-							xtype : 'field'
-						}
-					]
-				},
-				{
-					xtype : 'fieldset',
-					title : 'Perbaiki Bubut',
-					items : [
-						{
-							fieldLabel : 'Jumlah',
-							name : 'quantity_for_post_production',
-							xtype : 'field'
-						},
-						{
-							fieldLabel : 'Berat (kg)',
-							name : 'weight_for_post_production',
-							xtype : 'field'
-						}
 					]
 				}
 			]
@@ -228,17 +165,17 @@ Ext.define('AM.view.factory.itemreceivalentry.Form', {
 		this.down('form').getForm().findField('guarantee_return_code').setValue(record.get('code')); 
 	},
 	
-	setSelectedSalesItem: function( factory_item_id ){
-		var comboBox = this.down('form').getForm().findField('factory_item_id'); 
+	setSelectedSalesItem: function( sales_item_id ){
+		var comboBox = this.down('form').getForm().findField('sales_item_id'); 
 		var me = this; 
 		var store = comboBox.store; 
 		store.load({
 			params: {
-				selected_id : factory_item_id 
+				selected_id : sales_item_id 
 			},
 			callback : function(records, options, success){
 				me.setLoading(false);
-				comboBox.setValue( factory_item_id );
+				comboBox.setValue( sales_item_id );
 			}
 		});
 	},
@@ -265,7 +202,7 @@ Ext.define('AM.view.factory.itemreceivalentry.Form', {
 		me.setLoading(true);
 		
 		
-		me.setSelectedSalesItem( record.get("factory_item_id")  ) ;
+		me.setSelectedSalesItem( record.get("sales_item_id")  ) ;
 		me.setSelectedItemCondition( record.get("item_condition")  ) ;
 	 
 	}
