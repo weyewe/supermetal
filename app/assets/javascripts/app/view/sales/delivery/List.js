@@ -43,6 +43,12 @@ Ext.define('AM.view.sales.delivery.List' ,{
 			disabled: true
 		});
 		
+		this.downloadObjectButton = new Ext.Button({
+			text: 'Download',
+			action: 'downloadObject',
+			disabled: true
+		});
+		
 		this.searchField = new Ext.form.field.Text({
 			name: 'searchField',
 			hideLabel: true,
@@ -53,7 +59,7 @@ Ext.define('AM.view.sales.delivery.List' ,{
 	 
 
 		this.tbar = [this.addObjectButton, this.editObjectButton, this.deleteObjectButton, this.confirmObjectButton , 
-									this.finalizeObjectButton, , this.searchField];
+									this.finalizeObjectButton,  this.downloadObjectButton  , this.searchField];
 		this.bbar = Ext.create("Ext.PagingToolbar", {
 			store	: this.store, 
 			displayInfo: true,
@@ -93,5 +99,15 @@ Ext.define('AM.view.sales.delivery.List' ,{
 			this.confirmObjectButton.disable();
 			this.finalizeObjectButton.disable();
 		}
+	},
+	
+	enableDownloadButton: function(record){
+		if( record.get("is_confirmed") === true ){
+			this.downloadObjectButton.enable();
+		}else{
+			this.downloadObjectButton.disable();
+		}
 	}
+	
+	
 });

@@ -35,11 +35,15 @@ Ext.define('AM.controller.Invoices', {
       'invoicelist button[action=editObject]': {
         click: this.editObject
       },
+			'invoicelist button[action=downloadObject]': {
+        click: this.downloadObject
+      },
 			'invoicelist textfield[name=searchField]': {
         change: this.liveSearch
       }
     });
   },
+
  
 	liveSearch : function(grid, newValue, oldValue, options){
 		var me = this;
@@ -49,6 +53,14 @@ Ext.define('AM.controller.Invoices', {
 		};
 	 
 		me.getInvoicesStore().load();
+	},
+	
+	downloadObject : function(){
+		var me  = this;
+		var record = this.getList().getSelectedObject();
+		if(!record){ return; }
+		
+		window.open( '/print_invoice/' +  record.get("id") + '.pdf' , "_blank");
 	},
 
 	loadObjectList : function(me){

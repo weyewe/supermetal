@@ -51,6 +51,9 @@ Ext.define('AM.controller.Deliveries', {
 			'deliverylist button[action=finalizeObject]': {
         click: this.finalizeObject
       },
+			'deliverylist button[action=downloadObject]': {
+        click: this.downloadObject
+      },
 			'deliverylist textfield[name=searchField]': {
         change: this.liveSearch
       }
@@ -69,6 +72,15 @@ Ext.define('AM.controller.Deliveries', {
 		me.getDeliveriesStore().load();
 	},
 
+	downloadObject : function(){
+		var me  = this;
+		var record = this.getList().getSelectedObject();
+		if(!record){ return; }
+		if( record.get('is_confirmed') === false ){ return ;}
+		
+		window.open( '/print_delivery/' +  record.get("id") + '.pdf' , "_blank");
+	},
+	
 	confirmObject: function(){
 		var me  = this;
 		var record = this.getList().getSelectedObject();
@@ -247,10 +259,12 @@ Ext.define('AM.controller.Deliveries', {
     var grid = this.getList();
 		var record = this.getList().getSelectedObject();
 		
+		grid.enableDownloadButton( record );
 		if(!record){
 			return; 
 		}
 		var deliveryEntryGrid = this.getDeliveryEntryList();
+		
 		
 		if(deliveryEntryGrid){
 			// deliveryEntryGrid.setTitle("Purchase Order: " + record.get('code'));
