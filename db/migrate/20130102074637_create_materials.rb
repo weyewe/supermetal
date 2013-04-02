@@ -3,7 +3,7 @@ class CreateMaterials < ActiveRecord::Migration
     create_table :materials do |t|
       t.string :name 
       
-      t.boolean :is_deleted , :default => false 
+      # t.boolean :is_deleted , :default => false 
       
       t.timestamps
     end
