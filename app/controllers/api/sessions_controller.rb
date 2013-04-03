@@ -4,10 +4,17 @@ class Api::SessionsController < Api::BaseApiController
   respond_to :json
  
   def create
+    
+    puts "**********************\n"*10
+    puts "In the create"
     resource = User.find_for_database_authentication(:email => params[:user_login][:email])
+    puts "The resource: #{resource.inspect}"
     return invalid_login_attempt unless resource
+    
+    puts "Resurce is valid"
  
     if resource.valid_password?(params[:user_login][:password])
+      puts "The password is valid"
       sign_in(:user, resource)
       resource.ensure_authentication_token!
       render :json=> {:success=>true, 
@@ -17,6 +24,8 @@ class Api::SessionsController < Api::BaseApiController
               }
       return
     end
+    
+    puts "The password is invalid"
     invalid_login_attempt
   end
   
