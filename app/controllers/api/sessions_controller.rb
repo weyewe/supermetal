@@ -1,7 +1,8 @@
 class Api::SessionsController < Api::BaseApiController
   before_filter :say_moron
-  before_filter :authenticate_user!, :except => [:create, :destroy, :say_hi ]
+  # before_filter :authenticate_user!, :except => [:create, :destroy, :say_hi ]
   before_filter :ensure_params_exist, :except => [:say_hi, :destroy, :authenticate_auth_token]
+  skip_before_filter :authenticate_user!, :only => [:create, :destroy, :say_hi ]
   respond_to :json
  
   def say_moron
@@ -12,7 +13,7 @@ class Api::SessionsController < Api::BaseApiController
     puts "The params: #{params.inspect}"
     
     puts "**********************\n"*10
-    puts "In the create"
+    puts "In the create-emulation"
     resource = User.find_for_database_authentication(:email => params[:user_login][:email])
     
     if not resource.nil?
