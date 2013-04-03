@@ -5,6 +5,7 @@ Supermetal::Application.routes.draw do
   end
   
   root :to => 'home#extjs'
+  
   # match 'extjs' => 'home#extjs', :as => :extjs_version
   
   namespace :api do

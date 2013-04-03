@@ -110,6 +110,8 @@ Supermetal::Application.configure do
     domain: "heroku.com"
   }
   
+  config.logger = Logger.new(STDOUT)
+  
   # ActionMailer::Base.smtp_settings = {
   #   :address        => 'smtp.sendgrid.net',
   #   :port           => '587',
