@@ -10,7 +10,7 @@ json.item_receival_entries @objects do |object|
 	json.sales_item_id 		object.sales_item.id
 	json.sales_item_code 	object.sales_item.code 
 	json.sales_item_name 	object.sales_item.name 
-
+	json.quantity  object.quantity
 	json.is_confirmed 				object.is_confirmed 
 
 end

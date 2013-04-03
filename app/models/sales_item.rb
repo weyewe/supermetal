@@ -377,8 +377,10 @@ class SalesItem < ActiveRecord::Base
       
       puts "in the update work order, post production order. quantity_for_postproudction: #{self.quantity_for_post_production}"
       
-      sales_post_production_order.quantity = self.quantity_for_post_production 
-      sales_post_production_order.save 
+      if not sales_post_production_order.nil?
+        sales_post_production_order.quantity = self.quantity_for_post_production 
+        sales_post_production_order.save 
+      end
     # end
   end
   

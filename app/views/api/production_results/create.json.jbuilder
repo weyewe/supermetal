@@ -9,11 +9,11 @@ if not @object.nil? and @object.errors.size == 0
 
 		json.ok_quantity 				object.ok_quantity
 		json.broken_quantity 		object.broken_quantity
-		json.bad_source_quantity 		object.bad_source_quantity
+		json.repairable_quantity 		object.repairable_quantity
 
 		json.ok_weight 				object.ok_weight
 		json.broken_weight 		object.broken_weight
-		json.bad_source_weight 		object.bad_source_weight
+		json.repairable_weight 		object.repairable_weight
 
 		json.template_sales_item_id   		object.template_sales_item.id
 		json.template_sales_item_code   	object.template_sales_item.code

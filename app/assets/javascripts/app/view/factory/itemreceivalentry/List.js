@@ -12,33 +12,18 @@ Ext.define('AM.view.factory.itemreceivalentry.List' ,{
 				xtype : 'templatecolumn',
 				text : "Item",
 				flex : 1,
-				tpl : '<b>{factory_item_code}</b>' + 
+				tpl : '<b>{sales_item_code}</b>' + 
 							'<br />' + '<br />' + 
-							'{factory_item_name}' + '<br />' + 
-							"Kondisi barang: <b>{item_condition_name}</b>" 
+							'{sales_item_name}'   
 			},
 			{
 				xtype : 'templatecolumn',
-				text : "Lebur Ulang",
+				text : "Jumlah",
 				flex : 1,
-				tpl : 'Kuantitas: <b>{quantity_for_production}</b>' + '<br />' + 
-							'Berat: <b>{weight_for_production}</b> kg'
+				tpl : 'Kuantitas: <b>{quantity}</b>' 
 			},
-			{
-				xtype : 'templatecolumn',
-				text : "Perbaiki Cor",
-				flex : 1,
-				tpl : 'Kuantitas: <b>{quantity_for_production_repair}</b>' + '<br />' + 
-							'Berat: <b>{weight_for_production_repair}</b> kg'
-			},
-			{
-				xtype : 'templatecolumn',
-				text : "Perbaiki Bubut",
-				flex : 1,
-				tpl : 'Kuantitas: <b>{quantity_for_post_production}</b>' + '<br />' + 
-							'Berat: <b>{weight_for_post_production}</b> kg'
-			}
-			 
+		 
+			 { header: 'Konfirmasi',  dataIndex: 'is_confirmed',  flex: 1 , sortable: false}
 		];
 		
 

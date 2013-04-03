@@ -210,7 +210,7 @@ Ext.define('AM.controller.TemplateSalesItems', {
 		var productionRepairResultGrid = this.getProductionRepairResultList();
 		var postProductionResultGrid =  this.getPostProductionResultList();
 		
-		preProductionResultGrid.setTitle("Pre Production: " + record.get('code'));
+		preProductionResultGrid.setTitle("Pola: " + record.get('code'));
 		productionResultGrid.setTitle("Cor: " + record.get("code"));
 		productionRepairResultGrid.setTitle("Perbaiki Cor: " + record.get("code"));
 		postProductionResultGrid.setTitle("Bubut: " + record.get("code"));

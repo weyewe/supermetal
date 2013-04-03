@@ -10,8 +10,8 @@ class Api::ItemReceivalEntriesController < Api::BaseApiController
    
     @parent = ItemReceival.find_by_id params[:item_receival_id]
     
-    params[:item_receival][:receival_date] = extract_date( params[:item_receival][:receival_date] )
-    @object = ItemReceivalEntry.create_by_employee(current_user, @parent,  params[:item_receival_entry] )  
+    params[:item_receival_entry][:receival_date] = extract_date( params[:item_receival_entry][:receival_date] )
+    @object = ItemReceivalEntry.create_item_receival_entry(current_user, @parent,  params[:item_receival_entry] )  
     
     if @object.errors.size == 0 
       render :json => { :success => true, 
@@ -34,7 +34,7 @@ class Api::ItemReceivalEntriesController < Api::BaseApiController
     @parent = @object.item_receival 
     
     params[:item_receival][:receival_date] = extract_date( params[:item_receival][:receival_date] )
-    @object.update_by_employee(current_user, @parent,  params[:item_receival_entry])
+    @object.update_item_receival_entry(current_user, @parent,  params[:item_receival_entry])
      
     if @object.errors.size == 0 
       render :json => { :success => true,   
