@@ -16,7 +16,7 @@ class Api::SessionsController < Api::BaseApiController
     resource = User.find_for_database_authentication(:email => params[:user_login][:email])
     
     if not resource.nil?
-      put "The resource is not nil"
+      puts "The resource is not nil"
       puts "The resource: #{resource.inspect}"
     else
       return
