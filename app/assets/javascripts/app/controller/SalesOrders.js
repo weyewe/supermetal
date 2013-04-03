@@ -63,7 +63,7 @@ Ext.define('AM.controller.SalesOrders', {
 		var me = this;
 
 		me.getSalesOrdersStore().getProxy().extraParams = {
-		    livesearch: newValue
+		    livesearch: newValue 
 		};
 	 
 		me.getSalesOrdersStore().load();

@@ -12,7 +12,7 @@ class Api::SalesOrdersController < Api::BaseApiController
           (customer.name =~ livesearch)
         )
         
-      }.page(params[:page]).per(params[:limit]).order("id DESC")
+      }.order("code DESC").page(params[:page]).per(params[:limit]) 
       
       @total = SalesOrder.joins(:customer).where{
         (is_deleted.eq false) & 
