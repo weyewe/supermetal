@@ -364,3 +364,10 @@ SALES_ITEM_CREATION_CASE= {
 }
 
 UTC_OFFSET = 7 
+
+
+#
+# => Extjs 
+#
+
+EXT_41_JS = 'https://s3.amazonaws.com/weyewe-extjs/41/ext-all.js'

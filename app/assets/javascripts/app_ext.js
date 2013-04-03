@@ -1,4 +1,3 @@
-//= require ext-all.js
 //= require UX_TimePickerField.js
 //= require UX_DateTimePicker.js	
 //= require UX_DateTimeField.js	
