@@ -7,6 +7,9 @@ class Api::SessionsController < Api::BaseApiController
  
   def say_moron
     puts "YOU are moron.. here we are.. what is happening?\n"*10
+    if  params[:user_login].nil?
+      return nil
+    end
     puts "The password: #{params[:user_login][:password]}" 
     puts "The email: #{params[:user_login][:email]}"
     
