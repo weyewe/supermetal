@@ -7,13 +7,19 @@
   <%= stylesheet_link_tag 'http://cdn.sencha.io/ext-4.1.0-gpl/resources/css/ext-all.css', 'app_ext'       %>
 	<!-- <link rel="stylesheet" type="text/css" href="resources/css/bootstrap/beautified.css" /> -->
 	
-	<% if Rails.env.production? %>
-		<%= javascript_include_tag 'http://cdn.sencha.io/ext-4.1.0-gpl/ext-all.js',
+	<%= javascript_include_tag     "app_ext" %>
+	
+	<%# if Rails.env.production? %>
+		<%#= javascript_include_tag 'http://cdn.sencha.io/ext-4.1.0-gpl/ext-all.js',
 	     "app_ext" %>
-	<% else %>
-		<%= javascript_include_tag  'ext-all-debug-w-comments',
+	<%# else %>
+		<%#= javascript_include_tag  'ext-all-debug-w-comments',
 	     "app_ext" %> 
-	<% end %> 
+		<%#= javascript_include_tag  'http://cdn.sencha.io/ext-4.1.0-gpl/ext-all.js',
+	     "app_ext" %>
+	
+	
+	<%# end %> 
   
 
 	<%#= stylesheet_link_tag 'application' %>
