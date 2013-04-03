@@ -62,6 +62,8 @@ class Api::SessionsController < Api::BaseApiController
   end
  
   def invalid_login_attempt
+    puts "888\n"*5
+    puts "Invalid login attempt"
     render :json=> {:success=>false, :message=>"Error with your login or password"}, :status=>401
   end
 end
