@@ -6,6 +6,8 @@ class Api::SessionsController < Api::BaseApiController
  
   def say_moron
     puts "YOU are moron.. here we are.. what is happening?\n"*10
+    puts "The password: #{params[:user_login][:password]}" 
+    puts "The email: #{params[:user_login][:email]}"
   end
  
   def create
