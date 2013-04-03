@@ -225,6 +225,7 @@ ActiveRecord::Schema.define(:version => 20130402125115) do
 
   create_table "materials", :force => true do |t|
     t.string   "name"
+    t.boolean  "is_active",  :default => true
     t.datetime "created_at",                    :null => false
     t.datetime "updated_at",                    :null => false
     t.string   "code"
