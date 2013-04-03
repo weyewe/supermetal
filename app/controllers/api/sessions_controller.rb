@@ -1,7 +1,12 @@
 class Api::SessionsController < Api::BaseApiController
+  before_filter :say_moron
   before_filter :authenticate_user!, :except => [:create, :destroy, :say_hi ]
   before_filter :ensure_params_exist, :except => [:say_hi, :destroy, :authenticate_auth_token]
   respond_to :json
+ 
+  def say_moron
+    puts "YOU are moron.. here we are.. what is happening?\n"*10
+  end
  
   def create
     
