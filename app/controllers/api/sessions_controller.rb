@@ -10,6 +10,25 @@ class Api::SessionsController < Api::BaseApiController
     puts "The email: #{params[:user_login][:email]}"
     
     puts "The params: #{params.inspect}"
+    
+    puts "**********************\n"*10
+    puts "In the create"
+    resource = User.find_for_database_authentication(:email => params[:user_login][:email])
+    
+    if not resource.nil?
+      put "The resource is not nil"
+      puts "The resource: #{resource.inspect}"
+    else
+      return
+    end
+    
+    if resource.valid_password?(params[:user_login][:password])
+      puts "THe password is valid"
+    end
+    
+    puts "********************* end of say_moron"
+    
+    
   end
  
   def create
