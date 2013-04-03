@@ -4,17 +4,17 @@ class Api::TemplateSalesItemsController < Api::BaseApiController
     if params[:livesearch].present? 
       livesearch = "%#{params[:livesearch]}%"
       @objects = TemplateSalesItem.where{
-        (is_deleted.eq false) & 
         (
-          (name =~  livesearch )
+          (name =~  livesearch ) | 
+          (code =~ livesearch)
         )
         
       }.page(params[:page]).per(params[:limit]).order("id DESC")
       
       @total = TemplateSalesItem.where{
-        (is_deleted.eq false) & 
         (
-          (name =~  livesearch )
+          (name =~  livesearch ) | 
+          (code =~ livesearch)
         )
       }.count
     else

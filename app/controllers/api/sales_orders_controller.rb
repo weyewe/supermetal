@@ -22,7 +22,7 @@ class Api::SalesOrdersController < Api::BaseApiController
         )
       }.count
     else
-      @objects = SalesOrder.joins(:customer).active_objects.page(params[:page]).per(params[:limit]).order("id DESC")
+      @objects = SalesOrder.joins(:customer).active_objects.page(params[:page]).per(params[:limit]) 
       @total = SalesOrder.active_objects.count
     end
     

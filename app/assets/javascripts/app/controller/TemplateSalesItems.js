@@ -70,7 +70,11 @@ Ext.define('AM.controller.TemplateSalesItems', {
 			},
 			'templatesalesitemProcess tabpanel' : {
 				tabchange : this.refreshActiveTab
-			}
+			},
+			
+			'templatesalesitemlist textfield[name=searchField]': {
+        change: this.liveSearch
+      }
 			
 		
     });

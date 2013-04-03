@@ -14,7 +14,7 @@ class SalesOrder < ActiveRecord::Base
    }
    
   def self.active_objects
-    self.where(:is_deleted => false ).order("created_at DESC")
+    self.where(:is_deleted => false ).order("code DESC")
   end
   
   def delete(employee) 
