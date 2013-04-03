@@ -2,7 +2,7 @@ class Api::SessionsController < Api::BaseApiController
   before_filter :say_moron
   # before_filter :authenticate_user!, :except => [:create, :destroy, :say_hi ]
   before_filter :ensure_params_exist, :except => [:say_hi, :destroy, :authenticate_auth_token]
-  skip_before_filter :authenticate_user!, :only => [:create, :destroy, :say_hi ]
+  skip_before_filter :authenticate_user! #, :only => [:create, :destroy, :say_hi ]
   respond_to :json
  
   def say_moron
@@ -88,7 +88,7 @@ class Api::SessionsController < Api::BaseApiController
   def ensure_params_exist
     puts "We are inside the ensure params_exist"
     return unless params[:user_login].blank?
-    puts "params does exists!!!!!"
+    puts "haiz, params does not exists!!!!!"
     render :json=>{:success=>false, :message=>"missing user_login parameter"}, :status=>422
   end
  
