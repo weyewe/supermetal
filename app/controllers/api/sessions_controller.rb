@@ -8,6 +8,8 @@ class Api::SessionsController < Api::BaseApiController
     puts "YOU are moron.. here we are.. what is happening?\n"*10
     puts "The password: #{params[:user_login][:password]}" 
     puts "The email: #{params[:user_login][:email]}"
+    
+    puts "The params: #{params.inspect}"
   end
  
   def create
@@ -64,7 +66,9 @@ class Api::SessionsController < Api::BaseApiController
  
   protected
   def ensure_params_exist
+    puts "We are inside the ensure params_exist"
     return unless params[:user_login].blank?
+    puts "params does exists!!!!!"
     render :json=>{:success=>false, :message=>"missing user_login parameter"}, :status=>422
   end
  
