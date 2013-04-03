@@ -17,7 +17,7 @@ Ext.define("AM.view.AuthenticationForm", {
 				{
 					xtype : 'textfield',
 					anchor : '100%',
-					fieldLabel : "Email",
+					fieldLabel : "Email Anda",
 					name : 'email'
 				},
 				{
