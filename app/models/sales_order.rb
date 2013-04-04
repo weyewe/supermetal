@@ -1,4 +1,5 @@
 class SalesOrder < ActiveRecord::Base
+  # default_scope order('code DESC')
   # attr_accessible :title, :body
   validates_presence_of :creator_id
   validates_presence_of :customer_id  
@@ -6,15 +7,9 @@ class SalesOrder < ActiveRecord::Base
   
   belongs_to :customer 
   
-  
-  scope :live_search, lambda { |search| 
-    search = "%#{search}%"
-    joins(:customer).where{ (code =~ search) |  
-          (customer.name =~ search )} 
-   }
    
   def self.active_objects
-    self.where(:is_deleted => false ).order("code DESC")
+    self.where(:is_deleted => false ) 
   end
   
   def delete(employee) 

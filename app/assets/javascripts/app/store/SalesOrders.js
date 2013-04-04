@@ -12,7 +12,7 @@ Ext.define('AM.store.SalesOrders', {
 		
 	sorters : [
 		{
-			property	: 'id',
+			property	: 'code',
 			direction	: 'DESC'
 		}
 	], 

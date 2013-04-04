@@ -5,14 +5,14 @@ class Api::SalesOrdersController < Api::BaseApiController
     
     if params[:livesearch].present? 
       livesearch = "%#{params[:livesearch]}%"
-      @objects = SalesOrder.joins(:customer).where{
+      @objects = SalesOrder.order('code DESC').joins(:customer).where{
         (is_deleted.eq false) & 
         (
           (code =~  livesearch ) | 
           (customer.name =~ livesearch)
         )
         
-      }.order("code DESC").page(params[:page]).per(params[:limit]) 
+      }.page(params[:page]).per(params[:limit]) 
       
       @total = SalesOrder.joins(:customer).where{
         (is_deleted.eq false) & 
@@ -22,7 +22,7 @@ class Api::SalesOrdersController < Api::BaseApiController
         )
       }.count
     else
-      @objects = SalesOrder.joins(:customer).active_objects.page(params[:page]).per(params[:limit]) 
+      @objects = SalesOrder.order('code DESC').joins(:customer).active_objects.page(params[:page]).per(params[:limit]) 
       @total = SalesOrder.active_objects.count
     end
     
