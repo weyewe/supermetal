@@ -9,13 +9,13 @@ Ext.define('AM.store.SalesOrders', {
 	
 	
 		
-		
-	sorters : [
-		{
-			property	: 'code',
-			direction	: 'DESC'
-		}
-	], 
+	// 	
+	// sorters : [
+	// 	{
+	// 		property	: 'code',
+	// 		direction	: 'DESC'
+	// 	}
+	// ], 
 
 	listeners: {
 
