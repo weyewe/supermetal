@@ -58,7 +58,7 @@ class SalesItem < ActiveRecord::Base
   
   
   def weight_per_piece_must_not_be_less_than_zero
-    if  weight_per_piece.present? and weight_per_piece <= BigDecimal('0')
+    if  weight_per_piece.present? and weight_per_piece < BigDecimal('0')
       errors.add(:weight_per_piece , "Berat satuan tidak boleh kurang dari 0 kg" )  
     end
   end
