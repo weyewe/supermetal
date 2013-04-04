@@ -44,7 +44,7 @@ class Api::CashAccountsController < Api::BaseApiController
 
   def update
     @object = CashAccount.find(params[:id])
-    @object.update_by_employee(params[:cash_account])
+    @object.update_by_employee(current_user, params[:cash_account])
     
     if @object.valid?
       render :json => { :success => true,   

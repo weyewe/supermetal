@@ -72,7 +72,7 @@ class Customer < ActiveRecord::Base
   end
   
   def self.active_objects
-    self.where(:is_deleted => false).order("id DESC")
+    self.where(:is_deleted => false).order("name DESC")
   end
   
   def delete(employee)

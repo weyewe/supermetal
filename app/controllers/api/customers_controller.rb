@@ -3,13 +3,13 @@ class Api::CustomersController < Api::BaseApiController
   def index
     if params[:livesearch].present? 
       livesearch = "%#{params[:livesearch]}%"
-      @objects = Customer.where{
+      @objects = Customer.order("name ASC").where{
         (is_deleted.eq false) & 
         (
           (name =~  livesearch )
         )
         
-      }.page(params[:page]).per(params[:limit]).order("id DESC")
+      }.page(params[:page]).per(params[:limit])
       
       @total = Customer.where{
         (is_deleted.eq false) & 
@@ -18,7 +18,7 @@ class Api::CustomersController < Api::BaseApiController
         )
       }.count
     else
-      @objects = Customer.active_objects.page(params[:page]).per(params[:limit]).order("id DESC")
+      @objects = Customer.active_objects.page(params[:page]).per(params[:limit]) 
       @total = Customer.active_objects.count
     end
     

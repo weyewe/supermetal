@@ -12,8 +12,8 @@ Ext.define('AM.store.Customers', {
 		
 	sorters : [
 		{
-			property	: 'id',
-			direction	: 'DESC'
+			property	: 'name',
+			direction	: 'ASC'
 		}
 	], 
 
