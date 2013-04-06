@@ -4,6 +4,55 @@ role = {
   }
 }
 
+# new role for data entry 
+new_role_hash = {
+  
+  # inventory
+  :materials => {
+    :index => true
+  },
+  
+  # factory 
+  :item_receivals => {
+    :index => true 
+  },
+  :template_sales_items => {
+    :index => true 
+  },
+  
+  # sales 
+  :customers => {
+    :index => true 
+  },
+  :sales_orders => {
+    :index => true 
+  },
+  :deliveries => {
+    :index => true 
+  },
+  :sales_returns => {
+    :index => true 
+  },
+  :guarantee_returns => {
+    :index => true 
+  },
+  
+  # payments
+  
+  :invoices => {
+    :index => true 
+  },
+  :payments => {
+    :index => true 
+  }
+}
+
+# new_role_hash = {
+#   :materials => {
+#     :index => false
+#   }
+# }
+
 Role.create!(
 :name        => ROLE_NAME[:admin],
 :title       => 'Administrator',

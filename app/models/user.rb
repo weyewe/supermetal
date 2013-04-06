@@ -50,7 +50,7 @@ class User < ActiveRecord::Base
     password                         = UUIDTools::UUID.timestamp_create.to_s[0..7]
     new_object.name                  = params[:name]
     new_object.email                 = params[:email] 
-    new_object.role_id               =  admin_role.id
+    new_object.role_id               =   params[:role_id]
     
     new_object.password              = password
     new_object.password_confirmation = password 
@@ -80,9 +80,11 @@ class User < ActiveRecord::Base
     self.email                 = params[:email] 
     
     
-    if  self.is_main_user == false  
-      self.role_id               = admin_role.id
-    end
+    if  self.is_main_user == true  
+      self.role_id               = admin_role.id    
+    else
+      self.role_id = params[:role_id]
+    end 
     
     self.save
     return self  

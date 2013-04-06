@@ -68,6 +68,7 @@ Ext.define('AM.controller.Users', {
     var view = Ext.widget('userform');
 
     view.down('form').loadRecord(record);
+		view.setComboBoxData(record); 
   },
 
   updateObject: function(button) {
