@@ -131,9 +131,14 @@ class Invoice < ActiveRecord::Base
     
     amount_paid = self.confirmed_amount_paid
     # add the tax 
-    new_amount_payable =  (1.0 + 0.1)*new_amount_payable
+    # new_amount_payable =  (1.0 + 0.1)*new_amount_payable
     
-    self.amount_payable = new_amount_payable 
+    # self.amount_payable = new_amount_payable 
+    
+    self.amount_payable =  (1.0 + 0.1)*new_amount_payable # with the tax 
+    self.base_amount_payable = (1.0)*new_amount_payable
+    self.tax_amount_payable = 0.1*new_amount_payable
+    
     
     # puts "initial_amount_payable: #{initial_amount_payable}"
     # puts "new_amount_payable: #{new_amount_payable}"

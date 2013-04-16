@@ -428,6 +428,16 @@ class SalesItem < ActiveRecord::Base
       return self
     end
     
+    is_pricing_changed = (self.pre_production_price != BigDecimal( params[:pre_production_price] ) )? true : false    ||
+                          (self.production_price != BigDecimal( params[:production_price] ) )? true : false    || 
+                          (self.post_production_price != BigDecimal( params[:post_production_price] ) )? true : false    ||
+                          (self.is_pricing_by_weight !=   params[:is_pricing_by_weight]  )? true : false 
+            
+    # is_quantity_changed = self.quantity_for_production_changed? || self.quantity_for_post_production_changed?
+    
+    is_quantity_changed = ( not self.quantity_for_production.nil? and self.quantity_for_production != params[:quantity_for_production] )? true : false || 
+                          ( not self.quantity_for_post_production.nil? and self.quantity_for_post_production != params[:quantity_for_post_production])? true : false 
+    
     
     
     self.quantity_for_production      = params[:quantity_for_production]
@@ -462,12 +472,7 @@ class SalesItem < ActiveRecord::Base
     self.valid? 
     self.validate_post_confirm_update
     
-    is_pricing_changed = self.pre_production_price_changed?    || 
-                            self.production_price              ||
-                            self.post_production_price         ||
-                            self.is_pricing_by_weight
-            
-    is_quantity_changed = self.quantity_for_production_changed? || self.quantity_for_post_production_changed?
+    
                 
     # if self.quantity_for_post_production_changed?
     #   puts "5555 the quantity for post production is changed\n"*5
@@ -485,7 +490,9 @@ class SalesItem < ActiveRecord::Base
     
     if self.errors.size  == 0 
       # update price in invoice 
+      puts "THere are no errors\n"*10
       if  is_pricing_changed
+        puts "The pricing is changed"
         self.update_invoice 
       end
      
