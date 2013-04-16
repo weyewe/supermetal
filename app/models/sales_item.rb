@@ -435,8 +435,10 @@ class SalesItem < ActiveRecord::Base
             
     # is_quantity_changed = self.quantity_for_production_changed? || self.quantity_for_post_production_changed?
     
-    is_quantity_changed = ( not self.quantity_for_production.nil? and self.quantity_for_production != params[:quantity_for_production] )? true : false || 
-                          ( not self.quantity_for_post_production.nil? and self.quantity_for_post_production != params[:quantity_for_post_production])? true : false 
+    is_quantity_changed = (  self.quantity_for_production != params[:quantity_for_production] )? true : false || 
+                          (  self.quantity_for_post_production != params[:quantity_for_post_production])? true : false ||
+                          (  self.is_production != params[:is_production])? true : false ||
+                          (  self.is_post_production != params[:is_post_production])? true : false
     
     
     
@@ -453,6 +455,14 @@ class SalesItem < ActiveRecord::Base
     self.production_price      = BigDecimal( params[:production_price])   
     self.post_production_price = BigDecimal( params[:post_production_price]) 
     
+    # if not self.is_production
+    #   self.quantity_for_production = 0 
+    # end
+    # 
+    # if not self.is_post_production
+    #   self.quantity_for_post_production = 0 
+    # end
+    
     
     self.requested_deadline    = params[:requested_deadline] 
     
@@ -465,9 +475,7 @@ class SalesItem < ActiveRecord::Base
     
     
 
-    if self.case == SALES_ITEM_CREATION_CASE[:new]
-      self.update_template_sales_item 
-    end
+    
     
     self.valid? 
     self.validate_post_confirm_update
@@ -487,6 +495,10 @@ class SalesItem < ActiveRecord::Base
     # end
     
     self.save 
+    
+    if self.case == SALES_ITEM_CREATION_CASE[:new]
+      self.update_template_sales_item 
+    end
     
     if self.errors.size  == 0 
       # update price in invoice 
