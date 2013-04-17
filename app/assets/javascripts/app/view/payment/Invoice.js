@@ -16,9 +16,9 @@ Ext.define('AM.view.payment.Invoice', {
 				xtype : 'invoicelist' ,
 				flex : 1  
 			},
-			// {
-			// 	xtype : 'invoiceentrylist',
-			// 	flex : 1 
-			// }
+			{
+				xtype : 'invoiceentrylist',
+				flex : 1 
+			}
 		]
 });

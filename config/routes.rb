@@ -88,6 +88,8 @@ Supermetal::Application.routes.draw do
     resources :delivery_lost_entries 
     
     resources :invoices 
+    resources :invoice_entries
+    
     resources :payments
     match 'confirm_payment' => 'payments#confirm', :as => :confirm_payment, :method => :post
     resources :invoice_payments 

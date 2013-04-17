@@ -6,7 +6,8 @@ Ext.define('AM.controller.Invoices', {
 
   views: [
     'payment.invoice.List',
-    'payment.invoice.Form' 
+    'payment.invoice.Form' ,
+		'payment.invoiceentry.List'
   ],
 
   refs: [
@@ -14,6 +15,10 @@ Ext.define('AM.controller.Invoices', {
 			ref: 'list',
 			selector: 'invoicelist'
 		} ,
+		{
+			ref : 'invoiceEntryList',
+			selector : 'invoiceentrylist'
+		},
 		{
 			ref: 'viewport',
 			selector: 'vp'
@@ -166,12 +171,36 @@ Ext.define('AM.controller.Invoices', {
   },
 
   selectionChange: function(selectionModel, selections) {
-    var grid = this.getList();
+
+		var grid = this.getList();
 		var record = this.getList().getSelectedObject();
 		
 		if(!record){
 			return; 
 		}
+		var invoiceEntryGrid = this.getInvoiceEntryList();
+		
+		
+		if(invoiceEntryGrid){
+			// invoiceEntryGrid.setTitle("Purchase Order: " + record.get('code'));
+			invoiceEntryGrid.setObjectTitle( record ) ;
+			invoiceEntryGrid.getStore().load({
+				params : {
+					invoice_id : record.get('id')
+				},
+				callback : function(records, options, success){
+
+					var totalObject  = records.length;
+					if( totalObject ===  0 ){
+						invoiceEntryGrid.enableRecordButtons(); 
+					}else{
+						invoiceEntryGrid.enableRecordButtons(); 
+					}
+				}
+			});
+		}
+		
+		
  
     if (selections.length > 0) {
       grid.enableRecordButtons();

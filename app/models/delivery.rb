@@ -25,6 +25,16 @@ class Delivery < ActiveRecord::Base
     self.delivery_entries.where(:is_deleted => false).order("id DESC")
   end
   
+  def billable_delivery_entries
+    self.delivery_entries.where{
+      ( is_deleted.eq false )  && 
+      ( entry_case.not_in [
+          DELIVERY_ENTRY_CASE[:technical_failure_post_production],
+          DELIVERY_ENTRY_CASE[:guarantee_return]
+        ])
+    }.order("id DESC")
+  end
+  
   def self.create_by_employee( employee, params ) 
     return nil if employee.nil? 
     

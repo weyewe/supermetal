@@ -363,6 +363,8 @@ class SalesItem < ActiveRecord::Base
         :case                     => PRODUCTION_ORDER[:sales_order]
       ).first 
       
+      return nil if sales_production_order.nil? 
+      
       puts "in the update work order, production order. quantity_for_proudction: #{self.quantity_for_production}"
       sales_production_order.quantity = self.quantity_for_production 
       sales_production_order.save 
@@ -431,8 +433,10 @@ class SalesItem < ActiveRecord::Base
     is_pricing_changed = (self.pre_production_price != BigDecimal( params[:pre_production_price] ) )? true : false    ||
                           (self.production_price != BigDecimal( params[:production_price] ) )? true : false    || 
                           (self.post_production_price != BigDecimal( params[:post_production_price] ) )? true : false    ||
-                          (self.is_pricing_by_weight !=   params[:is_pricing_by_weight]  )? true : false 
+                          (self.is_pricing_by_weight !=   params[:is_pricing_by_weight]  )? true : false || 
+                          (self.is_pending_pricing !=   params[:is_pending_pricing]  )? true : false
             
+    puts "The value of is_pricing_changed : #{is_pricing_changed}"
     # is_quantity_changed = self.quantity_for_production_changed? || self.quantity_for_post_production_changed?
     
     is_quantity_changed = (  self.quantity_for_production != params[:quantity_for_production] )? true : false || 
