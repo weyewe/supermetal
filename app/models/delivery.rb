@@ -89,6 +89,7 @@ class Delivery < ActiveRecord::Base
     # if there payment of invoice associated with the delivery is paid: can't delete 
     #   you must delete that payment 
     invoice = self.invoice 
+    customer = self.customer 
     if not invoice.nil?  and invoice.invoice_payments.count != 0 
       total_count = invoice.invoice_payments.count
       self.errors.add(:delete_fail , "Sudah ada #{total_count} pembayaran. Hapus dulu pembayaran tersebut" )  
@@ -103,6 +104,9 @@ class Delivery < ActiveRecord::Base
     end 
     
     self.is_deleted = true 
+    invoice.destroy 
+    customer.update_outstanding_payment
+    
     self.save 
   end
   

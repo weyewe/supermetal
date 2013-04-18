@@ -1,0 +1,77 @@
+
+
+1. Confirm all non_deleted sales_item whose sales_order is confirmed
+	admin = User.find_by_email("admin@gmail.com")
+	
+	SalesItem.joins(:sales_order).where{
+		( is_deleted.eq false )  & 
+		( sales_order.is_confirmed.eq true ) & 
+		( is_confirmed.eq false )
+	}.each {|x| x.confirm(admin)}
+	
+	
+2. Delete invoice for all deleted Delivery => recalculate customer.outstanding_payment as well 
+	Invoice.joins(:delivery, :customer).where{
+		( delivery.is_deleted.eq true)  	
+	}.each do |invoice|
+		customer = invoice.customer 
+		invoice.destroy 
+		customer.update_outstanding_payment
+	end
+
+3. Recalculate all invoices amount and work order 
+SalesItem.joins(:sales_order).where{
+	( is_deleted.eq false )  & 
+	( sales_order.is_confirmed.eq true ) & 
+	( is_confirmed.eq false )
+}.each do |x|
+
+	x.update_invoice
+	x.update_work_order
+end
+
+
+	
+	
+4. Update the data entry role => don't show material  
+
+data_entry_role = Role.find_by_name ROLE_NAME[:data_entry]
+
+new_role_hash = {
+  
+
+  # factory 
+  :item_receivals => {
+    :index => true 
+  },
+  :template_sales_items => {
+    :index => true 
+  },
+  
+  # sales 
+  :customers => {
+    :index => true 
+  },
+  :sales_orders => {
+    :index => true 
+  },
+  :deliveries => {
+    :index => true 
+  },
+  :sales_returns => {
+    :index => true 
+  },
+  :guarantee_returns => {
+    :index => true 
+  },
+  
+  # payments
+  
+  :invoices => {
+    :index => true 
+  },
+  :payments => {
+    :index => true 
+  }
+}
+data_entry_role.update_role(new_role_hash)

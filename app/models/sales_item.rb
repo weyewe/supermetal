@@ -264,6 +264,9 @@ class SalesItem < ActiveRecord::Base
     
     if new_object.save 
       new_object.generate_code 
+      if sales_order.is_confirmed? 
+        new_object.confirm( employee ) 
+      end
     end
     
     return new_object 
@@ -610,6 +613,10 @@ class SalesItem < ActiveRecord::Base
     if new_object.save 
       new_object.code = template.code 
       new_object.save 
+      
+      if sales_order.is_confirmed?
+        new_object.confirm( employee ) 
+      end
     end
     
     return new_object

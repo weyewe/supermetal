@@ -7,11 +7,7 @@ role = {
 # new role for data entry 
 new_role_hash = {
   
-  # inventory
-  :materials => {
-    :index => true
-  },
-  
+
   # factory 
   :item_receivals => {
     :index => true 
