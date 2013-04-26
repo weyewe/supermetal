@@ -5,7 +5,8 @@ Ext.define('AM.model.SalesOrder', {
     	{ name: 'code', type: 'string' } ,
 			{ name: 'customer_id', type: 'int' },
 			{ name: 'customer_name', type: 'string'},
-			{ name: 'is_confirmed',type: 'boolean', defaultValue: false } 
+			{ name: 'is_confirmed',type: 'boolean', defaultValue: false } ,
+			{ name: 'creation_date',type: 'string' } 
   	],
 
 	 

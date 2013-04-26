@@ -6,4 +6,5 @@ json.sales_orders @objects do |object|
 	json.customer_id   object.customer_id 
 	json.id 				object.id 
 	json.is_confirmed object.is_confirmed 
+	json.creation_date format_date( object.created_at ) 
 end

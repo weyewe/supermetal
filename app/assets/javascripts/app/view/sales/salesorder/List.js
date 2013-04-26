@@ -8,6 +8,7 @@ Ext.define('AM.view.sales.salesorder.List' ,{
 	initComponent: function() {
 		this.columns = [
 			{ header: 'ID', dataIndex: 'id'},
+			{ header: 'Tanggal', dataIndex: 'creation_date'},
 			{ header: 'Code',  dataIndex: 'code',  flex: 1 , sortable: false},
 			{ header: 'Customer',  dataIndex: 'customer_name',  flex: 1 , sortable: false},
 			{ header: 'Confirmed?',  dataIndex: 'is_confirmed',  flex: 1 , sortable: false},
