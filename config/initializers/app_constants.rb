@@ -274,6 +274,8 @@ CASH_ACCOUNT_CASE = {
   } 
 }
 
+VAT_AMOUNT = 0.1
+
 
 # related to the stock 
 DELIVERY_ENTRY_ITEM_CONDITION = {

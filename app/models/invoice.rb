@@ -71,23 +71,7 @@ class Invoice < ActiveRecord::Base
     self.save 
   end
   
-  def update_amount_payable
-    total_amount = BigDecimal('0') 
-    
-    delivery.delivery_entries.each do |de|
-      if de.sales_item.is_pending_pricing 
-        self.amount_payable = BigDecimal('0')
-        self.save 
-        return 
-      end
-      total_amount +=  de.total_delivery_entry_price
-    end
-    
-    self.amount_payable =  (1.0 + 0.1)*total_amount # with the tax 
-    self.base_amount_payable = (1.0)*total_amount
-    self.tax_amount_payable = 0.1*total_amount 
-    self.save  
-  end
+  
   
   
   
@@ -121,23 +105,53 @@ class Invoice < ActiveRecord::Base
   On Update price change
 =end
 
+  def update_amount_payable
+    base_amount = BigDecimal('0') 
+    tax_amount = BigDecimal('0')
+  
+    delivery.delivery_entries.each do |de|
+      if de.sales_item.is_pending_pricing 
+        self.amount_payable = BigDecimal('0')
+        self.base_amount_payable  = BigDecimal('0')
+        self.tax_amount_payable = BigDecimal('0')
+        self.save 
+        return 
+      end
+      
+      
+      base_amount +=  de.total_delivery_entry_price
+      tax_amount +=   de.tax_amount
+    end
+  
+    # with the tax 
+    self.base_amount_payable = base_amount
+    self.tax_amount_payable =  tax_amount 
+    self.amount_payable =  self.base_amount_payable + self.tax_amount_payable
+    self.save  
+  end
+
+
+
   def propagate_price_change
     # puts "inside propagate_price_change"
     initial_amount_payable = self.amount_payable 
-    new_amount_payable = BigDecimal("0")
-    delivery.delivery_entries.each do |de|
-      new_amount_payable +=  de.total_delivery_entry_price
-    end
     
+    self.update_amount_payable
+    # delivery.delivery_entries.each do |de|
+    #   new_amount_payable +=  de.total_delivery_entry_price
+    # end
+    
+    
+    new_amount_payable = self.amount_payable 
     amount_paid = self.confirmed_amount_paid
     # add the tax 
     # new_amount_payable =  (1.0 + 0.1)*new_amount_payable
     
     # self.amount_payable = new_amount_payable 
     
-    self.amount_payable =  (1.0 + 0.1)*new_amount_payable # with the tax 
-    self.base_amount_payable = (1.0)*new_amount_payable
-    self.tax_amount_payable = 0.1*new_amount_payable
+    # self.base_amount_payable = (1.0)*new_amount_payable
+    # self.tax_amount_payable = VAT_AMOUNT*new_amount_payable
+    # self.amount_payable  = self.base_amount_payable + self.tax_amount_payable
     
     
     # puts "initial_amount_payable: #{initial_amount_payable}"

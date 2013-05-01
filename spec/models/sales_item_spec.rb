@@ -76,6 +76,7 @@ describe SalesItem do
       @has_production_quantity = 50 
       @has_production_sales_item = SalesItem.create_sales_item( @admin, @sales_order,  {
         :material_id => @copper.id, 
+        :vat_tax => '10',
         :is_pre_production => true , 
         :is_production     => true, 
         :is_post_production => true, 
@@ -102,6 +103,7 @@ describe SalesItem do
       @only_machining_sales_quantity  = 15 
       @only_machining_sales_item = SalesItem.create_sales_item( @admin, @sales_order,  {
         :material_id => @copper.id, 
+        :vat_tax => '10',
         :is_pre_production => false , 
         :is_production     => false, 
         :is_post_production => true, 
@@ -132,6 +134,7 @@ describe SalesItem do
         @has_production_quantity = 50 
         @has_production_sales_item = SalesItem.create_sales_item( @admin, @sales_order,  {
           :material_id => @copper.id, 
+          :vat_tax => '10',
           :is_pre_production => true , 
           :is_production     => true, 
           :is_post_production => true, 
@@ -155,6 +158,7 @@ describe SalesItem do
         @only_machining_sales_quantity  = 15 
         @only_machining_sales_item = SalesItem.create_sales_item( @admin, @sales_order,  {
           :material_id => @copper.id, 
+          :vat_tax => '10',
           :is_pre_production => false , 
           :is_production     => false, 
           :is_post_production => true, 

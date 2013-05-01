@@ -9,6 +9,7 @@ json.sales_items @objects do |object|
 	json.case				object.case 
 	
 	json.name							object.name
+	json.vat_tax							object.vat_tax
 	json.description			object.description
 	
 	

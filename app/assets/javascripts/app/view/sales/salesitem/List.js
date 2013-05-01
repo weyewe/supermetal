@@ -19,6 +19,7 @@ Ext.define('AM.view.sales.salesitem.List' ,{
 				
 			},
 			{ header: 'Repeat',  dataIndex: 'is_repeat_order',  flex: 1 , sortable: false},
+			{ header: 'PPn',  dataIndex: 'vat_tax',  flex: 1 , sortable: false},
 			{
 				xtype : 'templatecolumn',
 				text : "Spec",

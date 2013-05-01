@@ -9,6 +9,7 @@ class SalesItem < ActiveRecord::Base
   
   has_many :delivery_entries
   
+  
   has_many :pre_production_histories # PreProductionHistory 
   has_many :production_histories # ProductionHistory
   has_many :post_production_histories#  PostProductionHistory
@@ -22,12 +23,17 @@ class SalesItem < ActiveRecord::Base
   validates_presence_of :description
   validates_presence_of :name 
   validates_presence_of :creator_id
+  validates_presence_of :vat_tax 
+  validates_presence_of :material_id 
+    
   # validates_presence_of :price_per_piece
   # validates_presence_of :weight_per_piece
   # validates_presence_of :quantity 
   validates_presence_of :case 
   validates_presence_of :quantity_for_production, :quantity_for_post_production
   
+  
+  validate :logical_material_id 
   validate :material_must_present_if_production_is_true 
   validate :delivery_address_must_present_if_delivered_is_true 
   # validate :quantity_must_be_at_least_one
@@ -35,7 +41,15 @@ class SalesItem < ActiveRecord::Base
   validate :quantity_must_be_present_if_selected
   validate :quantity_for_production_and_post_production_non_zero
   validate :price_not_less_than_zero
+  validate :vat_tax_must_be_between_0_and_100_percent
   
+  def logical_material_id
+    return if self.material_id.nil?
+    
+    if Material.where(:is_deleted => false, :id => self.material_id ).length == 0 
+      errors.add(:material_id, "Harus memilih material id")
+    end
+  end
    
   
   def material_must_present_if_production_is_true
@@ -122,6 +136,15 @@ class SalesItem < ActiveRecord::Base
     
     if post_production_price.present? and post_production_price < zero
       errors.add(:post_production_price ,  'Tidak boleh negative' ) 
+    end
+  end
+  
+  
+  def vat_tax_must_be_between_0_and_100_percent
+    return nil if not self.vat_tax.present?
+    
+    if vat_tax < BigDecimal('0') or vat_tax > BigDecimal('100')
+      errors.add(:item_id , "PPn(%) harus diantara 0 - 100" ) 
     end
   end
   
@@ -236,6 +259,8 @@ class SalesItem < ActiveRecord::Base
     new_object.description           = params[:description]   
     new_object.name                  = params[:name]
     
+    new_object.vat_tax = BigDecimal( params[:vat_tax] || 0  ) 
+    
     new_object.customer_id = sales_order.customer_id 
     
     if params[:case].nil?
@@ -262,12 +287,17 @@ class SalesItem < ActiveRecord::Base
 
     
     
-    if new_object.save 
-      new_object.generate_code 
-      if sales_order.is_confirmed? 
-        new_object.confirm( employee ) 
+    ActiveRecord::Base.transaction do
+      if   new_object.save 
+        new_object.generate_code 
+        if sales_order.is_confirmed? 
+          new_object.confirm( employee ) 
+        end
       end
     end
+    
+    
+    
     
     return new_object 
   end
@@ -296,6 +326,7 @@ class SalesItem < ActiveRecord::Base
     self.delivery_address      = params[:delivery_address]
     
     self.is_pending_pricing = params[:is_pending_pricing]
+    self.vat_tax = BigDecimal( params[:vat_tax]  || 0  ) 
     
     if not self.is_pending_pricing
       self.pre_production_price  = BigDecimal( params[:pre_production_price]  )
@@ -437,7 +468,8 @@ class SalesItem < ActiveRecord::Base
                           (self.production_price != BigDecimal( params[:production_price] ) )? true : false    || 
                           (self.post_production_price != BigDecimal( params[:post_production_price] ) )? true : false    ||
                           (self.is_pricing_by_weight !=   params[:is_pricing_by_weight]  )? true : false || 
-                          (self.is_pending_pricing !=   params[:is_pending_pricing]  )? true : false
+                          (self.is_pending_pricing !=   params[:is_pending_pricing]  )? true : false  || 
+                          (self.vat_tax   !=  BigDecimal( params[:vat_tax] || 0 )  )? true : false 
             
     puts "The value of is_pricing_changed : #{is_pricing_changed}"
     # is_quantity_changed = self.quantity_for_production_changed? || self.quantity_for_post_production_changed?
@@ -451,6 +483,8 @@ class SalesItem < ActiveRecord::Base
     
     self.quantity_for_production      = params[:quantity_for_production]
     self.quantity_for_post_production = params[:quantity_for_post_production]
+    
+    self.vat_tax = BigDecimal( params[:vat_tax]  || 0  )
     
     self.is_pending_pricing    = params[:is_pending_pricing]
     self.is_pricing_by_weight  = params[:is_pricing_by_weight]
@@ -555,6 +589,7 @@ class SalesItem < ActiveRecord::Base
     new_object.sales_order_id = sales_order.id 
     new_object.customer_id = sales_order.customer_id 
     
+    
     template = TemplateSalesItem.find_by_id params[:template_sales_item_id]
     # related to the template sales item 
     sample_sales_item  = template.confirmed_sales_items.first 
@@ -568,6 +603,9 @@ class SalesItem < ActiveRecord::Base
     
     # from params  
     # new_object.quantity               = params[:quantity]  
+    new_object.vat_tax = BigDecimal( params[:vat_tax]  || 0  ) 
+    
+    
     new_object.quantity_for_production              = params[:quantity_for_production]     
     new_object.quantity_for_post_production              = params[:quantity_for_post_production]
     new_object.template_sales_item_id = params[:template_sales_item_id]
@@ -655,6 +693,8 @@ class SalesItem < ActiveRecord::Base
     self.is_delivered          = params[:is_delivered]      
     self.delivery_address      = params[:delivery_address]   
     self.is_pending_pricing = params[:is_pending_pricing]
+    
+    self.vat_tax = BigDecimal( params[:vat_tax]  || 0  ) 
     
     if not self.is_pending_pricing
       self.pre_production_price  = BigDecimal( params[:pre_production_price]  )

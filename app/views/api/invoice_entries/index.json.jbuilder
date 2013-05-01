@@ -16,6 +16,8 @@ json.invoice_entries @objects do |object|
 	json.sales_item_code			object.sales_item.code
 	json.sales_item_description			object.sales_item.description 
 	
+	json.tax_amount object.tax_amount
+	
 	json.sales_item_is_pre_production					object.sales_item.is_pre_production  
 	json.sales_item_is_production							object.sales_item.is_production		  
 	json.sales_item_is_post_production				object.sales_item.is_post_production 

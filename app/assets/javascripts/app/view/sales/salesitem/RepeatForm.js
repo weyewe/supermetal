@@ -76,6 +76,11 @@ Ext.define('AM.view.sales.salesitem.RepeatForm', {
 					name : 'template_sales_item_id' 
 				},
 				{
+					fieldLabel : 'PPn (%)',
+					name : 'vat_tax' ,
+					xtype : 'field'
+				},
+				{
 					fieldLabel : 'Tunda Harga?',
 					name : 'is_pending_pricing',
 					xtype : 'checkbox'

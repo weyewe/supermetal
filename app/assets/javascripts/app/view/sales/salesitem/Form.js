@@ -144,6 +144,11 @@ Ext.define('AM.view.sales.salesitem.Form', {
 				{
 					fieldLabel : 'Berat per set (kg)',
 					name : 'weight_per_piece'
+				},
+				{
+					fieldLabel : 'PPN',
+					name : 'vat_tax' ,
+					xtype : 'field'
 				}
 			]
 		};
@@ -173,6 +178,8 @@ Ext.define('AM.view.sales.salesitem.Form', {
 			]
 		};
 		
+	 
+		
 		var container = {
 			xtype : 'container',
 			layoutConfig: {
@@ -183,7 +190,7 @@ Ext.define('AM.view.sales.salesitem.Form', {
 			layout : 'vbox',
 			items : [
 				itemInfo,
-				deliveryInfo
+				deliveryInfo 
 			]
 		};
 		

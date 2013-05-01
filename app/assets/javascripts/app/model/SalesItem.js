@@ -6,6 +6,8 @@ Ext.define('AM.model.SalesItem', {
 			{ name: 'sales_order_code', type: 'string' },
 			{ name: 'sales_order_id', type: 'int' },
 			
+			{ name: 'vat_tax', type: 'string' },
+			
 			{ name: 'name', type: 'string'},
 			{ name: 'description', type: 'string'},
 			{ name: 'material_id', type: 'int'},

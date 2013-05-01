@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe DeliveryEntry do
+describe SalesReturnEntry do
   before(:each) do
     role = {
       :system => {
@@ -27,19 +27,19 @@ describe DeliveryEntry do
       :order_date     => Date.new(2012, 12, 15)   
     })
     
-    
     @has_production_quantity = 50 
+    @vat_tax = '20'
     @has_production_sales_item = SalesItem.create_sales_item( @admin, @sales_order,  {
       :material_id => @copper.id, 
+      :vat_tax => @vat_tax ,
       :is_pre_production => true , 
-      :vat_tax => '10',
       :is_production     => true, 
       :is_post_production => true, 
       :is_delivered => true, 
       :delivery_address => "Perumahan Citra Garden 1 Blok AC2/3G",
       # :quantity => @has_production_quantity,
-      :quantity_for_production => @has_production_quantity, 
-      :quantity_for_post_production => @has_production_quantity, 
+      :quantity_for_production => @has_production_quantity,
+      :quantity_for_post_production =>@has_production_quantity , 
       :description => "Bla bla bla bla bla", 
       :delivery_address => "Yeaaah babyy", 
       :requested_deadline => Date.new(2013, 3,5 ),
@@ -65,7 +65,6 @@ describe DeliveryEntry do
     @broken_weight         = '0'
     @started_at            = DateTime.new(2012,12,11,23,1,1)
     @finished_at           = DateTime.new(2012,12,12,23,1,1)
-
 
     @pr = ProductionResult.create_result( @admin,  {
       :ok_quantity            => @ok_quantity          ,
@@ -111,109 +110,84 @@ describe DeliveryEntry do
     @pending_post_production_pre_confirm = @template_sales_item.pending_post_production
     @ppr.confirm( @admin )
     @template_sales_item.reload
-    
+    # create delivery 
     @delivery   = Delivery.create_by_employee( @admin , {
       :customer_id    => @customer.id,          
       :delivery_address   => "some address",    
       :delivery_date     => Date.new(2012, 12, 15)
     })
-  end
-   
-  it 'should have ready production and ready post production' do
-    @template_sales_item.ready_production.should == @ok_production_quantity  - @ppr.processed_quantity
-    @template_sales_item.ready_post_production.should == @ok_post_production_quantity
-  end
-  
-  it 'should have delivery' do
-    @delivery.should be_valid
-  end
-  
-  it 'should not create delivery entry if   quantity sent ==  0  ' do
-    @delivery_entry = DeliveryEntry.create_delivery_entry( @admin, @delivery, {
-        :quantity_sent => 0 , 
-        :quantity_sent_weight => "324",
-        :sales_item_id =>  @has_production_sales_item.id, # for pricing 
-        :entry_case => DELIVERY_ENTRY_CASE[:normal],  # pricing level 
-        :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]  # quantity deduction 
+    
+    @template_sales_item = @has_production_sales_item.template_sales_item 
+    @ready_post_production = @template_sales_item.ready_post_production 
+    
+    @quantity_sent = 1 
+    if @ready_post_production > 1 
+      @quantity_sent = @ready_post_production - 1 
+    end
+    
+    @delivery_entry = DeliveryEntry.create_delivery_entry( @admin, @delivery,  {
+        :quantity_sent => @quantity_sent, 
+        :quantity_sent_weight => "#{@quantity_sent * 10}" ,
+        :sales_item_id => @has_production_sales_item.id,
+        :entry_case => DELIVERY_ENTRY_CASE[:normal], 
+        :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
       })
       
-    @delivery_entry.should_not be_valid 
+    @delivery.confirm( @admin ) 
+    @invoice = @delivery.invoice 
+    @has_production_sales_item.reload 
+    @delivery_entry.reload
+    @template_sales_item.reload
   end
   
-  it 'should not create delivery entry if  quantity sent > ready ' do 
-    @ready_post_production = @template_sales_item.ready_post_production
+  
+  it 'should calculate the tax based on the given data' do
+    @delivery_entry.is_confirmed.should be_true 
     
-    @delivery_entry = DeliveryEntry.create_delivery_entry( @admin, @delivery,   {
-        :quantity_sent => @ready_post_production + 1  , 
-        :quantity_sent_weight => "324" ,
-        :sales_item_id =>  @has_production_sales_item.id,
-        :entry_case => DELIVERY_ENTRY_CASE[:normal], 
-        :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
-      })
-    @delivery_entry.should_not be_valid
+    @delivery_entry.tax_amount.should == @delivery_entry.total_delivery_entry_price * ( ( BigDecimal( @vat_tax ) / 100.0) ) 
+  end 
+  
+  it 'should create invoice' do
+    @invoice.amount_payable.should == @delivery_entry.tax_amount + @delivery_entry.total_delivery_entry_price 
   end
   
-  it 'should create delivery entry if quantity_sent < ready' do
-    @ready_post_production = @template_sales_item.ready_post_production
+  context 'on updating the sales_item post_confirm' do
+    before(:each) do
+      
+      @new_vat_tax  = '0'
+      params = {
+        :material_id => @copper.id, 
+        :vat_tax => @new_vat_tax ,
+        :is_pre_production => true , 
+        :is_production     => true, 
+        :is_post_production => true, 
+        :is_delivered => true, 
+        :delivery_address => "Perumahan Citra Garden 1 Blok AC2/3G",
+        # :quantity => @has_production_quantity,
+        :quantity_for_production => @has_production_quantity,
+        :quantity_for_post_production =>@has_production_quantity , 
+        :description => "Bla bla bla bla bla", 
+        :delivery_address => "Yeaaah babyy", 
+        :requested_deadline => Date.new(2013, 3,5 ),
+        :weight_per_piece   => '15',
+        :name => "Sales Item",
+        :is_pending_pricing    => false, 
+        :is_pricing_by_weight  => false , 
+        :pre_production_price  => "50000", 
+        :production_price      => "20000",
+        :post_production_price => "150000"
+      }
+      
+      @has_production_sales_item.update_sales_item( @admin , params )
+      @delivery_entry.reload 
+    end
     
-    @delivery_entry = DeliveryEntry.create_delivery_entry( @admin, @delivery,   {
-        :quantity_sent => @ready_post_production   , 
-        :quantity_sent_weight => "324" ,
-        :sales_item_id =>  @has_production_sales_item.id,
-        :entry_case => DELIVERY_ENTRY_CASE[:normal], 
-        :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
-      })
-    @delivery_entry.should be_valid
+    it 'should update the vat_tax' do
+      @has_production_sales_item.vat_tax.should == BigDecimal( @new_vat_tax )
+      @delivery_entry.tax_amount.should == BigDecimal('0')
+    end
   end
-  
-  it 'should not create delivery entry if  weight > 0 ' do 
-    @ready_post_production = @template_sales_item.ready_post_production
-    @delivery_entry = DeliveryEntry.create_delivery_entry( @admin, @delivery,  {
-        :quantity_sent => @ready_post_production  , 
-        :quantity_sent_weight => "-5" ,
-        :sales_item_id => @has_production_sales_item.id ,
-        :entry_case => DELIVERY_ENTRY_CASE[:normal], 
-        :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
-      })
-    @delivery_entry.should_not be_valid
-    
-    
-    @delivery_entry = DeliveryEntry.create_delivery_entry( @admin, @delivery,  {
-      :quantity_sent => @ready_post_production , 
-      :quantity_sent_weight => "0" ,
-      :sales_item_id => @has_production_sales_item.id ,
-      :entry_case => DELIVERY_ENTRY_CASE[:normal], 
-      :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
-      })
-    @delivery_entry.should_not be_valid
-  end
-  
-  it 'should not create double delivery entries' do
-    @ready_post_production = @template_sales_item.ready_post_production
-    first_delivery_quantity =  1 
-    second_delivery_quantity = @ready_post_production - first_delivery_quantity 
-    
-    @delivery_entry = DeliveryEntry.create_delivery_entry( @admin, @delivery,  {
-      :quantity_sent => first_delivery_quantity , 
-      :quantity_sent_weight => "#{first_delivery_quantity*10}" ,
-      :sales_item_id => @has_production_sales_item.id ,
-      :entry_case => DELIVERY_ENTRY_CASE[:normal], 
-      :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
-    })
-    @delivery_entry.should be_valid
-    
-    
-    @delivery_entry = DeliveryEntry.create_delivery_entry( @admin, @delivery,  {
-      :quantity_sent => second_delivery_quantity  , 
-      :quantity_sent_weight => "#{second_delivery_quantity*10}" ,
-      :sales_item_id => @has_production_sales_item.id ,
-      :entry_case => DELIVERY_ENTRY_CASE[:normal], 
-      :item_condition => DELIVERY_ENTRY_ITEM_CONDITION[:post_production]
-    })
-    @delivery_entry.should_not be_valid
-  end
-  
-  # test this in the delivery_entry_variants 
-  it 'should have matching entry_case, item_condition, sales_item_id + quantity must be available' do
-  end
+   
 end
+
+# SalesItem.where(:is_deleted => false).each {|x| x.vat_tax = BigDecimal('10'); x.save }

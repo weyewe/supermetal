@@ -35,6 +35,7 @@ describe GuaranteeReturn do
     @only_post_production_sales_item_quantity = 50 
     @only_post_production_sales_item = SalesItem.create_sales_item( @admin, @sales_order,  {
       :material_id => @copper.id, 
+      :vat_tax => '10',
       :is_pre_production => false , 
       :is_production     => false, 
       :is_post_production => true, 

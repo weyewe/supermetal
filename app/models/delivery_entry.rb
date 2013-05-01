@@ -697,6 +697,10 @@ class DeliveryEntry < ActiveRecord::Base
       )
   end
   
+  def tax_amount
+    (self.sales_item.vat_tax / 100.0) * self.total_delivery_entry_price
+  end
+  
   def total_delivery_entry_price
     if self.sales_item.is_pending_pricing?
       return BigDecimal("0")

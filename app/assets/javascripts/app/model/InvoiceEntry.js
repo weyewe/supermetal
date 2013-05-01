@@ -21,6 +21,7 @@ Ext.define('AM.model.InvoiceEntry', {
 			{ name: 'billed_quantity', type: 'int' },
 			{ name: 'billed_weight', type: 'string'},
 			{ name: 'total_delivery_entry_price', type: 'string'},
+			{ name: 'tax_amount', type: 'string'},
 			
 			{ name: 'entry_case', type: 'int' },
     	{ name: 'entry_case_name', type: 'string' } ,

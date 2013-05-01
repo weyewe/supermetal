@@ -27,7 +27,7 @@ Ext.define('AM.view.payment.invoice.List' ,{
 				tpl : 'Total: <b>{amount_payable}</b>' + 	'<br />' +
 						  																		'<br />' +
 							'Harga Jual: <b>{base_amount_payable}</b>'		+ 	'<br />' +
-							'PPn (10%): <b>{tax_amount_payable}</b>' + '<br />'
+							'PPn: <b>{tax_amount_payable}</b>' + '<br />'
 				
 			},
 			{ header: 'Belum Dibayar',  dataIndex: 'confirmed_pending_payment',  flex: 1 , sortable: false}

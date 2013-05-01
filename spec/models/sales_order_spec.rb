@@ -67,6 +67,7 @@ describe SalesOrder do
         @quantity_in_sales_item = 50 
         @has_production_sales_item = SalesItem.create_sales_item( @admin, @sales_order,  {
             :material_id => @copper.id, 
+            :vat_tax => '10',
             :is_pre_production => true , 
             :is_production     => true, 
             :is_post_production => true, 

@@ -66,6 +66,12 @@ Ext.define('AM.view.payment.invoiceentry.List' ,{
 				flex : 1,
 				tpl : "{total_delivery_entry_price}"
 			},
+			{
+				xtype : 'templatecolumn',
+				text : "Tax",
+				flex : 1,
+				tpl : "{tax_amount}"
+			},
 			
 			 
 		];
