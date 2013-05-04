@@ -291,7 +291,7 @@ class SalesItem < ActiveRecord::Base
       if   new_object.save 
         new_object.generate_code 
         if sales_order.is_confirmed? 
-          new_object.confirm( employee ) 
+          new_object.confirm 
         end
       end
     end

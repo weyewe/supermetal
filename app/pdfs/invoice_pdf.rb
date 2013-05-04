@@ -171,6 +171,7 @@ class InvoicePdf < Prawn::Document
   def document_data_body
     count =  0 
     total_price_in_invoice = BigDecimal("0")
+    total_tax_amount_in_invoice = BigDecimal('0')
     
     table_body = [] 
     (@delivery.delivery_entries).map do |delivery_entry|
@@ -243,6 +244,7 @@ class InvoicePdf < Prawn::Document
       
       total_price = delivery_entry.total_delivery_entry_price
       total_price_in_invoice += delivery_entry.total_delivery_entry_price
+      total_tax_amount_in_invoice += delivery_entry.tax_amount 
   
       
       
@@ -262,15 +264,15 @@ class InvoicePdf < Prawn::Document
     ]]
     
     
-    tax_amount = 0.1 *total_price_in_invoice 
+    # tax_amount = 0.1 *total_price_in_invoice 
     tax_row =  [[
       "",
       " ", '',
-    "Pajak (10%)  ",  
-    "#{precision( tax_amount )}"
+    "PPn ",  
+    "#{precision( total_tax_amount_in_invoice )}"
     ]] 
     
-    total_amount = tax_amount + total_price_in_invoice
+    total_amount = total_tax_amount_in_invoice + total_price_in_invoice
     total_row =  [[
       "",
       " ", '',
