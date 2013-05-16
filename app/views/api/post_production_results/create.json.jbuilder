@@ -6,7 +6,7 @@ if not @object.nil? and @object.errors.size == 0
 		json.id 				object.id 
 		json.is_confirmed 				object.is_confirmed 
 	
-
+		json.in_progress_quantity 				object.in_progress_quantity
 		json.ok_quantity 				object.ok_quantity
 		json.broken_quantity 		object.broken_quantity
 		json.bad_source_quantity 		object.bad_source_quantity

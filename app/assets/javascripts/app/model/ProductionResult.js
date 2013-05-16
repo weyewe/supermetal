@@ -18,6 +18,9 @@ Ext.define('AM.model.ProductionResult', {
 			{ name: 'ok_tap_weight', type: 'string' },
 			{ name: 'repairable_tap_weight', type: 'string' },
 			
+			
+			{ name: 'in_progress_quantity', type: 'int' },
+			
 			// { name: 'started_at', type: 'date', dateFormat:'d/m/Y H:i:s'},
 			// { name: 'finished_at', type: 'date', dateFormat:'d/m/Y H:i:s'},
 			

@@ -10,6 +10,8 @@ if not @object.nil? and @object.errors.size == 0
 		json.ok_quantity 				object.ok_quantity
 		json.broken_quantity 		object.broken_quantity
 		json.repairable_quantity 		object.repairable_quantity
+		
+		json.in_progress_quantity 				object.in_progress_quantity
 
 		json.ok_weight 				object.ok_weight
 		json.broken_weight 		object.broken_weight

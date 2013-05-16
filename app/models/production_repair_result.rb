@@ -94,7 +94,7 @@ class ProductionRepairResult < ActiveRecord::Base
     new_object.creator_id = employee.id 
      
    
-    
+    new_object.in_progress_quantity         = params[:in_progress_quantity]
     new_object.ok_quantity         = params[:ok_quantity]
     new_object.broken_quantity     = params[:broken_quantity] 
     new_object.ok_weight           = BigDecimal( params[:ok_weight]           )
@@ -121,6 +121,7 @@ class ProductionRepairResult < ActiveRecord::Base
     end
     
     self.creator_id = employee.id 
+    self.in_progress_quantity         = params[:in_progress_quantity]
     self.ok_quantity         = params[:ok_quantity]
     self.broken_quantity     = params[:broken_quantity] 
     self.ok_weight           = BigDecimal( params[:ok_weight]         )
@@ -141,6 +142,7 @@ class ProductionRepairResult < ActiveRecord::Base
   def post_confirm_update(employee,  params ) 
     self.creator_id = employee.id 
     self.ok_quantity         = params[:ok_quantity]
+    self.in_progress_quantity         = params[:in_progress_quantity]
     self.broken_quantity     = params[:broken_quantity] 
     self.ok_weight           = BigDecimal( params[:ok_weight]         )
     self.broken_weight       = BigDecimal( params[:broken_weight]     )

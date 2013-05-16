@@ -18,7 +18,8 @@ Ext.define('AM.view.factory.templatesalesitem.List' ,{
 				xtype : 'templatecolumn',
 				text : "Pola",
 				flex : 1,
-				tpl : 'OK: <b>{ok_pre_production}</b>' + '<br />' + 
+				tpl : 'Dalam Pengerjaan: <b>{pre_production_in_progress_quantity}</b>' + '<br />' + 
+							'OK: <b>{ok_pre_production}</b>' + '<br />' + 
 							'Rusak: <b>{broken_pre_production}</b>' 
 			},
 			
@@ -26,21 +27,24 @@ Ext.define('AM.view.factory.templatesalesitem.List' ,{
 				xtype : 'templatecolumn',
 				text : "Cor",
 				flex : 1,
-				tpl : 'Pending Cor: <b>{pending_production}</b>' + '<br />' + 
+				tpl : 'Dalam Pengerjaan: <b>{production_in_progress_quantity}</b>' + '<br />' + 
+							'Pending Cor: <b>{pending_production}</b>' + '<br />' + 
 							'Ready Cor: <b>{ready_production}</b>' 
 			},
 			{
 				xtype : 'templatecolumn',
 				text : "Perbaiki Cor",
 				flex : 1,
-				tpl : 'Pending Perbaiki Cor: <b>{pending_production_repair}</b>'  
+				tpl : 'Dalam Pengerjaan: <b>{production_repair_in_progress_quantity}</b>' + '<br />' + 
+							'Pending Perbaiki Cor: <b>{pending_production_repair}</b>'  
 			},
 			
 			{
 				xtype : 'templatecolumn',
 				text : "Bubut",
 				flex : 1,
-				tpl : 'Pending Bubut: <b>{pending_post_production}</b>' + '<br />' + 
+				tpl : 'Dalam Pengerjaan: <b>{post_production_in_progress_quantity}</b>' + '<br />' + 
+							'Pending Bubut: <b>{pending_post_production}</b>' + '<br />' + 
 							'Ready Bubut: <b>{ready_post_production}</b>' 
 			},
 			 

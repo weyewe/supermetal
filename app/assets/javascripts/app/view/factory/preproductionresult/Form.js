@@ -65,7 +65,11 @@ Ext.define('AM.view.factory.preproductionresult.Form', {
 					name: 'template_sales_item_code',
 					value: '10'
 				},
-				
+				{
+					fieldLabel: 'Dalam Pengerjaan',
+					name: 'in_progress_quantity' ,
+					xtype : 'textfield'
+				},
 				 
 				{
 					fieldLabel: 'Jumlah OK',

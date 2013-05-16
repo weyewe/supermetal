@@ -5,6 +5,12 @@ json.template_sales_items @objects do |object|
 	json.name 			object.name
 	json.code 			object.code
 	
+	json.pre_production_in_progress_quantity 						object.pre_production_in_progress_quantity
+	json.production_in_progress_quantity 						object.production_in_progress_quantity
+	json.production_repair_in_progress_quantity 						object.production_repair_in_progress_quantity
+	json.post_production_in_progress_quantity 						object.post_production_in_progress_quantity
+	
+	
 	json.ok_pre_production 						object.ok_pre_production
 	json.broken_pre_production 				object.broken_pre_production
 	

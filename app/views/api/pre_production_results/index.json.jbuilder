@@ -4,6 +4,9 @@ json.pre_production_results @objects do |object|
 	json.id 				object.id 
 	json.is_confirmed 				object.is_confirmed 
 	
+	json.in_progress_quantity 				object.in_progress_quantity
+	
+	
 	json.ok_quantity 				object.ok_quantity
 	json.broken_quantity 		object.broken_quantity
 	json.processed_quantity 		object.processed_quantity

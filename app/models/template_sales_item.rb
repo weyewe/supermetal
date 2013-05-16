@@ -70,6 +70,32 @@ class TemplateSalesItem < ActiveRecord::Base
   end
   
   
+=begin
+  In Progress Quantity 
+=end
+
+  def pre_production_in_progress_quantity
+    self.pre_production_results.where(:is_confirmed => true).sum("in_progress_quantity")
+  end
+  
+  def production_in_progress_quantity
+    self.production_results.where(:is_confirmed => true).sum("in_progress_quantity")
+  end
+  
+  def production_repair_in_progress_quantity
+    self.production_repair_results.where(:is_confirmed => true).sum("in_progress_quantity")
+  end
+  
+  def post_production_in_progress_quantity
+    self.post_production_results.where(:is_confirmed => true).sum("in_progress_quantity")
+  end
+  
+  
+=begin
+  OK, broken result 
+=end
+  
+  
   def ok_pre_production
     self.pre_production_results.where(:is_confirmed => true).sum("ok_quantity")
   end

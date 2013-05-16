@@ -12,7 +12,13 @@ Ext.define('AM.model.TemplateSalesItem', {
 			{ name: 'pending_post_production', type: 'int' },
 			{ name: 'pending_production_repair', type: 'int' },
 			{ name: 'ready_production', type: 'int' },
-			{ name: 'ready_post_production', type: 'int' }
+			{ name: 'ready_post_production', type: 'int' },
+			
+			
+			{ name: 'pre_production_in_progress_quantity', type: 'int' },
+			{ name: 'production_in_progress_quantity', type: 'int' },
+			{ name: 'production_repair_in_progress_quantity', type: 'int' },
+			{ name: 'post_production_in_progress_quantity', type: 'int' }
 			
 		
   	],

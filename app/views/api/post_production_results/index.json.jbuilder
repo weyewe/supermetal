@@ -7,6 +7,7 @@ json.post_production_results @objects do |object|
 	json.ok_quantity 				object.ok_quantity
 	json.broken_quantity 		object.broken_quantity
 	json.bad_source_quantity 		object.bad_source_quantity
+	json.in_progress_quantity 				object.in_progress_quantity
 	
 	json.ok_weight 				object.ok_weight
 	json.broken_weight 		object.broken_weight

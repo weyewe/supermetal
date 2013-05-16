@@ -6,6 +6,9 @@ Ext.define('AM.model.ProductionRepairResult', {
 			{ name: 'template_sales_item_name', type: 'string' },
 			{ name: 'template_sales_item_code', type: 'string' },
 
+			{ name: 'in_progress_quantity', type: 'int' },
+
+
 			{ name: 'ok_quantity', type: 'int' },
 			{ name: 'broken_quantity', type: 'int' },
 			

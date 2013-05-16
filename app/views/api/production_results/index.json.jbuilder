@@ -9,6 +9,8 @@ json.production_results @objects do |object|
 	json.processed_quantity 		object.processed_quantity
 	json.repairable_quantity 		object.repairable_quantity
 	
+	json.in_progress_quantity 				object.in_progress_quantity
+	
 	json.ok_weight 				object.ok_weight
 	json.broken_weight 		object.broken_weight
 	json.repairable_weight 		object.repairable_weight

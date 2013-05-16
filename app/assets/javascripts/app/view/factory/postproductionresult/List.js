@@ -16,6 +16,7 @@ Ext.define('AM.view.factory.postproductionresult.List' ,{
 							'{template_sales_item_name}' 
 			},
 			
+			{ header: 'Dalam Pengerjaan',  dataIndex: 'in_progress_quantity',  flex: 1 , sortable: false},
 			{
 				xtype : 'templatecolumn',
 				text : "OK",

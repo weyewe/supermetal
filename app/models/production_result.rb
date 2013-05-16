@@ -109,6 +109,8 @@ class ProductionResult < ActiveRecord::Base
     new_object.template_sales_item_id = params[:template_sales_item_id]
     new_object.creator_id = employee.id 
     
+    new_object.in_progress_quantity         = params[:in_progress_quantity]
+    
     new_object.ok_quantity         = params[:ok_quantity]
     new_object.repairable_quantity = params[:repairable_quantity]
     new_object.broken_quantity     = params[:broken_quantity] 
@@ -137,6 +139,7 @@ class ProductionResult < ActiveRecord::Base
     end
     
     self.creator_id = employee.id 
+    self.in_progress_quantity         = params[:in_progress_quantity]
     self.ok_quantity         = params[:ok_quantity]
     self.repairable_quantity = params[:repairable_quantity]
     self.broken_quantity     = params[:broken_quantity] 
@@ -155,12 +158,15 @@ class ProductionResult < ActiveRecord::Base
   
   def post_confirm_update(employee,  params ) 
     self.creator_id = employee.id 
+    self.in_progress_quantity         = params[:in_progress_quantity]
+    
     self.ok_quantity         = params[:ok_quantity]
     self.repairable_quantity = params[:repairable_quantity]
     self.broken_quantity     = params[:broken_quantity] 
     self.ok_weight           = BigDecimal( params[:ok_weight]         )
     self.repairable_weight   = BigDecimal( params[:repairable_weight] )
     self.broken_weight       = BigDecimal( params[:broken_weight]     )
+    
     self.started_at          = params[:started_at] 
     self.finished_at         = params[:finished_at]
     

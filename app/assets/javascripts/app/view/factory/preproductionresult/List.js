@@ -15,6 +15,8 @@ Ext.define('AM.view.factory.preproductionresult.List' ,{
 				tpl : '<b>{template_sales_item_code}</b>' + '<br />' + 
 							'{template_sales_item_name}' 
 			},
+			{ header: 'Dalam Pengerjaan',  dataIndex: 'in_progress_quantity',  flex: 1 , sortable: false},
+			
 			{ header: 'Quantity OK',  dataIndex: 'ok_quantity',  flex: 1 , sortable: false},
 			{ header: 'Quantity Rusak',  dataIndex: 'broken_quantity',  flex: 1 , sortable: false},
 			{ header: 'Mulai',  dataIndex: 'started_at',  flex: 1 , sortable: false} ,

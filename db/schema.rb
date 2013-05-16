@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130501134831) do
+ActiveRecord::Schema.define(:version => 20130516125615) do
 
   create_table "banks", :force => true do |t|
     t.datetime "created_at", :null => false
@@ -301,6 +301,7 @@ ActiveRecord::Schema.define(:version => 20130501134831) do
     t.decimal  "bad_source_weight",      :precision => 7, :scale => 2, :default => 0.0
     t.datetime "created_at",                                                              :null => false
     t.datetime "updated_at",                                                              :null => false
+    t.integer  "in_progress_quantity",                                 :default => 0
   end
 
   create_table "pre_production_histories", :force => true do |t|
@@ -332,6 +333,7 @@ ActiveRecord::Schema.define(:version => 20130501134831) do
     t.datetime "confirmed_at"
     t.datetime "created_at",                                :null => false
     t.datetime "updated_at",                                :null => false
+    t.integer  "in_progress_quantity",   :default => 0
   end
 
   create_table "production_histories", :force => true do |t|
@@ -398,6 +400,7 @@ ActiveRecord::Schema.define(:version => 20130501134831) do
     t.datetime "confirmed_at"
     t.datetime "created_at",                                                              :null => false
     t.datetime "updated_at",                                                              :null => false
+    t.integer  "in_progress_quantity",                                 :default => 0
   end
 
   create_table "production_results", :force => true do |t|
@@ -419,6 +422,7 @@ ActiveRecord::Schema.define(:version => 20130501134831) do
     t.decimal  "repairable_tap_weight",  :precision => 7, :scale => 2, :default => 0.0
     t.datetime "created_at",                                                              :null => false
     t.datetime "updated_at",                                                              :null => false
+    t.integer  "in_progress_quantity",                                 :default => 0
   end
 
   create_table "responsibilities", :force => true do |t|

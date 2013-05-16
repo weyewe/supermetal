@@ -40,7 +40,17 @@ Ext.define('AM.view.factory.productionrepairresult.Form', {
 					name: 'template_sales_item_code',
 					value: '10'
 				},
-				
+				{
+					xtype : 'fieldset',
+					title : "Dalam Pengerjaan",
+					items : [
+						{
+							fieldLabel: 'Jumlah',
+							name: 'in_progress_quantity' ,
+							xtype : 'textfield'
+						}
+					]
+				},
 				{
 					xtype : 'fieldset',
 					title : "OK Cor",

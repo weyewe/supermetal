@@ -105,7 +105,7 @@ class PostProductionResult < ActiveRecord::Base
     new_object  = self.new
     new_object.template_sales_item_id = template_sales_item.id 
      
-  
+    new_object.in_progress_quantity         = params[:in_progress_quantity]
     
     new_object.ok_quantity         = params[:ok_quantity]
     new_object.broken_quantity     = params[:broken_quantity] 
@@ -140,6 +140,7 @@ class PostProductionResult < ActiveRecord::Base
     
     
     self.creator_id          = employee.id
+    self.in_progress_quantity         = params[:in_progress_quantity]
     self.ok_quantity         = params[:ok_quantity]
     self.broken_quantity     = params[:broken_quantity]  
     self.bad_source_quantity = params[:bad_source_quantity] 
@@ -164,6 +165,7 @@ class PostProductionResult < ActiveRecord::Base
   
   def post_confirm_update(employee,  params ) 
     self.creator_id = employee.id 
+    self.in_progress_quantity         = params[:in_progress_quantity]
     self.ok_quantity         = params[:ok_quantity]
     self.bad_source_quantity = params[:bad_source_quantity]
     self.broken_quantity     = params[:broken_quantity] 

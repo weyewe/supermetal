@@ -10,6 +10,8 @@ Ext.define('AM.model.PostProductionResult', {
 			{ name: 'broken_quantity', type: 'int' },
 			{ name: 'bad_source_quantity', type: 'int' },
 			
+			{ name: 'in_progress_quantity', type: 'int' },
+			
 			{ name: 'ok_weight', type: 'string' },
 			{ name: 'broken_weight', type: 'string' },
 			{ name: 'bad_source_weight', type: 'string' },

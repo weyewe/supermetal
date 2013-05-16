@@ -64,6 +64,7 @@ class PreProductionResult < ActiveRecord::Base
     new_object.creator_id = employee.id 
     
     new_object.ok_quantity         = params[:ok_quantity]
+    new_object.in_progress_quantity         = params[:in_progress_quantity]
     new_object.broken_quantity     = params[:broken_quantity] 
     new_object.started_at          = params[:started_at] 
     new_object.finished_at         = params[:finished_at] 
@@ -89,6 +90,7 @@ class PreProductionResult < ActiveRecord::Base
     self.creator_id = employee.id 
     self.ok_quantity         = params[:ok_quantity]
     self.broken_quantity     = params[:broken_quantity] 
+    self.in_progress_quantity         = params[:in_progress_quantity]
     self.started_at          = params[:started_at] 
     self.finished_at         = params[:finished_at]
 
@@ -105,6 +107,7 @@ class PreProductionResult < ActiveRecord::Base
     self.broken_quantity     = params[:broken_quantity] 
     self.started_at          = params[:started_at] 
     self.finished_at         = params[:finished_at]
+    self.in_progress_quantity         = params[:in_progress_quantity]
     
     if self.save 
       ActiveRecord::Base.transaction do

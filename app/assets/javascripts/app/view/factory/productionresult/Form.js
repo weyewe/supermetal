@@ -43,6 +43,18 @@ Ext.define('AM.view.factory.productionresult.Form', {
 				
 				{
 					xtype : 'fieldset',
+					title : "Dalam Pengerjaan",
+					items : [
+						{
+							fieldLabel: 'Jumlah',
+							name: 'in_progress_quantity' ,
+							xtype : 'textfield'
+						}
+					]
+				},
+				
+				{
+					xtype : 'fieldset',
 					title : "OK Cor",
 					items : [
 						{
